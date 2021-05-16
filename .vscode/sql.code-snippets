@@ -1,0 +1,49 @@
+{
+	// Place your phoenix-db workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders.
+	// Placeholders with the same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+	"CREATE_TABLE": {
+		"prefix": "CREATE_TABLE",
+		"scope": "sql",
+		"body": [
+			"",
+			"-- BEGIN ${1:table_name}",
+			"\tCREATE TABLE ${1:table_name}(",
+			"\t\t${2:prefix}_id                  SERIAL NOT NULL,",
+			"\t\t${2:prefix}_name                TEXT NOT NULL,",
+			"\t\t${2:prefix}_description         TEXT NOT NULL,",
+			"\t\t${2:prefix}_created_at          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,",
+			"\t\t${2:prefix}_updated_at          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,",
+			"\t\t${2:prefix}_status              dm_record_status",
+			"\t);",
+			"",
+			"\tALTER TABLE ONLY ${1:table_name} ADD CONSTRAINT",
+			"\t\t${1:table_name}_pk PRIMARY KEY (${2:prefix}_id);",
+			"",
+			"\t/*ALTER TABLE ONLY ${1:table_name} ADD CONSTRAINT",
+			"\t\t${1:table_name}_fk_${3:2nd_table_name} FOREIGN KEY (${2:prefix}_${4:column_origin})",
+			"\t\tREFERENCES ${3:2nd_table_name}(${5:column_reference});*/",
+			"",
+			"\t/*ALTER TABLE ONLY ${1:table_name} ADD CONSTRAINT",
+			"\t\t${1:table_name}_uq_${2:prefix}_${6:column_idx} UNIQUE (${2:prefix}_${6:column_idx});*/",
+			"",
+			"\t--CREATE INDEX ${1:table_name}_idx_${2:prefix}_${7:column_idx} ON ${1:table_name} (${2:prefix}_${7:column_idx});",
+			"-- END ${1:table_name}",
+			"",
+			""
+		]
+	}
+}
