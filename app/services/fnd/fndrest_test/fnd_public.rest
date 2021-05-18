@@ -1,0 +1,11 @@
+###
+# @name authenticate
+POST {{app-host}}/api/public/foundation/account/login
+Content-Type: application/json
+
+{
+    "Password": "{{env-password}}",
+    "User": "{{env-user}}"
+}
+
+

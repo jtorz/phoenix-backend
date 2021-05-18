@@ -1,33 +1,37 @@
 package ctxinfo
 
-import "context"
+import (
+	"context"
+
+	"github.com/gin-gonic/gin"
+	"github.com/jtorz/phoenix-backend/app/config"
+)
+
+const modeKey = config.EnvPrefix + "_mode_"
 
 func PrintLog(ctx context.Context) bool {
-	debug, _ := ctx.Value("DEBUG").(bool)
-	qa, _ := ctx.Value("QA").(bool)
-	return debug || qa
+	mode, _ := ctx.Value(modeKey).(config.Mode)
+	return config.IsModeDebug(mode)
+}
+
+func SetPrintLog(c *gin.Context, mode config.Mode) {
+	c.Set(modeKey, mode)
 }
 
 type Agent struct {
 	UserID string
 	AuthService
 }
-
-type agentContextKey struct {
-}
-
 type AuthService interface {
-	GetPrivileges() (Privilege, error)
+	GetPrivilegeByPriority(...string) (string, error)
+	HasPrivilege(string) (bool, error)
+	IsAdmin() (bool, error)
 }
 
-type Privilege struct {
-	Method string
-	Route  string
-	Key    string
-}
+const agentKey = config.EnvPrefix + "_agent_"
 
-func SetAgent(c context.Context, userID string, authSvc AuthService) context.Context {
-	return context.WithValue(c, agentContextKey{}, Agent{
+func SetAgent(c *gin.Context, userID string, authSvc AuthService) {
+	c.Set(agentKey, &Agent{
 		UserID:      userID,
 		AuthService: authSvc,
 	})

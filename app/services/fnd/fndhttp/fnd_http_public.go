@@ -2,8 +2,11 @@ package fndhttp
 
 import (
 	"database/sql"
+	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jtorz/phoenix-backend/app/httphandler"
+	"github.com/jtorz/phoenix-backend/app/services/authorization"
 )
 
 // HttpPublic http handler component.
@@ -12,14 +15,14 @@ type HttpPublic struct {
 }
 
 // Login http handler.
-func (httpPublic HttpPublic) Login() httphandler.HandlerFunc {
+func (handler HttpPublic) Login(jwtSvc authorization.JWTService) httphandler.HandlerFunc {
 	type request struct {
 		User     string `json:"user" binding:"required"`
 		Password string `json:"password" binding:"required"`
 	}
-	return func(handler *httphandler.Handler) {
+	return func(c *httphandler.Context) {
 		req := request{}
-		if handler.BindJSON(&req) {
+		if c.BindJSON(&req) {
 			return
 		}
 
@@ -50,5 +53,23 @@ func (httpPublic HttpPublic) Login() httphandler.HandlerFunc {
 			},
 			"jwt": jwt,
 		})*/
+		jwt, err := jwtSvc.NewJWT(authorization.AuthUser{
+			ID: "TODO:",
+		})
+
+		if c.HandleError(err) {
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"user": gin.H{
+				"id":         "u.ID",
+				"name":       "u.Name",
+				"middleName": "u.MiddleName",
+				"lastName":   "u.LastName",
+				"email":      "u.Email",
+				"username":   "u.Username",
+			},
+			"jwt": jwt,
+		})
 	}
 }

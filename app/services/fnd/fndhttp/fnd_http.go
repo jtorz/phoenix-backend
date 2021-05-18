@@ -5,15 +5,18 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jtorz/phoenix-backend/app/httphandler"
+	"github.com/jtorz/phoenix-backend/app/services/authorization"
 )
 
 type Service struct {
-	DB *sql.DB
+	DB     *sql.DB
+	JwtSvc authorization.JWTService
 }
 
-func NewService(db *sql.DB) Service {
+func NewService(db *sql.DB, jwtSvc authorization.JWTService) Service {
 	return Service{
-		DB: db,
+		DB:     db,
+		JwtSvc: jwtSvc,
 	}
 }
 
@@ -22,10 +25,10 @@ func NewService(db *sql.DB) Service {
 //
 // current path: /api/public/foundation
 func (s Service) APIPublic(apiGroup *gin.RouterGroup) {
-	httpPublic := HttpPublic(s)
+	httpPublic := HttpPublic{DB: s.DB}
 	{
 		//g.POST("/account/logout", httpPublic.Logout().Func())
-		apiGroup.POST("/account/login", httphandler.Secret(httpPublic.Login()))
+		apiGroup.POST("/account/login", httphandler.Secret(httpPublic.Login(s.JwtSvc)))
 		//g.POST("/account/restore/request", httpPublic.RequestRestore().Func())
 		//g.POST("/account/restore", httpPublic.Restore().Func())
 		//g.GET("/account/session", httpPublic.GetSession().Func())

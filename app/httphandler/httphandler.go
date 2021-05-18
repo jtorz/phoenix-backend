@@ -1,8 +1,6 @@
 package httphandler
 
 import (
-	golog "log"
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -11,7 +9,6 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	es_translations "github.com/go-playground/validator/v10/translations/es"
-	"github.com/jtorz/phoenix-backend/app/shared/ctxinfo"
 )
 
 var (
@@ -27,23 +24,23 @@ func init() {
 	es_translations.RegisterDefaultTranslations(v, trans)
 }
 
-// Handler gin.context wrapper.
-type Handler struct {
+// Context gin.context wrapper.
+type Context struct {
 	*gin.Context
 }
 
 // New wraps the gin.Context.
-func New(c *gin.Context) *Handler {
-	return &Handler{c}
+func New(c *gin.Context) *Context {
+	return &Context{c}
 }
 
 // HandlerFunc defines the handler used by gin middleware as return value.
-type HandlerFunc func(*Handler)
+type HandlerFunc func(*Context)
 
 // Func returns the original gin.HandlerFunc.
 func (h HandlerFunc) Func() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		h(&Handler{c})
+		h(&Context{c})
 	}
 }
 
@@ -51,26 +48,26 @@ func (h HandlerFunc) Func() gin.HandlerFunc {
 //
 // If an error occurs during the process a StatusBadRequest is responded to the client,
 // and returns true.
-func (handler *Handler) BindJSON(v interface{}) bool {
-	err := handler.ShouldBindWith(v, binding.JSON)
+func (c *Context) BindJSON(v interface{}) bool {
+	err := c.ShouldBindWith(v, binding.JSON)
 	if err == nil {
 		return false
 	}
 
 	e, ok := err.(validator.ValidationErrors)
 	if !ok {
-		handler.ErrBadRequest(err, "malformed JSON")
+		c.ErrBadRequest(err, "malformed JSON")
 		return true
 	}
 
 	for _, v := range e.Translate(trans) {
-		handler.ErrBadRequestMsg(v)
-		handler.Abort()
+		c.ErrBadRequestMsg(v)
+		c.Abort()
 		return true
 	}
 
-	handler.ErrBadRequest(e, e.Error())
-	handler.Abort()
+	c.ErrBadRequest(e, e.Error())
+	c.Abort()
 	return true
 }
 
@@ -78,9 +75,9 @@ func (handler *Handler) BindJSON(v interface{}) bool {
 //
 // If an error occurs during the conversion a StatusBadRequest is responded to the client,
 // and returns true.
-func (handler *Handler) ParamInt(paramName string) (int, bool) {
-	num, err := strconv.Atoi(handler.Param(paramName))
-	if handler.ErrBadRequest(err, paramName+" is not a number") {
+func (c *Context) ParamInt(paramName string) (int, bool) {
+	num, err := strconv.Atoi(c.Param(paramName))
+	if c.ErrBadRequest(err, paramName+" is not a number") {
 		return 0, true
 	}
 	return num, false
@@ -90,31 +87,10 @@ func (handler *Handler) ParamInt(paramName string) (int, bool) {
 //
 // If an error occurs during the conversion a StatusBadRequest is responded to the client,
 // and returns true.
-func (handler *Handler) ParamInt64(paramName string) (int64, bool) {
-	num, err := strconv.ParseInt(handler.Param(paramName), 10, 64)
-	if handler.ErrBadRequest(err, paramName+" is not a number") {
+func (c *Context) ParamInt64(paramName string) (int64, bool) {
+	num, err := strconv.ParseInt(c.Param(paramName), 10, 64)
+	if c.ErrBadRequest(err, paramName+" is not a number") {
 		return 0, true
 	}
 	return num, false
-}
-
-// ErrBadRequest reponds with status 400 with a msg only if err != nil.
-func (handler *Handler) ErrBadRequest(err error, clientMsg string) bool {
-	if err == nil {
-		return false
-	}
-	if ctxinfo.PrintLog(handler) {
-		golog.Println(err)
-	}
-	handler.JSON(http.StatusBadRequest, gin.H{
-		"msg": clientMsg,
-	})
-	return true
-}
-
-// ErrBadRequestMsg reponds with status 400 with a msg.
-func (handler *Handler) ErrBadRequestMsg(clientMsg string) {
-	handler.JSON(http.StatusBadRequest, gin.H{
-		"msg": clientMsg,
-	})
 }

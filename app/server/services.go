@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jtorz/phoenix-backend/app/services/authorization"
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndhttp"
 )
 
@@ -24,20 +25,28 @@ type Service struct {
 	}
 }
 
-func (server Server) regiterServices() {
+func (server *Server) regiterServices(jwtSvc authorization.JWTService) {
 	server.Services = map[string]Service{
 		"/foundation": {
 			Name:       "Foundation",
-			Configurer: fndhttp.NewService(server.MainDB),
+			Configurer: fndhttp.NewService(server.MainDB, jwtSvc),
 		},
 	}
 }
 
 func (server *Server) configureHttpServer() {
-	server.regiterServices()
+	if server.Config.JWTKey == "" {
+		panic("empty JWT key")
+	}
+	jwtSvc := authorization.JWTService(server.Config.JWTKey)
+
+	server.regiterServices(jwtSvc)
+
 	r := gin.New()
+
+	gin.SetMode(server.Config.AppMode)
 	server.api(r.Group("/api"))
-	server.configureMiddlewares()
+	server.configureMiddlewares(r, jwtSvc)
 	h := http.TimeoutHandler(r, time.Duration(server.Config.RequestTimeout)*time.Second, `"request timeout"`)
 	server.HTTPServer = &http.Server{
 		Addr:           fmt.Sprintf(":%d", server.Config.Port),

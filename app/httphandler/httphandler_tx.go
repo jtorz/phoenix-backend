@@ -10,7 +10,7 @@ type Tx struct {
 }
 
 // Commit commits the transaction if an error occurs it panics
-func (tx *Tx) Commit(c Handler) {
+func (tx *Tx) Commit(c Context) {
 	if err := tx.Tx.Commit(); err != nil {
 		panic(err)
 	}
@@ -18,7 +18,7 @@ func (tx *Tx) Commit(c Handler) {
 }
 
 // Rollback commits the transaction if an error occurs it panics
-func (tx *Tx) Rollback(c Handler) {
+func (tx *Tx) Rollback(c Context) {
 	if err := tx.Tx.Rollback(); err != nil {
 		panic(err)
 	}

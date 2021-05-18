@@ -3,9 +3,11 @@ package server
 import (
 	"database/sql"
 	"fmt"
+	"go/build"
 	"net/http"
 	"os"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/kardianos/service"
@@ -33,12 +35,21 @@ type Config struct {
 	RequestTimeout int    `mapstructure:"REQUEST_TIMEOUT"`
 	Cert           string `mapstructure:"SERVER_CERT"`
 	Key            string `mapstructure:"SERVER_KEY"`
+	AppMode        string `mapstructure:"MODE"`
+	JWTKey         string `mapstructure:"JWT_KEY"`
+	CryptKey       string `mapstructure:"CRYPT_KEY"`
+	AppPathEnv     string `mapstructure:"PATH"`
 	// Database
+
 	DBMainConnection      string `mapstructure:"DB_MAIN_CONNECTION"`
 	DBMainMaxIdleConns    int    `mapstructure:"DB_MAIN_MAX_IDLE_CONNS"`
 	DBMainMaxOpenConns    int    `mapstructure:"DB_MAIN_MAX_OPEN_CONNS"`
 	DBMainConnMaxIdleTime int    `mapstructure:"DB_MAIN_CONN_MAX_IDLE_TIME"`
 	DBMainConnMaxLifetime int    `mapstructure:"DB_MAIN_CONN_MAX_LIFETIME"`
+}
+
+func (c Config) AppModeDebug() bool {
+	return c.AppMode == "" || c.AppMode == "debug" || c.AppMode == "qa"
 }
 
 func NewServer() Server {
@@ -94,7 +105,8 @@ func (server *Server) load() error {
 	if err := server.loadConfig(); err != nil {
 		return err
 	}
-	//fmt.Println(server.Config)
+	//fmt.Printf("%#v\n", server.Config)
+	//os.Exit(1)
 	if err := server.connectDB(); err != nil {
 		return err
 	}
@@ -108,6 +120,19 @@ func (server *Server) loadConfig() error {
 	server.registerEnvs(Config{})
 
 	viper.SetDefault("REQUEST_TIMEOUT", 10)
+	viper.SetDefault("DB_MAIN_MAX_IDLE_CONNS", 10)
+	viper.SetDefault("DB_MAIN_MAX_OPEN_CONNS", 5)
+	viper.SetDefault("DB_MAIN_CONN_MAX_IDLE_TIME", 300)
+	viper.SetDefault("DB_MAIN_CONN_MAX_LIFETIME", 600)
+	{ //PATH
+
+		p := os.Getenv("GOPATH")
+		if p == "" {
+			p = build.Default.GOPATH
+		}
+		p = addSlash(p) + "src/" + config.SysPkgName + "/"
+		viper.SetDefault("PATH", p)
+	}
 
 	err := viper.Unmarshal(&server.Config)
 	if err != nil {
@@ -119,13 +144,14 @@ func (server *Server) registerEnvs(iv interface{}) {
 	v := reflect.ValueOf(iv)
 	for i := 0; i < v.NumField(); i++ {
 		tag := v.Type().Field(i).Tag.Get("mapstructure")
-		viper.BindEnv(tag)
+		tagValues := strings.Split(tag, ",")
+		viper.BindEnv(tagValues[0])
 	}
 }
 
 func (server *Server) connectDB() (err error) {
 	fmt.Println("connecting to main db")
-	if server.MainDB, err = sql.Open("postgres", server.Config.DBMainConnection); err != nil {
+	if server.MainDB, err = sql.Open("postgres", string(server.Config.DBMainConnection)); err != nil {
 		return err
 	}
 	server.MainDB.SetMaxIdleConns(server.Config.DBMainMaxIdleConns)
@@ -133,4 +159,11 @@ func (server *Server) connectDB() (err error) {
 	server.MainDB.SetConnMaxIdleTime(time.Second * time.Duration(server.Config.DBMainConnMaxIdleTime))
 	server.MainDB.SetConnMaxLifetime(time.Second * time.Duration(server.Config.DBMainConnMaxLifetime))
 	return nil
+}
+
+func addSlash(s string) string {
+	if s[len(s)-1] != '/' {
+		return s + "/"
+	}
+	return s
 }
