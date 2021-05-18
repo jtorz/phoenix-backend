@@ -12,15 +12,12 @@ import (
 )
 
 var (
-	uni   *ut.UniversalTranslator
 	trans ut.Translator
 )
 
 func init() {
-	uni = ut.New(es.New())
-
 	v := binding.Validator.Engine().(*validator.Validate)
-	trans, _ = uni.GetTranslator("es")
+	trans, _ = ut.New(es.New()).GetTranslator("es")
 	es_translations.RegisterDefaultTranslations(v, trans)
 }
 

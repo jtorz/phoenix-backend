@@ -11,7 +11,9 @@ import (
 	"github.com/jtorz/phoenix-backend/app/shared/ctxinfo"
 )
 
-// ErrBadRequest reponds with status 400 with a msg only if err != nil.
+// ErrBadRequest reponds with status 400 if the error exists.
+//
+// returns true if the error exists.
 func (c *Context) ErrBadRequest(err error, clientMsg string) bool {
 	if err == nil {
 		return false
@@ -32,31 +34,31 @@ func (c *Context) ErrBadRequestMsg(clientMsg string) {
 	})
 }
 
-// HandleError handles the error with the basic.
-// returns true if an error occured
+// HandleError handles the basic errors.
+//
+// returns true if an error occured.
 func (c *Context) HandleError(err error) bool {
 	if err == nil {
 		return false
 	}
 	if baseerrors.IsErrPrivilege(err) {
-		c.Status(http.StatusForbidden) // 403
+		c.JSON(http.StatusForbidden, err) // 403
 		return true
 	}
 	if baseerrors.IsErrStatus(err) {
-		c.JSON(http.StatusConflict, "status") //409
+		c.JSON(http.StatusConflict, err) //409
 		return true
 	}
-	if baseerrors.IsErrNotUpdated(err) {
-		c.JSON(http.StatusConflict, "not updated")
+	if baseerrors.IsErrNotUpdated(err) || baseerrors.IsErrDuplicated(err) {
+		c.JSON(http.StatusConflict, err)
 		return true
 	}
 	return c.UnexpectedError(err)
 }
 
-// UnexpectedError si hay error regresa true, responde con StatusInternalServerError
-// y realiza el log del error
+// UnexpectedError handles the error when the origin of such error is unknown
 //
-// Esta funcion solo debe llamarse cuando el origen del error es desconocido o no esta siendo manejado
+// returns true if an error occured.
 func (c *Context) UnexpectedError(err error) bool {
 	if err == nil {
 		return false
