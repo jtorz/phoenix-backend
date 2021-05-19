@@ -61,7 +61,7 @@ func IsErrDuplicated(err error) bool {
 }
 
 // ErrNotFound the requested information was not found.
-var ErrNotFound = errors.New("information not found")
+var ErrNotFound = errors.New("not found")
 
 // IsErrNotFound check if the error is ErrNotFound.
 func IsErrNotFound(err error) bool {

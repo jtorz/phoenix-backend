@@ -19,17 +19,16 @@ const (
 
 // AccountAccess can be used as alternate authentication methods.
 type AccountAccess struct {
-	ID        int
 	Type      AccountAccessType
 	Key       string
-	User      *User
+	User      User
 	CreatedAt time.Time   `json:"createdAt"`
 	UpdatedAt time.Time   `json:"updatedAt"`
 	Status    base.Status `json:"status"`
 }
 
 // NewAccountAccess creates a new account acces for the user
-func NewAccountAccess(u *User, k AccountAccessType) (a *AccountAccess, err error) {
+func NewAccountAccess(u User, k AccountAccessType) (a *AccountAccess, err error) {
 	uuid, err := uuid.NewRandom()
 	if err != nil {
 		return

@@ -5,6 +5,7 @@ import (
 
 	"github.com/jtorz/phoenix-backend/app/httphandler"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
+	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
 )
 
 // Service authorization module service.
@@ -12,22 +13,18 @@ import (
 // Implements ctxinfo.Service interface.
 type Service struct {
 	//DB *sql.DB
-	AuthUser
-}
-
-type AuthUser struct {
-	ID string
+	baseservice.JWTData
 }
 
 // NewAuthService creates a new Service.
-func NewAuthService(c *httphandler.Context, jwtSvc JWTService, db *sql.DB) (*Service, error) {
-	authUser, err := jwtSvc.AuthJWT(c)
+func NewAuthService(c *httphandler.Context, jwtSvc JWTSvc, db *sql.DB) (*Service, error) {
+	jwtData, err := jwtSvc.AuthJWT(c)
 	if err != nil {
 		return nil, err
 	}
 
 	svc := Service{
-		AuthUser: *authUser,
+		JWTData: *jwtData,
 	}
 
 	privs, err := svc.GetPrivileges()

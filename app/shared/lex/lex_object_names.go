@@ -27,27 +27,27 @@ var T = struct {
 	Emattemplate      string
 	Emabrecord        string
 }{
-	Fndccomponent:     "fndccomponent",
-	Fndtmodule:        "fndtmodule",
-	Fndtaction:        "fndtaction",
-	Fndtrole:          "fndtrole",
-	Fndtprivilege:     "fndtprivilege",
-	FndtuserRole:      "fnduser_role",
-	Fndtuser:          "fndtuser",
-	Fndtpassword:      "fndtpassword",
-	FndcaccessType:    "fndcaccess_type",
-	FndtaccessAccount: "fndtaccess_account",
-	Emacsender:        "emacsender",
-	EmactemplateType:  "emactemplate_type",
-	Ematheader:        "ematheader",
-	Ematfooter:        "ematfooter",
-	Emattemplate:      "emattemplate",
-	Emabrecord:        "emabrecord",
+	Fndccomponent:     "fnd_component",
+	Fndtmodule:        "fnd_module",
+	Fndtaction:        "fnd_action",
+	Fndtrole:          "fnd_role",
+	Fndtprivilege:     "fnd_privilege",
+	FndtuserRole:      "fnd_ser_role",
+	Fndtuser:          "fnd_user",
+	Fndtpassword:      "fnd_password",
+	FndcaccessType:    "fnd_access_type",
+	FndtaccessAccount: "fnd_access_account",
+	Emacsender:        "ema_sender",
+	EmactemplateType:  "ema_template_type",
+	Ematheader:        "ema_header",
+	Ematfooter:        "ema_footer",
+	Emattemplate:      "ema_template",
+	Emabrecord:        "ema_record",
 }
 
 // V database view names.
 var V = struct {
-	FndvprivilegeRole string
+	FndVPrivilegeRole string
 }{
-	FndvprivilegeRole: "fndvprivilege_role",
+	FndVPrivilegeRole: "fnd_v_privilege_role",
 }

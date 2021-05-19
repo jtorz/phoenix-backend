@@ -21,7 +21,7 @@ func init() {
 	es_translations.RegisterDefaultTranslations(v, trans)
 }
 
-// Context gin.context wrapper.
+// Context gin.context wrapper created to add extra functions.
 type Context struct {
 	*gin.Context
 }
@@ -43,8 +43,9 @@ func (h HandlerFunc) Func() gin.HandlerFunc {
 
 // BindJSON calls the gin.Context.Bind method.
 //
-// If an error occurs during the process a StatusBadRequest is responded to the client,
-// and returns true.
+// If an error occurs during the process a StatusBadRequest is responded to the client.
+//
+// returns true if an error occured.
 func (c *Context) BindJSON(v interface{}) bool {
 	err := c.ShouldBindWith(v, binding.JSON)
 	if err == nil {
@@ -70,8 +71,9 @@ func (c *Context) BindJSON(v interface{}) bool {
 
 // ParamInt returns the value of the URL param converted to int.
 //
-// If an error occurs during the conversion a StatusBadRequest is responded to the client,
-// and returns true.
+// If an error occurs during the conversion a StatusBadRequest is responded to the client.
+//
+// returns true if an error occured.
 func (c *Context) ParamInt(paramName string) (int, bool) {
 	num, err := strconv.Atoi(c.Param(paramName))
 	if c.ErrBadRequest(err, paramName+" is not a number") {
@@ -82,8 +84,9 @@ func (c *Context) ParamInt(paramName string) (int, bool) {
 
 // ParamInt64 returns the value of the URL param converted to int64.
 //
-// If an error occurs during the conversion a StatusBadRequest is responded to the client,
-// and returns true.
+// If an error occurs during the conversion a StatusBadRequest is responded to the client.
+//
+// returns true if an error occured.
 func (c *Context) ParamInt64(paramName string) (int64, bool) {
 	num, err := strconv.ParseInt(c.Param(paramName), 10, 64)
 	if c.ErrBadRequest(err, paramName+" is not a number") {

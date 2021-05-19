@@ -8,12 +8,16 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jtorz/phoenix-backend/app/httphandler"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
+	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
 )
 
-type JWTService []byte
+// JWTSvc jwt service is used to generate a jwt string and to decode jwt strings.
+//
+// The slice of bytes represents the string key user to cipher the data in the jwt.
+type JWTSvc []byte
 
 // NewJWT returns a new JWT.
-func (jwtSvc JWTService) NewJWT(authUser AuthUser) (string, error) {
+func (jwtSvc JWTSvc) NewJWT(authUser baseservice.JWTData) (string, error) {
 	if len(jwtSvc) == 0 {
 		panic("empty JWT key")
 	}
@@ -25,7 +29,7 @@ func (jwtSvc JWTService) NewJWT(authUser AuthUser) (string, error) {
 }
 
 // AuthJWT checks the jwt information.
-func (jwtSvc JWTService) AuthJWT(c *httphandler.Context) (*AuthUser, error) {
+func (jwtSvc JWTSvc) AuthJWT(c *httphandler.Context) (*baseservice.JWTData, error) {
 	tokenString, err := jwtSvc.getBearerToken(c)
 	if err != nil {
 		return nil, err
@@ -34,13 +38,13 @@ func (jwtSvc JWTService) AuthJWT(c *httphandler.Context) (*AuthUser, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &AuthUser{
+	return &baseservice.JWTData{
 		ID: claims["userID"].(string),
 	}, nil
 }
 
 // GetBearerToken returns the bearer jwt from the Authorization header.
-func (srv JWTService) getBearerToken(c *httphandler.Context) (string, error) {
+func (srv JWTSvc) getBearerToken(c *httphandler.Context) (string, error) {
 	tok := c.Request.Header.Get("Authorization")
 	if tok == "" {
 		return "", fmt.Errorf("empty JWT token: %w", baseerrors.ErrAuth)
@@ -52,7 +56,7 @@ func (srv JWTService) getBearerToken(c *httphandler.Context) (string, error) {
 	return tok, nil
 }
 
-func (jwtSvc JWTService) parseJWT(tokenString string) (*jwt.Token, jwt.MapClaims, error) {
+func (jwtSvc JWTSvc) parseJWT(tokenString string) (*jwt.Token, jwt.MapClaims, error) {
 	// Parse takes the token string and a function for looking up the key. The latter is especially
 	// useful if you use multiple keys for your application.  The standard is to use 'kid' in the
 	// head of the token to identify which key to use, but the parsed token (head and claims) is provided

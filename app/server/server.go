@@ -24,7 +24,6 @@ type Server struct {
 	Config     Config
 	MainDB     *sql.DB
 	HTTPServer *http.Server
-	Services   map[string]Service
 }
 
 type Config struct {
@@ -110,7 +109,7 @@ func (server *Server) load() error {
 	if err := server.connectDB(); err != nil {
 		return err
 	}
-	server.configureHttpServer()
+	server.configureServices()
 	return nil
 }
 

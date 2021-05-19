@@ -5,18 +5,20 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jtorz/phoenix-backend/app/httphandler"
-	"github.com/jtorz/phoenix-backend/app/services/authorization"
+	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
 )
 
 type Service struct {
-	DB     *sql.DB
-	JwtSvc authorization.JWTService
+	DB      *sql.DB
+	JwtSvc  baseservice.JWTGeneratorSvc
+	MailSvc baseservice.MailSenderSvc
 }
 
-func NewService(db *sql.DB, jwtSvc authorization.JWTService) Service {
+func NewService(db *sql.DB, jwtSvc baseservice.JWTGeneratorSvc, mailSvc baseservice.MailSenderSvc) Service {
 	return Service{
-		DB:     db,
-		JwtSvc: jwtSvc,
+		DB:      db,
+		JwtSvc:  jwtSvc,
+		MailSvc: mailSvc,
 	}
 }
 
@@ -25,10 +27,10 @@ func NewService(db *sql.DB, jwtSvc authorization.JWTService) Service {
 //
 // current path: /api/public/foundation
 func (s Service) APIPublic(apiGroup *gin.RouterGroup) {
-	httpPublic := HttpPublic{DB: s.DB}
+	httpPublic := newHttpPublic(s.DB, s.JwtSvc, s.MailSvc)
 	{
 		//g.POST("/account/logout", httpPublic.Logout().Func())
-		apiGroup.POST("/account/login", httphandler.Secret(httpPublic.Login(s.JwtSvc)))
+		apiGroup.POST("/account/login", httphandler.Secret(httpPublic.Login()))
 		//g.POST("/account/restore/request", httpPublic.RequestRestore().Func())
 		//g.POST("/account/restore", httpPublic.Restore().Func())
 		//g.GET("/account/session", httpPublic.GetSession().Func())

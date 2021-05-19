@@ -3,7 +3,6 @@ package httphandler
 import (
 	"context"
 	"log"
-	golog "log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,7 +18,7 @@ func (c *Context) ErrBadRequest(err error, clientMsg string) bool {
 		return false
 	}
 	if ctxinfo.PrintLog(c) {
-		golog.Println(err)
+		log.Println(err)
 	}
 	c.JSON(http.StatusBadRequest, gin.H{
 		"msg": clientMsg,
@@ -36,7 +35,7 @@ func (c *Context) ErrBadRequestMsg(clientMsg string) {
 
 // HandleError handles the basic errors.
 //
-// returns true if an error occured.
+// returns true if the error is not nil.
 func (c *Context) HandleError(err error) bool {
 	if err == nil {
 		return false
@@ -58,7 +57,7 @@ func (c *Context) HandleError(err error) bool {
 
 // UnexpectedError handles the error when the origin of such error is unknown
 //
-// returns true if an error occured.
+// returns true if the error is not nil.
 func (c *Context) UnexpectedError(err error) bool {
 	if err == nil {
 		return false

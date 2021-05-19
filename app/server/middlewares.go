@@ -16,17 +16,26 @@ import (
 type agent string
 
 // configureMiddlewares configures the http middlewares.
-func (server *Server) configureMiddlewares(r *gin.Engine, jwtSvc authorization.JWTService) {
-	r.Use(gin.Recovery()) // default recovery
+func (server *Server) configureMiddlewares(r *gin.Engine, jwtSvc authorization.JWTSvc) {
+	// Default gin recovery middleware
+	r.Use(gin.Recovery())
+
+	// Middleware used to add the app mode to the context.
 	r.Use(func(ginCtx *gin.Context) {
 		ctxinfo.SetPrintLog(ginCtx, config.Mode(server.Config.AppMode))
 	})
+
+	// gin.logger middleware added only on debug mode.
 	if server.Config.AppModeDebug() {
 		r.Use(gin.Logger())
 	}
 
+	// static file server
 	server.serveStaticFiles(r)
 
+	// If the route doesn't exists in the api a status 404 is returned,
+	// If the requested resource is not from the api the client is redirected to the root.
+	// In order to serve the frontend files, and it can search the original requested resource.
 	r.NoRoute(func(c *gin.Context) {
 		if isAPIRoute(c) {
 			//c.Set(controller.KeyRequestError, error404(c.Request.URL.String()))
@@ -36,9 +45,8 @@ func (server *Server) configureMiddlewares(r *gin.Engine, jwtSvc authorization.J
 		c.Redirect(http.StatusFound, "/?redirect="+url.QueryEscape(c.Request.URL.String()))
 	})
 
-	// midleware used to store
+	// Auhtentication and Authorization middleware.
 	r.Use(func(ginCtx *gin.Context) {
-
 		if isAPIPublicRoute(ginCtx) {
 			ginCtx.Next()
 			return
@@ -71,10 +79,6 @@ func (server *Server) serveStaticFiles(r *gin.Engine) {
 
 func isAPIRoute(c *gin.Context) bool {
 	return strings.HasPrefix(c.Request.URL.String(), "/api/")
-}
-
-func isAPIAdminRoute(c *gin.Context) bool {
-	return strings.HasPrefix(c.Request.URL.String(), "/api/admin/")
 }
 
 func isAPIPublicRoute(c *gin.Context) bool {

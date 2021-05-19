@@ -6,9 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Secret wraps the controller function to set the flag that marks the request as secret
+// Secret wraps the controller function to set the flag that marks the request as secret.
 //
-// A secret request avoids the logging of sensible data.
+// A secret request doesn't log the request nor the response, to avoid logging sesible data.
 func Secret(f HandlerFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Set(KeyRequestSecret, true)

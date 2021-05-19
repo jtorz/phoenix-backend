@@ -3,11 +3,14 @@ package daohelper
 import (
 	"context"
 	"database/sql"
-	golog "log"
+	"log"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 	"github.com/jtorz/phoenix-backend/app/shared/ctxinfo"
+
+	// goqudialect
+	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
 )
 
 // QueryHelper holds helper functions.
@@ -40,7 +43,7 @@ func (QueryHelper) QueryContext(ctx context.Context, exe base.Executor, s *goqu.
 		return nil, err
 	}
 	if ctxinfo.PrintLog(ctx) {
-		golog.Println(query, "\n", args)
+		log.Println(query, "\n", args)
 	}
 	return exe.QueryContext(ctx, query, args...)
 }
@@ -55,7 +58,7 @@ func (QueryHelper) QueryRowContext(ctx context.Context, exe base.Executor, s *go
 		return nil, err
 	}
 	if ctxinfo.PrintLog(ctx) {
-		golog.Println(query, "\n", args)
+		log.Println(query, "\n", args)
 	}
 	return exe.QueryRowContext(ctx, query, args...), nil
 }
@@ -67,7 +70,7 @@ func (QueryHelper) DoUpdate(ctx context.Context, exe base.Executor, s *goqu.Upda
 		return nil, err
 	}
 	if ctxinfo.PrintLog(ctx) {
-		golog.Println(query, "\n", args)
+		log.Println(query, "\n", args)
 	}
 	return exe.ExecContext(ctx, query, args...)
 }
@@ -79,7 +82,7 @@ func (QueryHelper) DoUpdateReturningRow(ctx context.Context, exe base.Executor, 
 		return nil, err
 	}
 	if ctxinfo.PrintLog(ctx) {
-		golog.Println(query, "\n", args)
+		log.Println(query, "\n", args)
 	}
 	return exe.QueryRowContext(ctx, query, args...), nil
 }
@@ -91,7 +94,7 @@ func (QueryHelper) DoInsert(ctx context.Context, exe base.Executor, s *goqu.Inse
 		return nil, err
 	}
 	if ctxinfo.PrintLog(ctx) {
-		golog.Println(query, "\n", args)
+		log.Println(query, "\n", args)
 	}
 	return exe.ExecContext(ctx, query, args...)
 }
@@ -103,7 +106,7 @@ func (QueryHelper) DoDelete(ctx context.Context, exe base.Executor, s *goqu.Dele
 		return nil, err
 	}
 	if ctxinfo.PrintLog(ctx) {
-		golog.Println(query, "\n", args)
+		log.Println(query, "\n", args)
 	}
 	return exe.ExecContext(ctx, query, args...)
 }
@@ -115,7 +118,7 @@ func (QueryHelper) DoInsertReturning(ctx context.Context, exe base.Executor, s *
 		return nil, err
 	}
 	if ctxinfo.PrintLog(ctx) {
-		golog.Println(query, "\n", args)
+		log.Println(query, "\n", args)
 	}
 	return exe.QueryRowContext(ctx, query, args...), nil
 }

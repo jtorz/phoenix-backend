@@ -17,13 +17,13 @@ const (
 func (s Status) String() string {
 	switch s {
 	case StatusDroppped:
-		return "Status Droppped"
+		return "Droppped"
 	case StatusCaptured:
-		return "Status Captured"
+		return "Captured"
 	case StatusActive:
-		return "Status Active"
+		return "Active"
 	case StatusInactive:
-		return "Status Inactive"
+		return "Inactive"
 	}
-	return "Status Unknown"
+	return "Unknown"
 }

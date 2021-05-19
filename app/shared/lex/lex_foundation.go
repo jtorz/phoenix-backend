@@ -176,7 +176,6 @@ var (
 	// FndtaccessAccount table column names.
 	FndtaccessAccount = struct {
 		AcaID             string
-		AcaKey            string
 		AcaType           string
 		AcaUserID         string
 		AcaExpirationDate string
@@ -185,7 +184,6 @@ var (
 		AcaStatus         string
 	}{
 		AcaID:             "aca_id",
-		AcaKey:            "aca_key",
 		AcaType:           "aca_type",
 		AcaUserID:         "aca_user_id",
 		AcaExpirationDate: "aca_expiration_date",

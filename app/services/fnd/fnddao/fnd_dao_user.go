@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/doug-martin/goqu/v9/exp"
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
@@ -14,11 +15,12 @@ import (
 
 // DaoUser Data Access structure.
 type DaoUser struct {
-	h daohelper.QueryHelper
+	Exe base.Executor
+	h   daohelper.QueryHelper
 }
 
 // Login retrieves the necessary data to login a user given its email/username.
-func (dao DaoUser) Login(ctx context.Context, exe base.Executor,
+func (dao *DaoUser) Login(ctx context.Context,
 	user string,
 ) (*fndmodel.User, error) {
 	res := &fndmodel.User{Password: &fndmodel.Password{}}
@@ -43,7 +45,7 @@ func (dao DaoUser) Login(ctx context.Context, exe base.Executor,
 			goqu.C(lex.Fndtpassword.PasStatus).Eq(base.StatusActive),
 		)
 
-	row, err := dao.h.QueryRowContext(ctx, exe, query)
+	row, err := dao.h.QueryRowContext(ctx, dao.Exe, query)
 	if err != nil {
 		return nil, dao.h.WrapErr(err)
 	}
@@ -65,4 +67,56 @@ func (dao DaoUser) Login(ctx context.Context, exe base.Executor,
 		return nil, dao.h.WrapErr(err)
 	}
 	return res, nil
+}
+
+// GetUserByMail returns a user given its email.
+func (dao *DaoUser) GetUserByMail(ctx context.Context,
+	email string,
+) (*fndmodel.User, error) {
+	return dao.getUser(ctx, goqu.C(lex.Fndtuser.UseEmail).Eq(email))
+}
+
+// GetUserByID retrives the record information using its ID.
+func (dao *DaoUser) GetUserByID(ctx context.Context,
+	userID string,
+) (*fndmodel.User, error) {
+	return dao.getUser(ctx, goqu.C(lex.Fndtuser.UseID).Eq(userID))
+}
+
+// getUser searchs the user with the given filters.
+func (dao *DaoUser) getUser(ctx context.Context,
+	filter ...exp.Expression,
+) (*fndmodel.User, error) {
+	query := dao.h.NewSelect(lex.T.Fndtuser).
+		Select(
+			lex.Fndtuser.UseID,
+			lex.Fndtuser.UseEmail,
+			lex.Fndtuser.UseUsername,
+			lex.Fndtuser.UseName,
+			lex.Fndtuser.UseMiddleName,
+			lex.Fndtuser.UseLastName,
+			lex.Fndtuser.UseStatus,
+			lex.Fndtuser.UseUpdatedAt,
+		).
+		Where(filter...)
+
+	row, err := dao.h.QueryRowContext(ctx, dao.Exe, query)
+	if err != nil {
+		return nil, dao.h.WrapErr(err)
+	}
+	rec := fndmodel.User{}
+	err = row.Scan(
+		&rec.ID,
+		&rec.Email,
+		&rec.Username,
+		&rec.Name,
+		&rec.MiddleName,
+		&rec.LastName,
+		&rec.Status,
+		&rec.UpdatedAt,
+	)
+	if err != nil {
+		return nil, dao.h.WrapErr(err)
+	}
+	return &rec, nil
 }

@@ -18,13 +18,14 @@ var pass1 = fndmodel.Password{
 }
 
 func newBizUserTest() BizUser {
-	return BizUser{dao: daoUserTest{}}
+	return BizUser{dao: &daoUserTest{}}
 }
 
-type daoUserTest struct {
-}
+type daoUserTest struct{}
 
-func (dao daoUserTest) Login(ctx context.Context, exe base.Executor, user string) (*fndmodel.User, error) {
+func (dao *daoUserTest) Login(ctx context.Context,
+	user string,
+) (*fndmodel.User, error) {
 	if user == "john.doe@gmail.com" || user == "john.doe" {
 		return &fndmodel.User{
 			ID:         "0bc01afe-ae7d-4f14-a4a9-8f5a1f4e7e79",
@@ -52,4 +53,18 @@ func (dao daoUserTest) Login(ctx context.Context, exe base.Executor, user string
 	}
 
 	return nil, baseerrors.ErrAuth
+}
+
+// GetUserByMail returns a user given its email.
+func (dao *daoUserTest) GetUserByMail(ctx context.Context,
+	email string,
+) (*fndmodel.User, error) {
+	return nil, nil
+}
+
+// GetUserByID retrives the record information using its ID.
+func (dao *daoUserTest) GetUserByID(ctx context.Context,
+	userID string,
+) (*fndmodel.User, error) {
+	return nil, nil
 }

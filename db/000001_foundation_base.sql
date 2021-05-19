@@ -203,16 +203,14 @@ CREATE DOMAIN fnd_dm_record_status
 -- END fnd_role_navigator
 
 
--- BEGIN fnd_access_account
-
-    CREATE DOMAIN fnd_dm_access_account_type
+-- BEGIN fnd_account_access
+    CREATE DOMAIN fnd_dm_account_access_type
         AS TEXT NOT NULL
         CHECK (VALUE IN ('RestoreAccount'));
 
-    CREATE TABLE fnd_access_account (
-        aca_id                  BIGSERIAL NOT NULL,
-        aca_key                 TEXT NOT NULL,
-        aca_type                fnd_dm_access_account_type NOT NULL,
+    CREATE TABLE fnd_account_access (
+        aca_id                  TEXT NOT NULL,
+        aca_type                fnd_dm_account_access_type NOT NULL,
         aca_user_id             UUID NOT NULL,
         aca_expiration_date     TIMESTAMP WITH TIME ZONE DEFAULT (now() + '2 days'::interval) NOT NULL,
         aca_created_at          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
@@ -220,16 +218,13 @@ CREATE DOMAIN fnd_dm_record_status
         aca_status              fnd_dm_record_status
     );
 
-    ALTER TABLE ONLY fnd_access_account ADD CONSTRAINT
+    ALTER TABLE ONLY fnd_account_access ADD CONSTRAINT
         fndtaccess_account_pk PRIMARY KEY (aca_id);
 
-    ALTER TABLE ONLY fnd_access_account ADD CONSTRAINT
+    ALTER TABLE ONLY fnd_account_access ADD CONSTRAINT
         fndtaccess_account_fk_fndtuser FOREIGN KEY (aca_user_id)
         REFERENCES fnd_user(use_id);
-
-    ALTER TABLE ONLY fnd_access_account ADD CONSTRAINT
-        fndtaccess_account_uq_aca_key UNIQUE (aca_key);
--- END fnd_access_account
+-- END fnd_account_access
 
 
 -- BEGIN fnd_v_privilege_role
