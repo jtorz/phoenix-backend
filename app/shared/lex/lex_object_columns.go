@@ -1,28 +1,13 @@
 package lex
 
 var (
-	// Fndccomponent table column names.
-	Fndccomponent = struct {
-		ComID          string
-		ComName        string
-		ComDescription string
-		ComCreatedAt   string
-		ComUpdatedAt   string
-		ComStatus      string
-	}{
-		ComID:          "com_id",
-		ComName:        "com_name",
-		ComDescription: "com_description",
-		ComCreatedAt:   "com_created_at",
-		ComUpdatedAt:   "com_updated_at",
-		ComStatus:      "com_status",
-	}
-
-	// Fndtmodule table column names.
-	Fndtmodule = struct {
+	// FndModule column names for object fnd_module.
+	FndModule = struct {
 		ModID          string
 		ModName        string
 		ModDescription string
+		ModOrder       string
+		ModParentID    string
 		ModCreatedAt   string
 		ModUpdatedAt   string
 		ModStatus      string
@@ -30,13 +15,15 @@ var (
 		ModID:          "mod_id",
 		ModName:        "mod_name",
 		ModDescription: "mod_description",
+		ModOrder:       "mod_order",
+		ModParentID:    "mod_parent_id",
 		ModCreatedAt:   "mod_created_at",
 		ModUpdatedAt:   "mod_updated_at",
 		ModStatus:      "mod_status",
 	}
 
-	// Fndtaction table column names.
-	Fndtaction = struct {
+	// FndAction column names for object fnd_action.
+	FndAction = struct {
 		ActModuleID    string
 		ActActionID    string
 		ActName        string
@@ -60,11 +47,12 @@ var (
 		ActStatus:      "act_status",
 	}
 
-	// Fndtrole table column names.
-	Fndtrole = struct {
+	// FndRole column names for object fnd_role.
+	FndRole = struct {
 		RolID          string
 		RolName        string
 		RolDescription string
+		RolIcon        string
 		RolCreatedAt   string
 		RolUpdatedAt   string
 		RolStatus      string
@@ -72,24 +60,25 @@ var (
 		RolID:          "rol_id",
 		RolName:        "rol_name",
 		RolDescription: "rol_description",
+		RolIcon:        "rol_icon",
 		RolCreatedAt:   "rol_created_at",
 		RolUpdatedAt:   "rol_updated_at",
 		RolStatus:      "rol_status",
 	}
 
-	// Fndtprivilege table column names.
-	Fndtprivilege = struct {
+	// FndPrivilege column names for object fnd_privilege.
+	FndPrivilege = struct {
 		PriRoleID   string
 		PriModuleID string
 		PriActionID string
 	}{
 		PriRoleID:   "pri_role_id",
-		PriModuleID: "act_module_id",
-		PriActionID: "act_action_id",
+		PriModuleID: "pri_module_id",
+		PriActionID: "pri_action_id",
 	}
 
-	// Fndtuser table column names.
-	Fndtuser = struct {
+	// FndUser column names for object fnd_user.
+	FndUser = struct {
 		UseID         string
 		UseName       string
 		UseMiddleName string
@@ -111,13 +100,13 @@ var (
 		UseStatus:     "use_status",
 	}
 
-	// Fndtpassword table column names.
-	Fndtpassword = struct {
+	// FndPassword column names for object fnd_password.
+	FndPassword = struct {
 		PasID               string
 		PasData             string
 		PasType             string
-		PasInvalidationDate string
 		PasUserID           string
+		PasInvalidationDate string
 		PasCreatedAt        string
 		PasUpdatedAt        string
 		PasStatus           string
@@ -132,8 +121,8 @@ var (
 		PasStatus:           "pas_status",
 	}
 
-	// FndtuserRole table column names.
-	FndtuserRole = struct {
+	// FndUserRole column names for object fnd_user_role.
+	FndUserRole = struct {
 		UsrUserID string
 		UsrRoleID string
 	}{
@@ -141,14 +130,23 @@ var (
 		UsrRoleID: "usr_role_id",
 	}
 
-	// Fndtnavigator table column names.
-	Fndtnavigator = struct {
+	// FndRoleNavigator column names for object fnd_role_navigator.
+	FndRoleNavigator = struct {
+		RonRoleID      string
+		RonNavigatorID string
+	}{
+		RonRoleID:      "ron_role_id",
+		RonNavigatorID: "ron_navigator_id",
+	}
+
+	// FndNavigator column names for object fnd_navigator.
+	FndNavigator = struct {
 		NavID          string
 		NavName        string
 		NavDescription string
 		NavIcon        string
 		NavOrder       string
-		NavUrl         string
+		NavURL         string
 		NavCreatedAt   string
 		NavUpdatedAt   string
 		NavStatus      string
@@ -158,23 +156,14 @@ var (
 		NavDescription: "nav_description",
 		NavIcon:        "nav_icon",
 		NavOrder:       "nav_order",
-		NavUrl:         "nav_url",
+		NavURL:         "nav_url",
 		NavCreatedAt:   "nav_created_at",
 		NavUpdatedAt:   "nav_updated_at",
 		NavStatus:      "nav_status",
 	}
 
-	// FndtroleNavigator table column names.
-	FndtroleNavigator = struct {
-		RonRoleID      string
-		RonNavigatorID string
-	}{
-		RonRoleID:      "ron_role_id",
-		RonNavigatorID: "ron_navigator_id",
-	}
-
-	// FndtaccessAccount table column names.
-	FndtaccessAccount = struct {
+	// FndAccountAccess column names for object fnd_account_access.
+	FndAccountAccess = struct {
 		AcaID             string
 		AcaType           string
 		AcaUserID         string
@@ -190,20 +179,5 @@ var (
 		AcaCreatedAt:      "aca_created_at",
 		AcaUpdatedAt:      "aca_updated_at",
 		AcaStatus:         "aca_status",
-	}
-
-	// FndvprivilegeRole table column names.
-	FndvprivilegeRole = struct {
-		PrrRoleID   string
-		PrrModuleID string
-		PrrActionID string
-		PrrRoute    string
-		PrrMethod   string
-	}{
-		PrrRoleID:   "prr_role_id",
-		PrrModuleID: "prr_module_id",
-		PrrActionID: "prr_action_id",
-		PrrRoute:    "prr_route",
-		PrrMethod:   "prr_method",
 	}
 )

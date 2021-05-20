@@ -21,14 +21,14 @@ type DaoUser struct {
 
 func (dao *DaoUser) New(ctx context.Context, u *fndmodel.User) error {
 	ins := dao.h.NewInsert(lex.T.FndUser).Rows(goqu.Record{
-		lex.Fndtuser.UseName:       u.Name,
-		lex.Fndtuser.UseMiddleName: u.MiddleName,
-		lex.Fndtuser.UseLastName:   u.LastName,
-		lex.Fndtuser.UseEmail:      u.Email,
-		lex.Fndtuser.UseUsername:   u.Username,
-		lex.Fndtuser.UseStatus:     u.Status,
+		lex.FndUser.UseName:       u.Name,
+		lex.FndUser.UseMiddleName: u.MiddleName,
+		lex.FndUser.UseLastName:   u.LastName,
+		lex.FndUser.UseEmail:      u.Email,
+		lex.FndUser.UseUsername:   u.Username,
+		lex.FndUser.UseStatus:     u.Status,
 	})
-	r, err := dao.h.DoInsertReturning(ctx, dao.Exe, ins, lex.Fndtuser.UseID, lex.Fndtuser.UseUpdatedAt)
+	r, err := dao.h.DoInsertReturning(ctx, dao.Exe, ins, lex.FndUser.UseID, lex.FndUser.UseUpdatedAt)
 	if err != nil {
 		return dao.h.WrapErr(err)
 	}
@@ -43,23 +43,23 @@ func (dao *DaoUser) Login(ctx context.Context,
 	res := &fndmodel.User{Password: &fndmodel.Password{}}
 	query := dao.h.NewSelect(lex.T.FndUser).
 		Select(
-			lex.Fndtuser.UseID,
-			lex.Fndtuser.UseName,
-			lex.Fndtuser.UseMiddleName,
-			lex.Fndtuser.UseLastName,
-			lex.Fndtuser.UseEmail,
-			lex.Fndtuser.UseUsername,
-			lex.Fndtuser.UseStatus,
-			lex.Fndtpassword.PasData,
-			lex.Fndtpassword.PasType,
+			lex.FndUser.UseID,
+			lex.FndUser.UseName,
+			lex.FndUser.UseMiddleName,
+			lex.FndUser.UseLastName,
+			lex.FndUser.UseEmail,
+			lex.FndUser.UseUsername,
+			lex.FndUser.UseStatus,
+			lex.FndPassword.PasData,
+			lex.FndPassword.PasType,
 		).
-		InnerJoin(goqu.T(lex.T.FndPassword), goqu.On(goqu.Ex{lex.Fndtpassword.PasUserID: goqu.I(lex.Fndtuser.UseID)})).
+		InnerJoin(goqu.T(lex.T.FndPassword), goqu.On(goqu.Ex{lex.FndPassword.PasUserID: goqu.I(lex.FndUser.UseID)})).
 		Where(
 			goqu.ExOr{
-				lex.Fndtuser.UseUsername: user,
-				lex.Fndtuser.UseEmail:    user,
+				lex.FndUser.UseUsername: user,
+				lex.FndUser.UseEmail:    user,
 			},
-			goqu.C(lex.Fndtpassword.PasStatus).Eq(base.StatusActive),
+			goqu.C(lex.FndPassword.PasStatus).Eq(base.StatusActive),
 		)
 
 	row, err := dao.h.QueryRowContext(ctx, dao.Exe, query)
@@ -90,14 +90,14 @@ func (dao *DaoUser) Login(ctx context.Context,
 func (dao *DaoUser) GetUserByMail(ctx context.Context,
 	email string,
 ) (*fndmodel.User, error) {
-	return dao.getUser(ctx, goqu.C(lex.Fndtuser.UseEmail).Eq(email))
+	return dao.getUser(ctx, goqu.C(lex.FndUser.UseEmail).Eq(email))
 }
 
 // GetUserByID retrives the record information using its ID.
 func (dao *DaoUser) GetUserByID(ctx context.Context,
 	userID string,
 ) (*fndmodel.User, error) {
-	return dao.getUser(ctx, goqu.C(lex.Fndtuser.UseID).Eq(userID))
+	return dao.getUser(ctx, goqu.C(lex.FndUser.UseID).Eq(userID))
 }
 
 // getUser searchs the user with the given filters.
@@ -106,14 +106,14 @@ func (dao *DaoUser) getUser(ctx context.Context,
 ) (*fndmodel.User, error) {
 	query := dao.h.NewSelect(lex.T.FndUser).
 		Select(
-			lex.Fndtuser.UseID,
-			lex.Fndtuser.UseEmail,
-			lex.Fndtuser.UseUsername,
-			lex.Fndtuser.UseName,
-			lex.Fndtuser.UseMiddleName,
-			lex.Fndtuser.UseLastName,
-			lex.Fndtuser.UseStatus,
-			lex.Fndtuser.UseUpdatedAt,
+			lex.FndUser.UseID,
+			lex.FndUser.UseEmail,
+			lex.FndUser.UseUsername,
+			lex.FndUser.UseName,
+			lex.FndUser.UseMiddleName,
+			lex.FndUser.UseLastName,
+			lex.FndUser.UseStatus,
+			lex.FndUser.UseUpdatedAt,
 		).
 		Where(filter...)
 

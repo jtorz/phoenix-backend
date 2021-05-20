@@ -22,11 +22,11 @@ type DaoAccountAccess struct {
 func (dao *DaoAccountAccess) Insert(ctx context.Context,
 	ac *fndmodel.AccountAccess,
 ) error {
-	ins := dao.h.NewInsert(lex.T.FndAccessAccount).Rows(goqu.Record{
-		lex.FndtaccessAccount.AcaID:     ac.Key,
-		lex.FndtaccessAccount.AcaType:   ac.Type,
-		lex.FndtaccessAccount.AcaUserID: ac.User.ID,
-		lex.FndtaccessAccount.AcaStatus: ac.Status,
+	ins := dao.h.NewInsert(lex.T.FndAccountAccess).Rows(goqu.Record{
+		lex.FndAccountAccess.AcaID:     ac.Key,
+		lex.FndAccountAccess.AcaType:   ac.Type,
+		lex.FndAccountAccess.AcaUserID: ac.User.ID,
+		lex.FndAccountAccess.AcaStatus: ac.Status,
 	})
 	_, err := dao.h.DoInsert(ctx, dao.Exe, ins)
 	return dao.h.WrapErr(err)
@@ -35,18 +35,18 @@ func (dao *DaoAccountAccess) Insert(ctx context.Context,
 func (dao *DaoAccountAccess) UseAccountAccess(ctx context.Context,
 	accType fndmodel.AccountAccessType, key string,
 ) (string, error) {
-	query := dao.h.NewUpdate(lex.T.FndAccessAccount).
+	query := dao.h.NewUpdate(lex.T.FndAccountAccess).
 		Set(goqu.Record{
-			lex.FndtaccessAccount.AcaStatus: base.StatusInactive,
+			lex.FndAccountAccess.AcaStatus: base.StatusInactive,
 		}).
 		Where(
-			goqu.C(lex.FndtaccessAccount.AcaID).Eq(key),
-			goqu.C(lex.FndtaccessAccount.AcaType).Eq(accType),
-			goqu.C(lex.FndtaccessAccount.AcaStatus).Eq(base.StatusActive),
-			goqu.C(lex.FndtaccessAccount.AcaExpirationDate).Gt(goqu.L("CURRENT_TIMESTAMP")),
+			goqu.C(lex.FndAccountAccess.AcaID).Eq(key),
+			goqu.C(lex.FndAccountAccess.AcaType).Eq(accType),
+			goqu.C(lex.FndAccountAccess.AcaStatus).Eq(base.StatusActive),
+			goqu.C(lex.FndAccountAccess.AcaExpirationDate).Gt(goqu.L("CURRENT_TIMESTAMP")),
 		)
 
-	row, err := dao.h.DoUpdateReturningRow(ctx, dao.Exe, query, lex.FndtaccessAccount.AcaUserID)
+	row, err := dao.h.DoUpdateReturningRow(ctx, dao.Exe, query, lex.FndAccountAccess.AcaUserID)
 
 	if err != nil {
 		return "", dao.h.WrapErr(err)
@@ -65,13 +65,13 @@ func (dao *DaoAccountAccess) GetAccessByUserID(ctx context.Context,
 	accType fndmodel.AccountAccessType, userID string,
 ) (*fndmodel.AccountAccess, error) {
 	res := fndmodel.AccountAccess{}
-	query := dao.h.NewSelect(lex.T.FndAccessAccount).
-		Select(lex.FndtaccessAccount.AcaID).
+	query := dao.h.NewSelect(lex.T.FndAccountAccess).
+		Select(lex.FndAccountAccess.AcaID).
 		Where(
-			goqu.C(lex.FndtaccessAccount.AcaUserID).Eq(userID),
-			goqu.C(lex.FndtaccessAccount.AcaType).Eq(accType),
-			goqu.C(lex.FndtaccessAccount.AcaStatus).Eq(base.StatusActive),
-			goqu.C(lex.FndtaccessAccount.AcaExpirationDate).Lt(goqu.L("CURRENT_TIMESTAMP")),
+			goqu.C(lex.FndAccountAccess.AcaUserID).Eq(userID),
+			goqu.C(lex.FndAccountAccess.AcaType).Eq(accType),
+			goqu.C(lex.FndAccountAccess.AcaStatus).Eq(base.StatusActive),
+			goqu.C(lex.FndAccountAccess.AcaExpirationDate).Lt(goqu.L("CURRENT_TIMESTAMP")),
 		)
 
 	row, err := dao.h.QueryRowContext(ctx, dao.Exe, query)

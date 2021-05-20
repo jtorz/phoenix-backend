@@ -14,19 +14,23 @@ var T = struct {
 	FndAction        string
 	FndRole          string
 	FndPrivilege     string
-	FndUserRole      string
 	FndUser          string
 	FndPassword      string
-	FndAccessAccount string
+	FndUserRole      string
+	FndRoleNavigator string
+	FndNavigator     string
+	FndAccountAccess string
 }{
 	FndModule:        "fnd_module",
 	FndAction:        "fnd_action",
 	FndRole:          "fnd_role",
 	FndPrivilege:     "fnd_privilege",
-	FndUserRole:      "fnd_ser_role",
 	FndUser:          "fnd_user",
 	FndPassword:      "fnd_password",
-	FndAccessAccount: "fnd_access_account",
+	FndUserRole:      "fnd_user_role",
+	FndRoleNavigator: "fnd_role_navigator",
+	FndNavigator:     "fnd_navigator",
+	FndAccountAccess: "fnd_account_access",
 }
 
 // V database view names.
