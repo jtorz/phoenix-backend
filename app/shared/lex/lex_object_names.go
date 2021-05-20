@@ -4,8 +4,8 @@
 //
 // * Table names
 // * Table columns
-// * view names
-// * view columns
+// * View names
+// * View columns
 package lex
 
 // T database table names.
