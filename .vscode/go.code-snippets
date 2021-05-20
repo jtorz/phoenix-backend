@@ -1,0 +1,104 @@
+{
+	// Place your phoenix-db workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders.
+	// Placeholders with the same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+	"queryRows": {
+		"scope":"go",
+		"prefix": "queryRows",
+		"body": [
+			"res := make([]$1, 0)",
+			"query := dao.NewSelect(lex.T.$2).",
+			"\tSelect(",
+			"\tlex.$2.$3,",
+			").",
+			"\tWhere(",
+			"\tgoqu.C(lex.$2.$4).Eq($5),",
+			")",
+			"",
+			"rows, err := dao.QueryContext(dao.Ctx, dao.Exe, query)",
+			"if err != nil {",
+			"\tif err == sql.ErrNoRows {",
+			"\t\treturn res, nil",
+			"\t}",
+			"\treturn nil, dao.WrapErr(err)",
+			"}",
+			"defer rows.Close()",
+			"for rows.Next(){",
+			"\trec := $1{}",
+			"\terr := rows.Scan(",
+			"\t\t&rec.$0,",
+			"\t)",
+			"\tif err != nil {",
+			"\t\treturn nil, dao.WrapErr(err)",
+			"\t}",
+			"\tres = append(res, rec)",
+			"}",
+			"return res, nil",
+			""
+		]
+	},
+	"queryRow": {
+		"scope":"go",
+		"prefix": "queryRow",
+		"body": [
+			"rec := &$1{}",
+			"query := dao.NewSelect(lex.T.$2).",
+			"\tSelect(",
+			"\tlex.$2.$3,",
+			").",
+			"\tWhere(",
+			"\t\tgoqu.C(lex.$2.$5).Eq($6),",
+			"\t)",
+			"",
+			"row, err := dao.QueryRowContext(dao.Ctx, dao.Exe, query)",
+			"if err != nil {",
+			"\treturn nil, dao.WrapErr(err)",
+			"}",
+			"err = row.Scan(",
+			"\t&rec.$0,",
+			")",
+			"if err != nil {",
+			"\treturn nil, dao.WrapErr(err)",
+			"}",
+			"return rec, nil",
+			""
+		]
+	},
+	"queryUpdate": {
+		"scope":"go",
+		"prefix": "queryUpdate",
+		"body": "query := dao.NewUpdate(lex.T.$1).\nSet(goqu.Record{\n\tlex.$1.$2:$3,\n}).\nWhere(\n\tgoqu.C(lex.$1.$4).Eq($5),\ngoqu.C(lex.$1.$4).Eq($6.UpdatedAt),\n)\nres, err := dao.DoUpdate(dao.Ctx,dao.Exe,query)\nif err != nil{\n\treturn dao.WrapErr(err)\n}\nreturn dao.CheckOneRowUpdated(res)"
+	},
+	"queryInsert": {
+		"scope":"go",
+		"prefix": "queryInsert",
+		"body": [
+			"ins := dao.h.NewInsert(lex.T.$1).Rows(goqu.Record{",
+			"\tlex.$1.$2:$3",
+			"})",
+			"_, err := dao.h.DoInsertReturning(ctx, dao.Exe, ins,lex.$1.$4)",
+			"if err != nil {",
+			"\treturn dao.h.WrapErr(err)",
+			"}",
+			"return nil",
+			]
+	},
+	"join": {
+		"scope":"go",
+		"prefix": "join",
+		"body": "InnerJoin(goqu.T(lex.T.$1), goqu.On(goqu.Ex{lex.$1.$2: goqu.I(lex.$3)}))."
+	},
+}

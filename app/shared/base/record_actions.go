@@ -4,7 +4,7 @@ package base
 type RecordActions []string
 
 // Simple actions that can be performed with a record.
-func (a *RecordActions) Simple(s Status) {
+func (a *RecordActions) SimpleActions(s Status) {
 	*a = NewRecordActionsSimple(s)
 }
 

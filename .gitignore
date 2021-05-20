@@ -28,3 +28,5 @@ sqlboiler.toml
 app/assets/certs/*
 
 .vscode/launch.json
+
+scripts/generate-lex.ps1

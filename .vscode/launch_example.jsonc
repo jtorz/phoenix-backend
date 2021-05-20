@@ -28,14 +28,6 @@
                 "PHOENIX_DB_MAIN_MAX_OPEN_CONNS": "1",
                 "PHOENIX_DB_MAIN_CONN_MAX_IDLE_TIME": "10",
                 "PHOENIX_DB_MAIN_CONN_MAX_LIFETIME": "1",
-                // MAIL
-                "PHOENIX_MAIL_HOST": "smtp.google.com",
-                "PHOENIX_MAIL_PORT": "465",
-                "PHOENIX_MAIL_USERNAME": "example@gmail.com",
-                "PHOENIX_MAIL_PASSWORD": "a_password",
-                "PHOENIX_MAIL_ENCRYPTION": "None | SSL/TLS | STARTTLS",
-                "PHOENIX_MAIL_CONNECT_TIMEOUT": "10",
-                "PHOENIX_MAIL_SEND_TIMEOUT": "10",
             }
         }
     ]

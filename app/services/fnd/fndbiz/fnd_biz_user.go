@@ -14,17 +14,22 @@ import (
 
 // BizUser business component.
 type BizUser struct {
+	Exe base.Executor
 	dao DaoUser
 }
 
 func NewBizUser(exe base.Executor) BizUser {
-	return BizUser{dao: &fnddao.DaoUser{Exe: exe}}
+	return BizUser{
+		Exe: exe,
+		dao: &fnddao.DaoUser{Exe: exe},
+	}
 }
 
 type DaoUser interface {
 	Login(_ context.Context, userNameOrEmail string) (*fndmodel.User, error)
 	GetUserByMail(ctx context.Context, _ string) (*fndmodel.User, error)
 	GetUserByID(ctx context.Context, userID string) (*fndmodel.User, error)
+	New(context.Context, *fndmodel.User) error
 }
 
 // Login retrieves the necessary data to log in a user given its email/username.
@@ -45,44 +50,84 @@ func (biz *BizUser) Login(ctx context.Context,
 	return u, nil
 }
 
+// New creates a new user anf sends the email to activate the account.
+func (biz *BizUser) New(ctx context.Context, senderSvc baseservice.MailSenderSvc,
+	u *fndmodel.User,
+) error {
+	u.Status = base.StatusCaptured
+	if err := biz.dao.New(ctx, u); err != nil {
+		return err
+	}
+	if err := biz.generateAccess(ctx, senderSvc, *u); err != nil {
+		return err
+	}
+	u.SimpleActions(u.Status)
+	return nil
+}
+
+// GetUserByMail returns a user given its email.
+func (biz *BizUser) GetUserByMail(ctx context.Context,
+	email string,
+) (*fndmodel.User, error) {
+	u, err := biz.dao.GetUserByMail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+	u.SimpleActions(u.Status)
+	return u, nil
+}
+
+// GetUserByID retrives the user information using its ID.
+func (biz *BizUser) GetUserByID(ctx context.Context,
+	userID string,
+) (*fndmodel.User, error) {
+	u, err := biz.dao.GetUserByID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	u.SimpleActions(u.Status)
+	return u, nil
+}
+
 // RequestRestore creates an account access to allow the user change the password their own.
 func (biz *BizUser) RequestRestore(ctx context.Context, senderSvc baseservice.MailSenderSvc,
 	email string,
-) error {
-	u := &fndmodel.User{Email: email}
-	/* err := biz.GetUserByMail(u)
+) (*fndmodel.User, error) {
+	u, err := biz.GetUserByMail(ctx, email)
 	if err != nil {
-		if fnderrors.IsErrNotFound(err) {
-			return fnderrors.ErrAuth
+		if baseerrors.IsErrNotFound(err) {
+			return nil, baseerrors.ErrAuth
 		}
-		return err
+		return nil, err
 	}
-	if u.Status == basemodel.StatusInactive {
-		return fmt.Errorf("can't activate user account on status inactive: %w", fnderrors.ErrActionNotAllowedStatus)
+	if u.Status == base.StatusInactive {
+		return nil, fmt.Errorf("can't activate user account on status inactive: %w", baseerrors.ErrActionNotAllowedStatus)
 	}
-	return biz.generateSendEmailAccount(sender, u) */
-	return biz.generateAccess(ctx, senderSvc, u)
+
+	if err = biz.generateAccess(ctx, senderSvc, *u); err != nil {
+		return nil, err
+	}
+	return u, nil
 }
 
 func (biz *BizUser) generateAccess(ctx context.Context, senderSvc baseservice.MailSenderSvc,
-	u *fndmodel.User,
+	u fndmodel.User,
 ) (err error) {
-	/* bizAcc := NewBizAccountAccess(biz.TCtx)
-	ac, err := bizAcc.GetAccessByUserID(fndmodel.AccAccRestoreAccount, u.ID)
-	if err == nil {
-		ac.User = u
-		return biz.sendEmailAccount(mail, *ac, true)
+	bizAcc := NewBizAccountAccess(biz.Exe)
+	ac, err := bizAcc.GetAccessByUserID(ctx, fndmodel.AccAccRestoreAccount, u.ID)
+
+	if err != nil {
+		if baseerrors.IsErrNotFound(err) {
+			ac.User = u
+			return biz.sendEmailAccount(ctx, senderSvc, *ac, true)
+		}
+		return err
 	}
 
-	ac, err = fndmodel.NewAccountAccess(u, fndmodel.AccAccRestoreAccount)
+	ac, err = bizAcc.NewAccountAccess(ctx, u)
 	if err != nil {
 		return
 	}
-	err = bizAcc.Insert(ac)
-	if err != nil {
-		return
-	}*/
-	ac := &fndmodel.AccountAccess{}
 	return biz.sendEmailAccount(ctx, senderSvc, *ac, true)
 }
 

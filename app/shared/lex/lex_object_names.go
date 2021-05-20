@@ -10,39 +10,23 @@ package lex
 
 // T database table names.
 var T = struct {
-	Fndccomponent     string
-	Fndtmodule        string
-	Fndtaction        string
-	Fndtrole          string
-	Fndtprivilege     string
-	FndtuserRole      string
-	Fndtuser          string
-	Fndtpassword      string
-	FndcaccessType    string
-	FndtaccessAccount string
-	Emacsender        string
-	EmactemplateType  string
-	Ematheader        string
-	Ematfooter        string
-	Emattemplate      string
-	Emabrecord        string
+	FndModule        string
+	FndAction        string
+	FndRole          string
+	FndPrivilege     string
+	FndUserRole      string
+	FndUser          string
+	FndPassword      string
+	FndAccessAccount string
 }{
-	Fndccomponent:     "fnd_component",
-	Fndtmodule:        "fnd_module",
-	Fndtaction:        "fnd_action",
-	Fndtrole:          "fnd_role",
-	Fndtprivilege:     "fnd_privilege",
-	FndtuserRole:      "fnd_ser_role",
-	Fndtuser:          "fnd_user",
-	Fndtpassword:      "fnd_password",
-	FndcaccessType:    "fnd_access_type",
-	FndtaccessAccount: "fnd_access_account",
-	Emacsender:        "ema_sender",
-	EmactemplateType:  "ema_template_type",
-	Ematheader:        "ema_header",
-	Ematfooter:        "ema_footer",
-	Emattemplate:      "ema_template",
-	Emabrecord:        "ema_record",
+	FndModule:        "fnd_module",
+	FndAction:        "fnd_action",
+	FndRole:          "fnd_role",
+	FndPrivilege:     "fnd_privilege",
+	FndUserRole:      "fnd_ser_role",
+	FndUser:          "fnd_user",
+	FndPassword:      "fnd_password",
+	FndAccessAccount: "fnd_access_account",
 }
 
 // V database view names.

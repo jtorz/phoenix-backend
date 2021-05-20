@@ -68,3 +68,7 @@ func (dao *daoUserTest) GetUserByID(ctx context.Context,
 ) (*fndmodel.User, error) {
 	return nil, nil
 }
+
+func (dao *daoUserTest) New(context.Context, *fndmodel.User) error {
+	return nil
+}

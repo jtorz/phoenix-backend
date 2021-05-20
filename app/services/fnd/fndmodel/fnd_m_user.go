@@ -15,12 +15,12 @@ type User struct {
 	Email      string `json:"email"`
 	Username   string `json:"username"`
 	//UserInformation *UserInformation `json:"userInformation"`
-	Password      *Password          `json:"password"`
-	Roles         Roles              `json:"role"`
-	CreatedAt     time.Time          `json:"createdAt"`
-	UpdatedAt     time.Time          `json:"updatedAt"`
-	Status        base.Status        `json:"status"`
-	RecordActions base.RecordActions `json:"recordActions"`
+	Password           *Password   `json:"password"`
+	Roles              Roles       `json:"role"`
+	CreatedAt          time.Time   `json:"createdAt"`
+	UpdatedAt          time.Time   `json:"updatedAt"`
+	Status             base.Status `json:"status"`
+	base.RecordActions `json:"recordActions"`
 }
 
 // UserID returns the id of the user.

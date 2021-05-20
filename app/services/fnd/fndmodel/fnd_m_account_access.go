@@ -1,10 +1,10 @@
 package fndmodel
 
 import (
+	"crypto/rand"
 	"fmt"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 	"golang.org/x/crypto/scrypt"
 )
@@ -28,14 +28,15 @@ type AccountAccess struct {
 }
 
 // NewAccountAccess creates a new account acces for the user
-func NewAccountAccess(u User, k AccountAccessType) (a *AccountAccess, err error) {
-	uuid, err := uuid.NewRandom()
+func NewAccountAccess(u User, k AccountAccessType) (*AccountAccess, error) {
+	key := make([]byte, 128)
+	_, err := rand.Read(key)
 	if err != nil {
-		return
+		return nil, err
 	}
-	key, err := scrypt.Key([]byte(u.ID), []byte(uuid.String()), 2048, 8, 1, 64)
+	key, err = scrypt.Key([]byte(u.ID), key, 2048, 8, 1, 64)
 	if err != nil {
-		return
+		return nil, err
 	}
 	return &AccountAccess{
 		Type:   k,

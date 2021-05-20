@@ -10,12 +10,16 @@ import (
 
 // BizAccountAccess business component.
 type BizAccountAccess struct {
+	Exe base.Executor
 	dao DaoBizAccountAccess
 }
 
 // NewBizAccountAccess creates business component.
 func NewBizAccountAccess(exe base.Executor) BizAccountAccess {
-	return BizAccountAccess{dao: &fnddao.DaoAccountAccess{Exe: exe}}
+	return BizAccountAccess{
+		Exe: exe,
+		dao: &fnddao.DaoAccountAccess{Exe: exe},
+	}
 }
 
 type DaoBizAccountAccess interface {
@@ -38,7 +42,7 @@ func (biz *BizAccountAccess) UseAccountAccess(ctx context.Context,
 	return biz.dao.UseAccountAccess(ctx, accType, key)
 }
 
-// Insert crud: inserts a single record.
+// NewAccountAccess create the new account access,
 func (biz *BizAccountAccess) NewAccountAccess(ctx context.Context,
 	u fndmodel.User,
 ) (*fndmodel.AccountAccess, error) {

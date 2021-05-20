@@ -22,7 +22,7 @@ type DaoAccountAccess struct {
 func (dao *DaoAccountAccess) Insert(ctx context.Context,
 	ac *fndmodel.AccountAccess,
 ) error {
-	ins := dao.h.NewInsert(lex.T.FndtaccessAccount).Rows(goqu.Record{
+	ins := dao.h.NewInsert(lex.T.FndAccessAccount).Rows(goqu.Record{
 		lex.FndtaccessAccount.AcaID:     ac.Key,
 		lex.FndtaccessAccount.AcaType:   ac.Type,
 		lex.FndtaccessAccount.AcaUserID: ac.User.ID,
@@ -35,7 +35,7 @@ func (dao *DaoAccountAccess) Insert(ctx context.Context,
 func (dao *DaoAccountAccess) UseAccountAccess(ctx context.Context,
 	accType fndmodel.AccountAccessType, key string,
 ) (string, error) {
-	query := dao.h.NewUpdate(lex.T.FndtaccessAccount).
+	query := dao.h.NewUpdate(lex.T.FndAccessAccount).
 		Set(goqu.Record{
 			lex.FndtaccessAccount.AcaStatus: base.StatusInactive,
 		}).
@@ -65,7 +65,7 @@ func (dao *DaoAccountAccess) GetAccessByUserID(ctx context.Context,
 	accType fndmodel.AccountAccessType, userID string,
 ) (*fndmodel.AccountAccess, error) {
 	res := fndmodel.AccountAccess{}
-	query := dao.h.NewSelect(lex.T.FndtaccessAccount).
+	query := dao.h.NewSelect(lex.T.FndAccessAccount).
 		Select(lex.FndtaccessAccount.AcaID).
 		Where(
 			goqu.C(lex.FndtaccessAccount.AcaUserID).Eq(userID),

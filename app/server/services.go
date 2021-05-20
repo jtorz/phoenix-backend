@@ -10,7 +10,6 @@ import (
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndhttp"
 	"github.com/jtorz/phoenix-backend/app/services/mail"
 	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
-	"github.com/spf13/viper"
 )
 
 func (server *Server) configureServices() {
@@ -28,11 +27,7 @@ func (server *Server) configureServices() {
 	var mailSenderSvc baseservice.MailSenderSvc
 
 	{
-		mailConfig := mail.ServiceConfig{}
-		mailConfig.SetDefaults(viper.SetDefault)
-		server.registerEnvs(mailConfig)
-		viper.Unmarshal(&mailConfig)
-		mailSenderSvc = mail.NewService(server.MainDB, mailConfig, server.Config.Domain)
+		mailSenderSvc = mail.NewService(server.MainDB, server.Config.Domain)
 
 		/* route := "/email"
 		adminGroup := apiGroup.Group("/admin")

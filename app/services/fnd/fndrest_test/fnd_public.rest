@@ -9,3 +9,17 @@ Content-Type: application/json
 }
 
 
+###
+# @name Signup
+POST {{app-host}}/api/public/foundation/account/signup
+Content-Type: application/json
+
+{
+    "Name": "phoenix",
+    "MiddleName": "phoenix",
+    "LastName": "phoenix",
+    "Email": "phoenix@gmail.com",
+    "Username": "phoenix",
+    "Password": "phoenix"
+}
+

@@ -1,5 +1,7 @@
 package stringset
 
+import "strings"
+
 // FirstN returns the first n characters from a non unicode string
 func FirstN(s string, n int) string {
 	if len(s) > n {
@@ -28,4 +30,11 @@ func FindInSlice(a []string, s string) (int, bool) {
 		}
 	}
 	return 0, false
+}
+
+func UpperFirst(s string) string {
+	if s == "" {
+		return ""
+	}
+	return strings.ToUpper(string(s[0])) + s[1:]
 }
