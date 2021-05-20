@@ -22,6 +22,7 @@
                 "PHOENIX_JWT_KEY": "123456789",
                 "PHOENIX_CRYPT_KEY": "",
                 "PHOENIX_PATH": "/app",
+                "PHOENIX_LOGGING_LEVEL": "debug",
                 // DATA BASE
                 "PHOENIX_DB_MAIN_CONNECTION": "host=localhost port=5432 user=postgres dbname=postgres password=postgres sslmode=disable",
                 "PHOENIX_DB_MAIN_MAX_IDLE_CONNS": "1",

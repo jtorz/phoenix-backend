@@ -9,7 +9,7 @@ import (
 	"github.com/jtorz/phoenix-backend/utils/pg"
 )
 
-// CheckOneRowUpdated checks that only one records was affected
+// CheckOneRowUpdated checks that only one records was affected.
 func (QueryHelper) CheckOneRowUpdated(r sql.Result) error {
 	n, err := r.RowsAffected()
 	if err != nil {

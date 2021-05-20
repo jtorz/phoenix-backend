@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/jtorz/phoenix-backend/app/config"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 	"github.com/jtorz/phoenix-backend/app/shared/ctxinfo"
 
@@ -42,7 +43,7 @@ func (QueryHelper) QueryContext(ctx context.Context, exe base.Executor, s *goqu.
 	if err != nil {
 		return nil, err
 	}
-	if ctxinfo.PrintLog(ctx) {
+	if ctxinfo.LoggingLevel(ctx) == config.LogDebug {
 		log.Println(query, "\n", args)
 	}
 	return exe.QueryContext(ctx, query, args...)
@@ -57,7 +58,7 @@ func (QueryHelper) QueryRowContext(ctx context.Context, exe base.Executor, s *go
 	if err != nil {
 		return nil, err
 	}
-	if ctxinfo.PrintLog(ctx) {
+	if ctxinfo.LoggingLevel(ctx) == config.LogDebug {
 		log.Println(query, "\n", args)
 	}
 	return exe.QueryRowContext(ctx, query, args...), nil
@@ -69,7 +70,7 @@ func (QueryHelper) DoUpdate(ctx context.Context, exe base.Executor, s *goqu.Upda
 	if err != nil {
 		return nil, err
 	}
-	if ctxinfo.PrintLog(ctx) {
+	if ctxinfo.LoggingLevel(ctx) == config.LogDebug {
 		log.Println(query, "\n", args)
 	}
 	return exe.ExecContext(ctx, query, args...)
@@ -81,7 +82,7 @@ func (QueryHelper) DoUpdateReturningRow(ctx context.Context, exe base.Executor, 
 	if err != nil {
 		return nil, err
 	}
-	if ctxinfo.PrintLog(ctx) {
+	if ctxinfo.LoggingLevel(ctx) == config.LogDebug {
 		log.Println(query, "\n", args)
 	}
 	return exe.QueryRowContext(ctx, query, args...), nil
@@ -93,7 +94,7 @@ func (QueryHelper) DoInsert(ctx context.Context, exe base.Executor, s *goqu.Inse
 	if err != nil {
 		return nil, err
 	}
-	if ctxinfo.PrintLog(ctx) {
+	if ctxinfo.LoggingLevel(ctx) == config.LogDebug {
 		log.Println(query, "\n", args)
 	}
 	return exe.ExecContext(ctx, query, args...)
@@ -105,7 +106,7 @@ func (QueryHelper) DoDelete(ctx context.Context, exe base.Executor, s *goqu.Dele
 	if err != nil {
 		return nil, err
 	}
-	if ctxinfo.PrintLog(ctx) {
+	if ctxinfo.LoggingLevel(ctx) == config.LogDebug {
 		log.Println(query, "\n", args)
 	}
 	return exe.ExecContext(ctx, query, args...)
@@ -117,7 +118,7 @@ func (QueryHelper) DoInsertReturning(ctx context.Context, exe base.Executor, s *
 	if err != nil {
 		return nil, err
 	}
-	if ctxinfo.PrintLog(ctx) {
+	if ctxinfo.LoggingLevel(ctx) == config.LogDebug {
 		log.Println(query, "\n", args)
 	}
 	return exe.QueryRowContext(ctx, query, args...), nil

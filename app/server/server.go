@@ -27,17 +27,18 @@ type Server struct {
 }
 
 type Config struct {
-	Port           int    `mapstructure:"PORT"`
-	PortRedirect   int    `mapstructure:"PORT_REDIRECT"`
-	Domain         string `mapstructure:"DOMAIN"`
-	Protocol       string `mapstructure:"PROTOCOL"`
-	RequestTimeout int    `mapstructure:"REQUEST_TIMEOUT"`
-	Cert           string `mapstructure:"SERVER_CERT"`
-	Key            string `mapstructure:"SERVER_KEY"`
-	AppMode        string `mapstructure:"MODE"`
-	JWTKey         string `mapstructure:"JWT_KEY"`
-	CryptKey       string `mapstructure:"CRYPT_KEY"`
-	AppPathEnv     string `mapstructure:"PATH"`
+	Port           int              `mapstructure:"PORT"`
+	PortRedirect   int              `mapstructure:"PORT_REDIRECT"`
+	Domain         string           `mapstructure:"DOMAIN"`
+	Protocol       string           `mapstructure:"PROTOCOL"`
+	RequestTimeout int              `mapstructure:"REQUEST_TIMEOUT"`
+	Cert           string           `mapstructure:"SERVER_CERT"`
+	Key            string           `mapstructure:"SERVER_KEY"`
+	AppMode        string           `mapstructure:"MODE"`
+	JWTKey         string           `mapstructure:"JWT_KEY"`
+	CryptKey       string           `mapstructure:"CRYPT_KEY"`
+	AppPathEnv     string           `mapstructure:"PATH"`
+	LoggingLevel   config.LogginLvl `mapstructure:"LOGGING_LEVEL"`
 	// Database
 
 	DBMainConnection      string `mapstructure:"DB_MAIN_CONNECTION"`
@@ -104,8 +105,8 @@ func (server *Server) load() error {
 	if err := server.loadConfig(); err != nil {
 		return err
 	}
-	//fmt.Printf("%#v\n", server.Config)
-	//os.Exit(1)
+	/* fmt.Printf("%#v\n", server.Config)
+	os.Exit(1) */
 	if err := server.connectDB(); err != nil {
 		return err
 	}
@@ -123,6 +124,7 @@ func (server *Server) loadConfig() error {
 	viper.SetDefault("DB_MAIN_MAX_OPEN_CONNS", 5)
 	viper.SetDefault("DB_MAIN_CONN_MAX_IDLE_TIME", 300)
 	viper.SetDefault("DB_MAIN_CONN_MAX_LIFETIME", 600)
+	viper.SetDefault("LOGGING_LEVEL", "debug")
 	{ //PATH
 
 		p := os.Getenv("GOPATH")

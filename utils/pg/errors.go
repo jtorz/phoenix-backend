@@ -44,7 +44,7 @@ func IsCode(err error, code ErrorCode) bool {
 	return pgerr.Code == code
 }
 
-// GetPgErr returns the postgress underlying error if posible
+// GetPgErr returns the postgres underlying error if posible.
 func GetPgErr(err error) *Error {
 	err2 := errors.Unwrap(err)
 	if err2 != nil {

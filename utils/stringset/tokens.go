@@ -14,7 +14,7 @@ import (
 )
 
 // ErrEmptyString empty string error.
-var ErrEmptyString = errors.New("Empty string")
+var ErrEmptyString = errors.New("empty string")
 
 // NewHashedToken genera un nombre de un token que puede ser utilizado en codigo mas un hash
 //

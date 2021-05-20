@@ -38,3 +38,20 @@ const (
 	// EnvPrefix enviroment variables prefix.
 	EnvPrefix string = "PHOENIX"
 )
+
+type LogginLvl string
+
+const (
+	// LogNone indicates that no logging is used.
+	LogNone LogginLvl = "none"
+	// LogDebug indicates logging level is for debug and upper levels.
+	LogDebug LogginLvl = "debug"
+	// LogWarning indicates logging level is for warning an upper levels.
+	LogWarning LogginLvl = "warning"
+)
+
+// IsLogDebug chechs if the logging level is debug.
+// Empty string is considered debug.
+func (l LogginLvl) IsLogDebug() bool {
+	return l == LogDebug || l == ""
+}

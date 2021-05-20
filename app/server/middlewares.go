@@ -13,8 +13,6 @@ import (
 	"github.com/jtorz/phoenix-backend/app/shared/ctxinfo"
 )
 
-type agent string
-
 // configureMiddlewares configures the http middlewares.
 func (server *Server) configureMiddlewares(r *gin.Engine, jwtSvc authorization.JWTSvc) {
 	// Default gin recovery middleware
@@ -22,11 +20,11 @@ func (server *Server) configureMiddlewares(r *gin.Engine, jwtSvc authorization.J
 
 	// Middleware used to add the app mode to the context.
 	r.Use(func(ginCtx *gin.Context) {
-		ctxinfo.SetPrintLog(ginCtx, config.Mode(server.Config.AppMode))
+		ctxinfo.SetLoggingLevel(ginCtx, config.LogginLvl(server.Config.LoggingLevel))
 	})
 
 	// gin.logger middleware added only on debug mode.
-	if server.Config.AppModeDebug() {
+	if server.Config.LoggingLevel.IsLogDebug() {
 		r.Use(gin.Logger())
 	}
 

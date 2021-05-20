@@ -35,7 +35,7 @@ func ListFromIntSlice(ns []int, delim byte) string {
 	return b.String()
 }
 
-//ListFromSlice creates a List from the slice or array
+// ListFromSlice creates a List from the slice or array.
 func ListFromSlice(a interface{}, delim byte) string {
 	val := reflect.ValueOf(a)
 	if val.Kind() == reflect.Array || val.Kind() == reflect.Slice {

@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/allegro/bigcache/v2"
-	"github.com/jtorz/phoenix-backend/app/shared/ctxinfo"
 )
 
 // CacheSvc Cache service.
@@ -26,9 +25,7 @@ func NewCacheSvc() (*CacheSvc, error) {
 func (cacheSvc CacheSvc) Get(ctx context.Context, v interface{}, key string) (found bool) {
 	b, found, err := cacheSvc.GetBytes(key)
 	if err != nil {
-		if ctxinfo.PrintLog(ctx) {
-			log.Printf("cache error: can't retrieve value: %s", err)
-		}
+		log.Printf("cache error: can't retrieve value: %s", err)
 		return false
 	}
 
@@ -38,9 +35,7 @@ func (cacheSvc CacheSvc) Get(ctx context.Context, v interface{}, key string) (fo
 
 	err = json.Unmarshal(b, v)
 	if err != nil {
-		if ctxinfo.PrintLog(ctx) {
-			log.Printf("cache error: can't unmarshal %T: %s", v, err)
-		}
+		log.Printf("cache error: can't unmarshal %T: %s", v, err)
 		return false
 	}
 	return true
@@ -50,15 +45,11 @@ func (cacheSvc CacheSvc) Get(ctx context.Context, v interface{}, key string) (fo
 func (cacheSvc CacheSvc) Save(ctx context.Context, v interface{}, key string) {
 	b, err := json.Marshal(v)
 	if err != nil {
-		if ctxinfo.PrintLog(ctx) {
-			log.Printf("cache error: can't unmarshal %T: %s", v, err)
-		}
+		log.Printf("cache error: can't unmarshal %T: %s", v, err)
 	}
 	err = cacheSvc.SetBytes(key, b)
 	if err != nil {
-		if ctxinfo.PrintLog(ctx) {
-			log.Printf("cache error: can't set value: %s", err)
-		}
+		log.Printf("cache error: can't set value: %s", err)
 	}
 }
 

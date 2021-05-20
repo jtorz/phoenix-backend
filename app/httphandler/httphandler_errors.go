@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jtorz/phoenix-backend/app/config"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
 	"github.com/jtorz/phoenix-backend/app/shared/ctxinfo"
 )
@@ -17,7 +18,7 @@ func (c *Context) ErrBadRequest(err error, clientMsg string) bool {
 	if err == nil {
 		return false
 	}
-	if ctxinfo.PrintLog(c) {
+	if ctxinfo.LoggingLevel(c) == config.LogDebug {
 		log.Println(err)
 	}
 	c.JSON(http.StatusBadRequest, gin.H{
@@ -65,7 +66,7 @@ func (c *Context) UnexpectedError(err error) bool {
 	if c.Request.Context().Err() == context.Canceled {
 		return true
 	}
-	if ctxinfo.PrintLog(c) {
+	if ctxinfo.LoggingLevel(c) == config.LogDebug {
 		log.Println(err)
 	}
 	c.Status(http.StatusInternalServerError)

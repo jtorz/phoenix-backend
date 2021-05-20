@@ -32,6 +32,7 @@ func FindInSlice(a []string, s string) (int, bool) {
 	return 0, false
 }
 
+// UpperFirst transforms the first letter to upper case, the rest is left as is.
 func UpperFirst(s string) string {
 	if s == "" {
 		return ""
