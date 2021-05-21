@@ -3,6 +3,7 @@ package fnddao
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/doug-martin/goqu/v9/exp"
@@ -53,7 +54,7 @@ func (dao *DaoUser) Login(ctx context.Context,
 			lex.FndPassword.PasData,
 			lex.FndPassword.PasType,
 		).
-		InnerJoin(goqu.T(lex.T.FndPassword), lex.FndtpasswordFKFndtuser()).
+		InnerJoin(goqu.T(lex.T.FndPassword), lex.FndPasswordFkFndUser()).
 		Where(
 			goqu.ExOr{
 				lex.FndUser.UseUsername: user,
@@ -136,4 +137,29 @@ func (dao *DaoUser) getUser(ctx context.Context,
 		return nil, dao.h.WrapErr(err)
 	}
 	return &rec, nil
+}
+
+// SetStatus changes the logical status of the user.
+func (dao *DaoUser) SetStatus(ctx context.Context,
+	u *fndmodel.User,
+) error {
+	now := time.Now()
+	query := dao.h.NewUpdate(lex.T.FndUser).
+		Set(goqu.Record{
+			lex.FndUser.UseStatus:    u.ID,
+			lex.FndUser.UseUpdatedAt: now,
+		}).
+		Where(
+			goqu.C(lex.FndUser.UseID).Eq(u.ID),
+			goqu.C(lex.FndUser.UseUpdatedAt).Eq(u.UpdatedAt),
+		)
+	res, err := dao.h.DoUpdate(ctx, dao.Exe, query)
+	if err != nil {
+		return dao.h.WrapErr(err)
+	}
+	if err = dao.h.CheckOneRowUpdated(res); err != nil {
+		return err
+	}
+	u.UpdatedAt = now
+	return nil
 }

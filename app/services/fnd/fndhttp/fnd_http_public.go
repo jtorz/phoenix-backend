@@ -35,7 +35,6 @@ func (handler httpPublic) Signup() httphandler.HandlerFunc {
 		LastName   string `binding:"required"`
 		Email      string `binding:"required,email"`
 		Username   string `binding:"required"`
-		Password   string `binding:"required"`
 	}
 	return func(c *httphandler.Context) {
 		req := Req{}
@@ -110,10 +109,11 @@ func (handler httpPublic) Login() httphandler.HandlerFunc {
 
 // RequestRestore creates an account access to allow the user change the password.
 func (handler httpPublic) RequestRestore() httphandler.HandlerFunc {
+	type Req struct {
+		Email string `binding:"required,email"`
+	}
 	return func(c *httphandler.Context) {
-		req := struct {
-			Email string `binding:"required,email"`
-		}{}
+		req := Req{}
 		if c.BindJSON(&req) {
 			return
 		}

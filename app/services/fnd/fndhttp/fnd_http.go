@@ -32,9 +32,9 @@ func (s Service) APIPublic(apiGroup *gin.RouterGroup) {
 		//g.POST("/account/logout", httpPublic.Logout().Func())
 		apiGroup.POST("/account/login", httphandler.Secret(httpPublic.Login()))
 		apiGroup.POST("/account/signup", httphandler.Secret(httpPublic.Signup()))
-		//g.POST("/account/restore/request", httpPublic.RequestRestore().Func())
-		//g.POST("/account/restore", httpPublic.Restore().Func())
-		//g.GET("/account/session", httpPublic.GetSession().Func())
+		apiGroup.POST("/account/restore/request", httpPublic.RequestRestore().Func())
+		//apiGroup.POST("/account/restore", httpPublic.Restore().Func())
+		//apiGroup.GET("/account/session", httpPublic.GetSession().Func())
 	}
 }
 

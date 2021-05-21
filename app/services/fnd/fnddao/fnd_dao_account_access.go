@@ -33,7 +33,7 @@ func (dao *DaoAccountAccess) Insert(ctx context.Context,
 }
 
 func (dao *DaoAccountAccess) UseAccountAccess(ctx context.Context,
-	accType fndmodel.AccountAccessType, key string,
+	key string, accType fndmodel.AccountAccessType,
 ) (string, error) {
 	query := dao.h.NewUpdate(lex.T.FndAccountAccess).
 		Set(goqu.Record{
@@ -62,7 +62,7 @@ func (dao *DaoAccountAccess) UseAccountAccess(ctx context.Context,
 }
 
 func (dao *DaoAccountAccess) GetAccessByUserID(ctx context.Context,
-	accType fndmodel.AccountAccessType, userID string,
+	userID string, accType fndmodel.AccountAccessType,
 ) (*fndmodel.AccountAccess, error) {
 	res := fndmodel.AccountAccess{}
 	query := dao.h.NewSelect(lex.T.FndAccountAccess).

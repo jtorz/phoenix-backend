@@ -41,16 +41,20 @@ func (c *Context) HandleError(err error) bool {
 	if err == nil {
 		return false
 	}
+	if baseerrors.IsErrInvalidData(err) {
+		c.JSON(http.StatusBadRequest, err.Error()) // 400
+		return true
+	}
 	if baseerrors.IsErrPrivilege(err) {
-		c.JSON(http.StatusForbidden, err) // 403
+		c.JSON(http.StatusForbidden, err.Error()) // 403
 		return true
 	}
 	if baseerrors.IsErrStatus(err) {
-		c.JSON(http.StatusConflict, err) //409
+		c.JSON(http.StatusConflict, err.Error()) //409
 		return true
 	}
 	if baseerrors.IsErrNotUpdated(err) || baseerrors.IsErrDuplicated(err) {
-		c.JSON(http.StatusConflict, err)
+		c.JSON(http.StatusConflict, err.Error())
 		return true
 	}
 	return c.UnexpectedError(err)

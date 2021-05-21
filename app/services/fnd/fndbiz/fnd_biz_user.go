@@ -3,7 +3,7 @@ package fndbiz
 import (
 	"context"
 	"fmt"
-	"net/url"
+	"regexp"
 
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fnddao"
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndmodel"
@@ -15,7 +15,7 @@ import (
 // BizUser business component.
 type BizUser struct {
 	Exe base.Executor
-	dao DaoUser
+	dao *fnddao.DaoUser
 }
 
 func NewBizUser(exe base.Executor) BizUser {
@@ -23,13 +23,6 @@ func NewBizUser(exe base.Executor) BizUser {
 		Exe: exe,
 		dao: &fnddao.DaoUser{Exe: exe},
 	}
-}
-
-type DaoUser interface {
-	Login(_ context.Context, userNameOrEmail string) (*fndmodel.User, error)
-	GetUserByMail(ctx context.Context, _ string) (*fndmodel.User, error)
-	GetUserByID(ctx context.Context, userID string) (*fndmodel.User, error)
-	New(context.Context, *fndmodel.User) error
 }
 
 // Login retrieves the necessary data to log in a user given its email/username.
@@ -50,15 +43,21 @@ func (biz *BizUser) Login(ctx context.Context,
 	return u, nil
 }
 
+var usernameStyle = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9\._]*$`)
+
 // New creates a new user anf sends the email to activate the account.
 func (biz *BizUser) New(ctx context.Context, senderSvc baseservice.MailSenderSvc,
 	u *fndmodel.User,
 ) error {
+	if !usernameStyle.MatchString(u.Username) {
+		return fmt.Errorf("%w: username must start with a letter and contain only letter, numbers, dots or underscores", baseerrors.ErrInvalidData)
+	}
 	u.Status = base.StatusCaptured
 	if err := biz.dao.New(ctx, u); err != nil {
 		return err
 	}
-	if err := biz.generateAccess(ctx, senderSvc, *u); err != nil {
+	bizAcc := NewBizAccountAccess(biz.Exe)
+	if err := bizAcc.NewAccessRestore(ctx, senderSvc, *u, true); err != nil {
 		return err
 	}
 	u.SimpleActions(u.Status)
@@ -104,55 +103,52 @@ func (biz *BizUser) RequestRestore(ctx context.Context, senderSvc baseservice.Ma
 		return nil, fmt.Errorf("can't activate user account on status inactive: %w", baseerrors.ErrActionNotAllowedStatus)
 	}
 
-	if err = biz.generateAccess(ctx, senderSvc, *u); err != nil {
+	bizAcc := NewBizAccountAccess(biz.Exe)
+	if err = bizAcc.NewAccessRestore(ctx, senderSvc, *u, false); err != nil {
 		return nil, err
 	}
 	return u, nil
 }
 
-func (biz *BizUser) generateAccess(ctx context.Context, senderSvc baseservice.MailSenderSvc,
-	u fndmodel.User,
-) (err error) {
+// Restore activates the user account sets their password,
+// marks the restore account access as active,
+// and sends the information to the email service to notify the user.
+func (biz *BizUser) Restore(ctx context.Context, senderSvc baseservice.MailSenderSvc,
+	key string,
+) (*fndmodel.User, error) {
 	bizAcc := NewBizAccountAccess(biz.Exe)
-	ac, err := bizAcc.GetAccessByUserID(ctx, fndmodel.AccAccRestoreAccount, u.ID)
-
+	userID, err := bizAcc.UseAccountAccess(ctx, key, fndmodel.AccAccRestoreAccount)
 	if err != nil {
-		if baseerrors.IsErrNotFound(err) {
-			ac.User = u
-			return biz.sendEmailAccount(ctx, senderSvc, *ac, true)
-		}
-		return err
+		return nil, err
+	}
+	u, err := biz.GetUserByID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	if u.Status == base.StatusInactive {
+		return nil, fmt.Errorf("can't activate user account on status inactive: %w", baseerrors.ErrActionNotAllowedStatus)
 	}
 
-	ac, err = bizAcc.NewAccountAccess(ctx, u)
-	if err != nil {
-		return
+	u.Status = base.StatusActive
+	if err = biz.dao.SetStatus(ctx, u); err != nil {
+		return nil, err
 	}
-	return biz.sendEmailAccount(ctx, senderSvc, *ac, true)
-}
+	// TODO:
+	/*
 
-func (biz *BizUser) sendEmailAccount(ctx context.Context, senderSvc baseservice.MailSenderSvc,
-	ac fndmodel.AccountAccess, isActivation bool,
-) (err error) {
+	 */
+
 	data := map[string]interface{}{
-		"user": ac.User,
-		"url":  restoreAccountURLResource(ac.Key, isActivation),
+		"user": u,
 	}
-
-	return senderSvc.SendMail(ctx, baseservice.MailTemplate{
-		SenderUserID: ac.User.ID,
+	err = senderSvc.SendMail(ctx, baseservice.MailTemplate{
+		SenderUserID: u.ID,
 		Type:         baseservice.MailTypeRestoreAccount,
 		Data:         data,
-		To:           []string{ac.User.Email},
+		To:           []string{u.Email},
 	})
-}
-
-func restoreAccountURLResource(key string, isActivation bool) string {
-	var r = "/restore-account/"
-	if isActivation {
-		r += "activate/"
-	} else {
-		r += "restore/"
+	if err != nil {
+		return nil, err
 	}
-	return r + url.QueryEscape(key)
+	return u, nil
 }

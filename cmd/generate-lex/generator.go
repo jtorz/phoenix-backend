@@ -131,5 +131,5 @@ func (g *Generator) getFK(objname string) ([]Fk, error) {
 }
 
 func goCase(s string) string {
-	return stringset.UpperFirst(strmangle.CamelCase(strings.TrimSpace(s)))
+	return stringset.SnakeToGoCase(strings.TrimSpace(s))
 }

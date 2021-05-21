@@ -7,11 +7,21 @@ import (
 	"github.com/jtorz/phoenix-backend/utils/pg"
 )
 
+// ErrInvalidData is used to indicate that the format or the content of the data is not valid.
+//
+// Examples of ErrDataFormat is a invalid email, an age less than 0.
+var ErrInvalidData = errors.New("invalid data")
+
+// IsErrInvalidData checks if the error is ErrInvalidData.
+func IsErrInvalidData(err error) bool {
+	return errors.Is(err, ErrInvalidData)
+}
+
 // ErrActionNotAllowedStatus is used whe an action can't be used due to the current
-// status of a record
+// status of a record.
 var ErrActionNotAllowedStatus = errors.New("action not allowed in current state")
 
-// IsErrStatus check if the error is ErrActionNotAllowedStatus.
+// IsErrStatus checks if the error is ErrActionNotAllowedStatus.
 func IsErrStatus(err error) bool {
 	return errors.Is(err, ErrActionNotAllowedStatus)
 }
@@ -19,7 +29,7 @@ func IsErrStatus(err error) bool {
 // ErrPrivilege the user doesn't have the privileges to execute an operation.
 var ErrPrivilege = errors.New("insufficient privileges")
 
-// IsErrPrivilege check if the error is ErrPrivilege.
+// IsErrPrivilege checks if the error is ErrPrivilege.
 func IsErrPrivilege(err error) bool {
 	return errors.Is(err, ErrPrivilege)
 }

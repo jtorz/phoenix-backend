@@ -46,3 +46,12 @@ func SetAgent(c *gin.Context, userID string, authSvc AuthService) {
 		AuthService: authSvc,
 	})
 }
+
+// GetAgent returs the agent from the context.
+func GetAgent(c context.Context) *Agent {
+	a, ok := c.Value(agentKey).(*Agent)
+	if !ok {
+		return nil
+	}
+	return a
+}

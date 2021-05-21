@@ -52,24 +52,24 @@ var V = struct {
 	FndVPrivilegeRole: "fnd_v_privilege_role",
 }
 
-// FndModuleFKFNDModule returns the join expression for the foreign key from FndModule to FndModule.
-func FndModuleFKFNDModule(exps ...exp.Expression) exp.JoinCondition {
+// FndModuleFkFndModulePadre returns the join expression for the foreign key from FndModule to FndModule.
+func FndModuleFkFndModulePadre(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
 		FndModule.ModParentID: goqu.I(FndModule.ModID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndtactionFKFNDModule returns the join expression for the foreign key from FndAction to FndModule.
-func FndtactionFKFNDModule(exps ...exp.Expression) exp.JoinCondition {
+// FndActionFkFndModule returns the join expression for the foreign key from FndAction to FndModule.
+func FndActionFkFndModule(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
 		FndAction.ActModuleID: goqu.I(FndModule.ModID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndtprivilegeFKFndtaction returns the join expression for the foreign key from FndPrivilege to FndAction.
-func FndtprivilegeFKFndtaction(exps ...exp.Expression) exp.JoinCondition {
+// FndPrivilegeFkFndAction returns the join expression for the foreign key from FndPrivilege to FndAction.
+func FndPrivilegeFkFndAction(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
 		FndPrivilege.PriActionID: goqu.I(FndAction.ActActionID),
 		FndPrivilege.PriModuleID: goqu.I(FndAction.ActModuleID),
@@ -77,56 +77,56 @@ func FndtprivilegeFKFndtaction(exps ...exp.Expression) exp.JoinCondition {
 	return goqu.On(exps...)
 }
 
-// FndtprivilegeFKFndtrole returns the join expression for the foreign key from FndPrivilege to FndRole.
-func FndtprivilegeFKFndtrole(exps ...exp.Expression) exp.JoinCondition {
+// FndPrivilegeFkFndRole returns the join expression for the foreign key from FndPrivilege to FndRole.
+func FndPrivilegeFkFndRole(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
 		FndPrivilege.PriRoleID: goqu.I(FndRole.RolID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndtpasswordFKFndtuser returns the join expression for the foreign key from FndPassword to FndUser.
-func FndtpasswordFKFndtuser(exps ...exp.Expression) exp.JoinCondition {
+// FndPasswordFkFndUser returns the join expression for the foreign key from FndPassword to FndUser.
+func FndPasswordFkFndUser(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
 		FndPassword.PasUserID: goqu.I(FndUser.UseID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndtuserRoleFKFndtrole returns the join expression for the foreign key from FndUserRole to FndRole.
-func FndtuserRoleFKFndtrole(exps ...exp.Expression) exp.JoinCondition {
+// FndUserRoleFkFndRole returns the join expression for the foreign key from FndUserRole to FndRole.
+func FndUserRoleFkFndRole(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
 		FndUserRole.UsrRoleID: goqu.I(FndRole.RolID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndtuserRoleFKFndtuser returns the join expression for the foreign key from FndUserRole to FndUser.
-func FndtuserRoleFKFndtuser(exps ...exp.Expression) exp.JoinCondition {
+// FndUserRoleFkFndUser returns the join expression for the foreign key from FndUserRole to FndUser.
+func FndUserRoleFkFndUser(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
 		FndUserRole.UsrUserID: goqu.I(FndUser.UseID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndtroleNavigatorFKFndtnavigator returns the join expression for the foreign key from FndRoleNavigator to FndNavigator.
-func FndtroleNavigatorFKFndtnavigator(exps ...exp.Expression) exp.JoinCondition {
+// FndRoleNavigatorFkFndNavigator returns the join expression for the foreign key from FndRoleNavigator to FndNavigator.
+func FndRoleNavigatorFkFndNavigator(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
 		FndRoleNavigator.RonNavigatorID: goqu.I(FndNavigator.NavID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndtroleNavigatorFKFndtrole returns the join expression for the foreign key from FndRoleNavigator to FndRole.
-func FndtroleNavigatorFKFndtrole(exps ...exp.Expression) exp.JoinCondition {
+// FndRoleNavigatorFkFndRole returns the join expression for the foreign key from FndRoleNavigator to FndRole.
+func FndRoleNavigatorFkFndRole(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
 		FndRoleNavigator.RonRoleID: goqu.I(FndRole.RolID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndtaccessAccountFKFndtuser returns the join expression for the foreign key from FndAccountAccess to FndUser.
-func FndtaccessAccountFKFndtuser(exps ...exp.Expression) exp.JoinCondition {
+// FndAccountAccessFkFndUser returns the join expression for the foreign key from FndAccountAccess to FndUser.
+func FndAccountAccessFkFndUser(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
 		FndAccountAccess.AcaUserID: goqu.I(FndUser.UseID),
 	})

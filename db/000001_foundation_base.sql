@@ -1,22 +1,3 @@
-
---drop database phoenix;
---create database phoenix;
-CREATE EXTENSION IF NOT EXISTS intarray WITH SCHEMA public;
-
-COMMENT ON EXTENSION intarray IS 'functions, operators, and index support for 1-D arrays of integers';
-
-CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA public;
-
-COMMENT ON EXTENSION tablefunc IS 'functions that manipulate whole tables, including crosstab';
-
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
-
-COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
-
-CREATE DOMAIN fnd_dm_record_status
-    AS SMALLINT DEFAULT 1 NOT NULL
-    CHECK (VALUE IN (0, 1, 2, 3));
-
 -- BEGIN fnd_module
     CREATE TABLE fnd_module (
         mod_id                  TEXT NOT NULL,
@@ -32,9 +13,7 @@ CREATE DOMAIN fnd_dm_record_status
     ALTER TABLE ONLY fnd_module ADD CONSTRAINT
         fnd_module_pk PRIMARY KEY (mod_id);
 
-    ALTER TABLE ONLY fnd_module ADD CONSTRAINT
-        fnd_module_fk_fnd_module FOREIGN KEY (mod_parent_id)
-        REFERENCES fnd_module(mod_id);
+    call create_fk('fnd_module', 'mod_parent_id', 'fnd_module', 'mod_id', 'padre');
 -- END fnd_module
 
 
@@ -55,9 +34,7 @@ CREATE DOMAIN fnd_dm_record_status
     ALTER TABLE ONLY fnd_action ADD CONSTRAINT
         fndtaction_pk PRIMARY KEY (act_module_id, act_action_id);
 
-    ALTER TABLE ONLY fnd_action ADD CONSTRAINT
-        fndtaction_fk_fnd_module FOREIGN KEY (act_module_id)
-        REFERENCES fnd_module(mod_id);
+    call create_fk('fnd_action', 'act_module_id', 'fnd_module', 'mod_id', '');
 -- END fnd_action
 
 
@@ -87,13 +64,9 @@ CREATE DOMAIN fnd_dm_record_status
     ALTER TABLE ONLY fnd_privilege ADD CONSTRAINT
         fndtprivilege_pk PRIMARY KEY (pri_role_id, pri_module_id, pri_action_id);
 
-    ALTER TABLE ONLY fnd_privilege ADD CONSTRAINT
-        fndtprivilege_fk_fndtrole FOREIGN KEY (pri_role_id)
-        REFERENCES fnd_role(rol_id);
+    call create_fk('fnd_privilege', 'pri_role_id', 'fnd_role', 'rol_id', '');
 
-    ALTER TABLE ONLY fnd_privilege ADD CONSTRAINT
-        fndtprivilege_fk_fndtaction FOREIGN KEY (pri_module_id, pri_action_id)
-        REFERENCES fnd_action(act_module_id, act_action_id);
+    call create_fk('fnd_privilege', 'pri_module_id,pri_action_id', 'fnd_action', 'act_module_id,act_action_id', '');
 -- END fnd_privilege
 
 -- BEGIN fnd_user
@@ -139,9 +112,7 @@ CREATE DOMAIN fnd_dm_record_status
     ALTER TABLE ONLY fnd_password ADD CONSTRAINT
         fndtpassword_pk PRIMARY KEY (pas_id);
 
-    ALTER TABLE ONLY fnd_password ADD CONSTRAINT
-        fndtpassword_fk_fndtuser FOREIGN KEY (pas_user_id)
-        REFERENCES fnd_user(use_id);
+    call create_fk('fnd_password', 'pas_user_id', 'fnd_user', 'use_id', '');
 
     CREATE INDEX fndtpassword_idx_pas_user_id ON fnd_password USING HASH (pas_user_id);
 -- END fnd_password
@@ -156,13 +127,9 @@ CREATE DOMAIN fnd_dm_record_status
     ALTER TABLE ONLY fnd_user_role ADD CONSTRAINT
         fndtuser_role_pk PRIMARY KEY (usr_user_id, usr_role_id);
 
-    ALTER TABLE ONLY fnd_user_role ADD CONSTRAINT
-        fndtuser_role_fk_fndtuser FOREIGN KEY (usr_user_id)
-        REFERENCES fnd_user(use_id);
+    call create_fk('fnd_user_role', 'usr_user_id', 'fnd_user', 'use_id', '');
 
-    ALTER TABLE ONLY fnd_user_role ADD CONSTRAINT
-        fndtuser_role_fk_fndtrole FOREIGN KEY (usr_role_id)
-        REFERENCES fnd_role(rol_id);
+    call create_fk('fnd_user_role', 'usr_role_id', 'fnd_role', 'rol_id', '');
 -- END fnd_user_role
 
 
@@ -193,13 +160,9 @@ CREATE DOMAIN fnd_dm_record_status
     ALTER TABLE ONLY fnd_role_navigator ADD CONSTRAINT
         fndtrole_navigator_pk PRIMARY KEY (ron_role_id, ron_navigator_id);
 
-    ALTER TABLE ONLY fnd_role_navigator ADD CONSTRAINT
-        fndtrole_navigator_fk_fndtrole FOREIGN KEY (ron_role_id)
-        REFERENCES fnd_role(rol_id);
+    call create_fk('fnd_role_navigator', 'ron_role_id', 'fnd_role', 'rol_id', '');
 
-    ALTER TABLE ONLY fnd_role_navigator ADD CONSTRAINT
-        fndtrole_navigator_fk_fndtnavigator FOREIGN KEY (ron_navigator_id)
-        REFERENCES fnd_navigator(nav_id);
+    call create_fk('fnd_role_navigator', 'ron_navigator_id', 'fnd_navigator', 'nav_id', '');
 -- END fnd_role_navigator
 
 
@@ -221,9 +184,7 @@ CREATE DOMAIN fnd_dm_record_status
     ALTER TABLE ONLY fnd_account_access ADD CONSTRAINT
         fndtaccess_account_pk PRIMARY KEY (aca_id);
 
-    ALTER TABLE ONLY fnd_account_access ADD CONSTRAINT
-        fndtaccess_account_fk_fndtuser FOREIGN KEY (aca_user_id)
-        REFERENCES fnd_user(use_id);
+    call create_fk('fnd_account_access', 'aca_user_id', 'fnd_user', 'use_id', '');
 -- END fnd_account_access
 
 
