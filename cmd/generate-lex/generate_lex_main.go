@@ -28,6 +28,7 @@ type Generator struct {
 
 type TPLData struct {
 	PackageName string
+	TestPackage string
 	Tables      []TplObject
 	Views       []TplObject
 }
@@ -39,12 +40,15 @@ type TplObject struct {
 }
 
 type TplColumn struct {
-	GoCase string
-	Name   string
+	GoCase   string
+	Name     string
+	Nullable string
+	DataType string
 }
 
 func init() {
 	flag.String("pkg", "lex", "go package name")
+	flag.String("testPkg", "github.com/jtorz/phoenix-backend/app/config/configtest", "go test package name")
 	flag.String("out", "app/shared/lex", "database connection string")
 	flag.String("schema", "", "database schema")
 	flag.String("db", "", "database connection string")
@@ -63,9 +67,10 @@ func getReqFlag(key string) string {
 }
 
 func main() {
-	var objects, objectNames []byte
+	var objects, objectNames, testFile []byte
 	gen := Generator{}
 	gen.TPLData.PackageName = getReqFlag("pkg")
+	gen.TPLData.TestPackage = getReqFlag("testPkg")
 	gen.OutputDir = getReqFlag("out")
 	gen.Schema = getReqFlag("schema")
 	gen.FilterPrefix = viper.GetString("filterPrefix")
@@ -85,6 +90,11 @@ func main() {
 	if err != nil {
 		log.Fatal("objectNames", err)
 	}
+
+	testFile, err = gen.executeTemplate(lexasset.TestTpl)
+	if err != nil {
+		log.Fatal("objectNames", err)
+	}
 	file := gen.OutputDir + "/lex_object_names.go"
 	err = ioutil.WriteFile(file, objects, 0644)
 	if err != nil {
@@ -92,6 +102,11 @@ func main() {
 	}
 	file = gen.OutputDir + "/lex_object_columns.go"
 	err = ioutil.WriteFile(file, objectNames, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	file = gen.OutputDir + "/lex_test.go"
+	err = ioutil.WriteFile(file, testFile, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -109,7 +124,12 @@ func (gen *Generator) checkAvoidOverwrite() {
 	if _, err := os.Stat(file); os.IsNotExist(err) {
 		log.Fatalf("File %s already exists. Use --overwrite flag or delete file to continue.", file)
 	}
+	file = gen.OutputDir + "/lex_test.go"
+	if _, err := os.Stat(file); os.IsNotExist(err) {
+		log.Fatalf("File %s already exists. Use --overwrite flag or delete file to continue.", file)
+	}
 }
+
 func (gen *Generator) loadDB() {
 	var err error
 	dbcon := getReqFlag("db")

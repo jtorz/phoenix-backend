@@ -4,9 +4,18 @@ package {{.PackageName}}
 
 
 var (	{{range .Tables }}
-	// {{.GoCase}} column names for object {{.Name}}.
+	// {{.GoCase}} column names for table {{.Name}}.
 	{{.GoCase}} = struct { {{range .Columns }}
-			{{.GoCase}} string {{end}}
+			{{.GoCase}} string `database:"{{.Nullable}},{{.DataType}}"` {{end}}
+	}{ {{range .Columns }}
+			{{.GoCase}}: "{{.Name}}", {{end}}
+	}
+	{{end}}
+
+	{{range .Views }}
+	// {{.GoCase}} column names for view {{.Name}}.
+	{{.GoCase}} = struct { {{range .Columns }}
+			{{.GoCase}} string `database:"{{.Nullable}},{{.DataType}}"` {{end}}
 	}{ {{range .Columns }}
 			{{.GoCase}}: "{{.Name}}", {{end}}
 	}
