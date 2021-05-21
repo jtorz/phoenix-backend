@@ -37,6 +37,7 @@ type TplObject struct {
 	GoCase  string
 	Name    string
 	Columns []TplColumn
+	Fks     []Fk
 }
 
 type TplColumn struct {
@@ -44,6 +45,15 @@ type TplColumn struct {
 	Name     string
 	Nullable string
 	DataType string
+}
+
+type Fk struct {
+	ConstraintName string
+	Columns        []FKCol
+	FTable         string
+}
+type FKCol struct {
+	Orig, Dest string
 }
 
 func init() {
@@ -93,7 +103,7 @@ func main() {
 
 	testFile, err = gen.executeTemplate(lexasset.TestTpl)
 	if err != nil {
-		log.Fatal("objectNames", err)
+		log.Fatal("tets", err)
 	}
 	file := gen.OutputDir + "/lex_object_names.go"
 	err = ioutil.WriteFile(file, objects, 0644)

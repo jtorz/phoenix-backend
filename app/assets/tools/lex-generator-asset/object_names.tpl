@@ -2,14 +2,23 @@
 //
 // The elements in the package are:
 //
-// * Table names
-// * Table columns
-// * View names
-// * View columns
+// lex_object_names.go
+//   * Table names
+//   * View names
+//   * FK Constraints join expressions
+//
+//  lex_object_columns.go
+//   * Table columns
+//   * View columns
 //
 // Code generated - DO NOT EDIT.
 // This file is a generated binding and any manual changes will be lost.
 package {{.PackageName}}
+
+import (
+	"github.com/doug-martin/goqu/v9"
+	"github.com/doug-martin/goqu/v9/exp"
+)
 
 // T database table names.
 var T = struct { {{range .Tables}}
@@ -24,3 +33,18 @@ var V = struct { {{range .Views}}
 }{ {{range .Views}}
 	{{.GoCase}} :"{{.Name}}", {{end}}
 }
+
+
+
+{{range $T := .Tables }}
+	{{range $FK := .Fks}}
+	// {{$FK.ConstraintName}} returns the join expression for the foreign key from {{$T.GoCase}} to {{$FK.FTable}}.
+	func {{$FK.ConstraintName}}(exps ...exp.Expression) exp.JoinCondition{
+		exps = append(exps, goqu.Ex{ {{range $fkCol := $FK.Columns}}
+				{{$T.GoCase}}.{{$fkCol.Orig}}: goqu.I({{$FK.FTable}}.{{$fkCol.Dest}}), {{end}}
+		})
+		return goqu.On(exps...)
+	}
+	{{end}}
+{{end}}
+

@@ -53,7 +53,7 @@ func (dao *DaoUser) Login(ctx context.Context,
 			lex.FndPassword.PasData,
 			lex.FndPassword.PasType,
 		).
-		InnerJoin(goqu.T(lex.T.FndPassword), goqu.On(goqu.Ex{lex.FndPassword.PasUserID: goqu.I(lex.FndUser.UseID)})).
+		InnerJoin(goqu.T(lex.T.FndPassword), lex.FndtpasswordFKFndtuser()).
 		Where(
 			goqu.ExOr{
 				lex.FndUser.UseUsername: user,
