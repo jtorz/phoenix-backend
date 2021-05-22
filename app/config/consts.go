@@ -39,19 +39,15 @@ const (
 	EnvPrefix string = "PHOENIX"
 )
 
-type LogginLvl string
+type LogginLvl uint8
 
 const (
-	// LogNone indicates that no logging is used.
-	LogNone LogginLvl = "none"
 	// LogDebug indicates logging level is for debug and upper levels.
-	LogDebug LogginLvl = "debug"
+	LogDebug LogginLvl = 0
 	// LogWarning indicates logging level is for warning an upper levels.
-	LogWarning LogginLvl = "warning"
+	LogWarning LogginLvl = 50
+	// LogError indicates logging level is for errors only an upper levels.
+	LogError LogginLvl = 100
+	// LogMax max logging level.
+	LogMax LogginLvl = 255
 )
-
-// IsLogDebug chechs if the logging level is debug.
-// Empty string is considered debug.
-func (l LogginLvl) IsLogDebug() bool {
-	return l == LogDebug || l == ""
-}

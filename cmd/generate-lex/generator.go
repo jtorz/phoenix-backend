@@ -7,7 +7,7 @@ import (
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/doug-martin/goqu/v9/exp"
-	"github.com/jtorz/phoenix-backend/app/shared/daohelper"
+	"github.com/jtorz/phoenix-backend/app/shared/lex"
 	"github.com/jtorz/phoenix-backend/utils/stringset"
 	"github.com/volatiletech/sqlboiler/strmangle"
 )
@@ -24,13 +24,12 @@ func (g *Generator) getObjects() (err error) {
 
 func (g *Generator) getDbObjects(objname, objtype string) ([]TplObject, error) {
 	var objects []TplObject
-	h := daohelper.QueryHelper{}
 	where := []exp.Expression{goqu.C("schemaname").Eq(g.Schema)}
 	if g.FilterPrefix != "" {
 		where = append(where, goqu.C(objname).Like(g.FilterPrefix+"%"))
 	}
-	query := h.NewSelect(objtype).Select(objname).Where(where...)
-	rows, err := h.QueryContext(context.Background(), g.DB, query)
+	query := lex.NewSelect(objname).From(objtype).Where(where...)
+	rows, err := lex.QueryContext(context.Background(), g.DB, query)
 	if err != nil {
 		return nil, err
 	}
@@ -57,15 +56,14 @@ func (g *Generator) getDbObjects(objname, objtype string) ([]TplObject, error) {
 
 func (g *Generator) getDbObjectColumns(objname string) ([]TplColumn, error) {
 	var columns []TplColumn
-	h := daohelper.QueryHelper{}
-	query := h.NewSelect("information_schema.columns").
-		Select("column_name", "is_nullable", "data_type").
+	query := lex.NewSelect("column_name", "is_nullable", "data_type").
+		From("information_schema.columns").
 		Where(
 			goqu.C("table_schema").Table("columns").Eq(g.Schema),
 			goqu.C("table_name").Table("columns").Eq(objname),
 		)
 
-	rows, err := h.QueryContext(context.Background(), g.DB, query)
+	rows, err := lex.QueryContext(context.Background(), g.DB, query)
 	if err != nil {
 		return nil, err
 	}

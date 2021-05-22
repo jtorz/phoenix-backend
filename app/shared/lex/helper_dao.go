@@ -1,16 +1,19 @@
-package daohelper
+package lex
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"runtime"
 
+	"github.com/jtorz/phoenix-backend/app/config"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
+	"github.com/jtorz/phoenix-backend/app/shared/ctxinfo"
 	"github.com/jtorz/phoenix-backend/utils/pg"
 )
 
 // CheckOneRowUpdated checks that only one records was affected.
-func (QueryHelper) CheckOneRowUpdated(r sql.Result) error {
+func CheckOneRowUpdated(r sql.Result) error {
 	n, err := r.RowsAffected()
 	if err != nil {
 		pc := make([]uintptr, 10)
@@ -35,7 +38,7 @@ func (QueryHelper) CheckOneRowUpdated(r sql.Result) error {
 }
 
 // WrapIfErrDuplicated wraps the error into baseerrors.ErrDuplicated er the underlying error is due to a unique key volation.
-func (QueryHelper) WrapIfErrDuplicated(err error) error {
+func WrapIfErrDuplicated(err error) error {
 	if pg.IsCode(err, pg.UniqueViolation) {
 		return fmt.Errorf("%s %w", err.Error(), baseerrors.ErrDuplicated)
 	}
@@ -43,7 +46,10 @@ func (QueryHelper) WrapIfErrDuplicated(err error) error {
 }
 
 // WrapErr wraps the error with extra information if ocurred.
-func (QueryHelper) WrapErr(err error) error {
+func WrapErr(ctx context.Context, err error) error {
+	if !ctxinfo.LogginAllowed(ctx, config.LogDebug) {
+		return err
+	}
 	if err != nil {
 		pc := make([]uintptr, 10) // at least 1 entry needed
 		runtime.Callers(2, pc)

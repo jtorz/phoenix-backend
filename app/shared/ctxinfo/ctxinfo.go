@@ -12,10 +12,14 @@ const modeKey = config.EnvPrefix + "_mode_"
 // LoggingLevel returns the level of logging int he context.
 func LoggingLevel(ctx context.Context) config.LogginLvl {
 	lvl, _ := ctx.Value(modeKey).(config.LogginLvl)
-	if lvl == "" {
-		return config.LogDebug
-	}
 	return lvl
+}
+
+// LogginAllowed verifies if the logging is allowed in the context.
+// Only the loggin is allowed when the required log is bigger (or equal) than the context.LogginLvl.
+func LogginAllowed(ctx context.Context, lvl config.LogginLvl) bool {
+	ctxLvl := LoggingLevel(ctx)
+	return lvl >= ctxLvl
 }
 
 // SetLoggingLevel sets level of logging to the gin.Context.

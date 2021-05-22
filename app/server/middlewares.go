@@ -24,7 +24,7 @@ func (server *Server) configureMiddlewares(r *gin.Engine, jwtSvc authorization.J
 	})
 
 	// gin.logger middleware added only on debug mode.
-	if server.Config.LoggingLevel.IsLogDebug() {
+	if config.LogDebug >= server.Config.LoggingLevel {
 		r.Use(gin.Logger())
 	}
 
