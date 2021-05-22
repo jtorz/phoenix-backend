@@ -36,6 +36,9 @@ func NewDelete(table interface{}) *goqu.DeleteDataset {
 
 // QueryContext executes a query that returns rows, typically a SELECT.
 func QueryContext(ctx context.Context, exe base.Executor, s *goqu.SelectDataset) (*sql.Rows, error) {
+	if err := s.Error(); err != nil {
+		return nil, err
+	}
 	query, args, err := s.Prepared(true).ToSQL()
 	if err != nil {
 		return nil, err
@@ -51,6 +54,9 @@ func QueryContext(ctx context.Context, exe base.Executor, s *goqu.SelectDataset)
 // Otherwise, the *Row's Scan scans the first selected row and discards
 // the rest.
 func QueryRowContext(ctx context.Context, exe base.Executor, s *goqu.SelectDataset) (*sql.Row, error) {
+	if err := s.Error(); err != nil {
+		return nil, err
+	}
 	query, args, err := s.Prepared(true).ToSQL()
 	if err != nil {
 		return nil, err
@@ -63,6 +69,9 @@ func QueryRowContext(ctx context.Context, exe base.Executor, s *goqu.SelectDatas
 
 // DoUpdate executes a query without returning any rows.
 func DoUpdate(ctx context.Context, exe base.Executor, s *goqu.UpdateDataset) (sql.Result, error) {
+	if err := s.Error(); err != nil {
+		return nil, err
+	}
 	query, args, err := s.Prepared(true).ToSQL()
 	if err != nil {
 		return nil, err
@@ -75,6 +84,9 @@ func DoUpdate(ctx context.Context, exe base.Executor, s *goqu.UpdateDataset) (sq
 
 // DoUpdateReturningRow executes a query  returning a row.
 func DoUpdateReturningRow(ctx context.Context, exe base.Executor, s *goqu.UpdateDataset, returning ...interface{}) (*sql.Row, error) {
+	if err := s.Error(); err != nil {
+		return nil, err
+	}
 	query, args, err := s.Prepared(true).Returning(returning...).ToSQL()
 	if err != nil {
 		return nil, err
@@ -87,6 +99,9 @@ func DoUpdateReturningRow(ctx context.Context, exe base.Executor, s *goqu.Update
 
 // DoInsert executes a query without returning any rows.
 func DoInsert(ctx context.Context, exe base.Executor, s *goqu.InsertDataset) (sql.Result, error) {
+	if err := s.Error(); err != nil {
+		return nil, err
+	}
 	query, args, err := s.Prepared(true).ToSQL()
 	if err != nil {
 		return nil, err
@@ -99,6 +114,9 @@ func DoInsert(ctx context.Context, exe base.Executor, s *goqu.InsertDataset) (sq
 
 // DoDelete executes a query without returning any rows.
 func DoDelete(ctx context.Context, exe base.Executor, s *goqu.DeleteDataset) (sql.Result, error) {
+	if err := s.Error(); err != nil {
+		return nil, err
+	}
 	query, args, err := s.Prepared(true).ToSQL()
 	if err != nil {
 		return nil, err
@@ -111,6 +129,9 @@ func DoDelete(ctx context.Context, exe base.Executor, s *goqu.DeleteDataset) (sq
 
 // DoInsertReturning executes a query without returning any rows.
 func DoInsertReturning(ctx context.Context, exe base.Executor, s *goqu.InsertDataset, returning ...interface{}) (*sql.Row, error) {
+	if err := s.Error(); err != nil {
+		return nil, err
+	}
 	query, args, err := s.Prepared(true).Returning(returning...).ToSQL()
 	if err != nil {
 		return nil, err

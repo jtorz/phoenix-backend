@@ -1,18 +1,6 @@
-// Package {{.PackageName}} contains the dictionary (lexicon) of the database.
-//
-// The elements in the package are:
-//
-// lex_object_names.go
-//   * Table names
-//   * View names
-//   * FK Constraints join expressions
-//
-//  lex_object_columns.go
-//   * Table columns
-//   * View columns
-//
 // Code generated - DO NOT EDIT.
 // This file is a generated binding and any manual changes will be lost.
+
 package {{.PackageName}}
 
 import (

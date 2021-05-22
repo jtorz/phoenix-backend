@@ -11,7 +11,7 @@ import (
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
 
-	//lint:ignore ST1001  only lex package should be used as a odot import.
+	//lint:ignore ST1001 dot import allowed only in dao packages for lex.
 	. "github.com/jtorz/phoenix-backend/app/shared/lex"
 )
 
@@ -157,7 +157,7 @@ func (dao *DaoUser) SetStatus(ctx context.Context,
 	if err != nil {
 		return WrapErr(ctx, err)
 	}
-	if err = CheckOneRowUpdated(res); err != nil {
+	if err = CheckOneRowUpdated(ctx, res); err != nil {
 		return err
 	}
 	u.UpdatedAt = now

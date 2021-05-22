@@ -10,7 +10,7 @@ import (
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
 
-	//lint:ignore ST1001  only lex package should be used as a odot import.
+	//lint:ignore ST1001 dot import allowed only in dao packages for lex.
 	. "github.com/jtorz/phoenix-backend/app/shared/lex"
 )
 

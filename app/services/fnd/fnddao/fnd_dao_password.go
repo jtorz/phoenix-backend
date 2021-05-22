@@ -9,7 +9,7 @@ import (
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 
-	//lint:ignore ST1001  only lex package should be used as a odot import.
+	//lint:ignore ST1001 dot import allowed only in dao packages for lex.
 	. "github.com/jtorz/phoenix-backend/app/shared/lex"
 )
 

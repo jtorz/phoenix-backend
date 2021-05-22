@@ -1,3 +1,15 @@
+// Package lex contains the dictionary (lexicon) of the database and auxiliar functions to the daos.
+//
+// The elements in the package are:
+//
+// lex_object_names.go
+//	Table names
+//	View names
+//	FK Constraints join expressions
+//
+//  lex_object_columns.go
+//	* Table columns
+//	* View columns
 package lex
 
 import (
@@ -13,28 +25,42 @@ import (
 )
 
 // CheckOneRowUpdated checks that only one records was affected.
-func CheckOneRowUpdated(r sql.Result) error {
+func CheckOneRowUpdated(ctx context.Context, r sql.Result) error {
 	n, err := r.RowsAffected()
 	if err != nil {
-		pc := make([]uintptr, 10)
-		runtime.Callers(2, pc)
-		f := runtime.FuncForPC(pc[0])
-		file, line := f.FileLine(pc[0])
-		data := fmt.Sprintf("%s:%d %s/n", file, line, f.Name())
-		return fmt.Errorf("%w %s", err, data)
-	}
-	if n != 1 {
-		pc := make([]uintptr, 10)
-		runtime.Callers(2, pc)
-		f := runtime.FuncForPC(pc[0])
-		file, line := f.FileLine(pc[0])
-		data := fmt.Sprintf("%s:%d %s/n", file, line, f.Name())
-		if n == 0 {
-			return fmt.Errorf("%s %w", data, baseerrors.ErrNotUpdated)
+		if ctxinfo.LogginAllowed(ctx, config.LogDebug) {
+			// Added stack trace info only for debug.
+			// code repeated to avoid adding info to the stack.
+			pc := make([]uintptr, 10)
+			runtime.Callers(2, pc)
+			f := runtime.FuncForPC(pc[0])
+			file, line := f.FileLine(pc[0])
+			data := fmt.Sprintf("%s:%d %s/n", file, line, f.Name())
+			return fmt.Errorf("%w %s", err, data)
 		}
+		return err
+	}
+	if n == 1 {
+		return nil
+	}
+	if n == 0 {
+		err = baseerrors.ErrNotUpdated
+	}
+	if n == 1 {
+		err = baseerrors.ErrMultiUpdated
+	}
+	if ctxinfo.LogginAllowed(ctx, config.LogDebug) {
+		// Added stack trace info only for debug.
+		// code repeated to avoid adding info to the stack.
+		pc := make([]uintptr, 10)
+		runtime.Callers(2, pc)
+		f := runtime.FuncForPC(pc[0])
+		file, line := f.FileLine(pc[0])
+		data := fmt.Sprintf("%s:%d %s/n", file, line, f.Name())
 		return fmt.Errorf("%s %w", data, baseerrors.ErrMultiUpdated)
 	}
-	return nil
+	return err
+
 }
 
 // WrapIfErrDuplicated wraps the error into baseerrors.ErrDuplicated er the underlying error is due to a unique key volation.
@@ -47,11 +73,10 @@ func WrapIfErrDuplicated(err error) error {
 
 // WrapErr wraps the error with extra information if ocurred.
 func WrapErr(ctx context.Context, err error) error {
-	if !ctxinfo.LogginAllowed(ctx, config.LogDebug) {
-		return err
-	}
-	if err != nil {
-		pc := make([]uintptr, 10) // at least 1 entry needed
+	if ctxinfo.LogginAllowed(ctx, config.LogDebug) {
+		// Added stack trace info only for debug.
+		// code repeated to avoid adding info to the stack.
+		pc := make([]uintptr, 10)
 		runtime.Callers(2, pc)
 		f := runtime.FuncForPC(pc[0])
 		file, line := f.FileLine(pc[0])
@@ -59,5 +84,5 @@ func WrapErr(ctx context.Context, err error) error {
 
 		return fmt.Errorf("%s %w", data, err)
 	}
-	return nil
+	return err
 }
