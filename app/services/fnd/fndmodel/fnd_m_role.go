@@ -10,14 +10,14 @@ type Roles []Role
 
 //Role user role.
 type Role struct {
-	ID            string             `json:"id"`
-	Name          string             `json:"name"`
-	Description   string             `json:"description"`
-	Privileges    Privileges         `json:"privileges"`
-	CreatedAt     time.Time          `json:"createdAt"`
-	UpdatedAt     time.Time          `json:"updatedAt"`
-	Status        base.Status        `json:"status"`
-	RecordActions base.RecordActions `json:"recordActions"`
+	ID            string
+	Name          string
+	Description   string
+	Privileges    Privileges
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	Status        base.Status
+	RecordActions base.RecordActions
 }
 
 func (roles Roles) Privileges() Privileges {

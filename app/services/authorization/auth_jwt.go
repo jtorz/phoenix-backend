@@ -66,7 +66,7 @@ func (jwtSvc JWTSvc) parseJWT(tokenString string) (*jwt.Token, jwt.MapClaims, er
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected jwt signing method %v: %w", token.Header["alg"], baseerrors.ErrAuth)
 		}
-		return jwtSvc, nil
+		return append([]byte{}, jwtSvc...), nil
 	})
 
 	if err != nil {

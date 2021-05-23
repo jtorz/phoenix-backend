@@ -14,12 +14,10 @@ import (
 )
 
 // DaoNavigator Data Access structure.
-type DaoNavigator struct {
-	Exe base.Executor
-}
+type DaoNavigator struct{}
 
 // GetByID retrives the record information using its ID.
-func (dao *DaoNavigator) GetByID(ctx context.Context,
+func (dao *DaoNavigator) GetByID(ctx context.Context, exe base.Executor,
 	id string,
 ) (*fndmodel.Navigator, error) {
 	var rec *fndmodel.Navigator
@@ -37,7 +35,7 @@ func (dao *DaoNavigator) GetByID(ctx context.Context,
 			goqu.C(FndNavigator.NavID).Eq(id),
 		)
 
-	row, err := QueryRowContext(ctx, dao.Exe, query)
+	row, err := QueryRowContext(ctx, exe, query)
 	if err != nil {
 		return nil, WrapErr(ctx, err)
 	}
@@ -56,74 +54,15 @@ func (dao *DaoNavigator) GetByID(ctx context.Context,
 	return rec, nil
 }
 
-// All returns the the complete catalogue of records that can be filtered by the user.
-func (dao *DaoNavigator) All(ctx context.Context,
+// List returns the list of records that can be filtered by the user.
+func (dao *DaoNavigator) List(ctx context.Context, exe base.Executor,
 	qry base.ClientQuery,
 ) ([]fndmodel.Navigator, error) {
 	res := make([]fndmodel.Navigator, 0)
-	params, err := FndRole.ParseFilter(qry)
+	params, err := FndNavigator.ParseFilter(qry)
 	if err != nil {
-		return nil, err
-	}
-
-	query := NewSelect(T.FndNavigator).
-		Select(
-			FndNavigator.NavID,
-			FndNavigator.NavName,
-			FndNavigator.NavDescription,
-			FndNavigator.NavIcon,
-			FndNavigator.NavOrder,
-			FndNavigator.NavURL,
-			FndNavigator.NavParentID,
-			FndNavigator.NavStatus,
-			FndNavigator.NavUpdatedAt,
-		).Where(params.FilterExp).
-		Limit(params.Limit).
-		Limit(params.Offset).
-		Order(params.Sort...)
-
-	rows, err := QueryContext(ctx, dao.Exe, query)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return res, nil
-		}
 		return nil, WrapErr(ctx, err)
 	}
-	defer rows.Close()
-	for rows.Next() {
-		var parentID string
-		rec := fndmodel.Navigator{}
-		err := rows.Scan(
-			&rec.ID,
-			&rec.Name,
-			&rec.Description,
-			&rec.Icon,
-			&rec.Order,
-			&rec.URL,
-			&parentID,
-			&rec.Status,
-			&rec.UpdatedAt,
-		)
-		if err != nil {
-			return nil, WrapErr(ctx, err)
-		}
-		if parentID != "" {
-			rec.Parent = &fndmodel.Navigator{ID: parentID}
-		}
-		res = append(res, rec)
-	}
-	return res, nil
-}
-
-// List returns the list of records that can be filtered by the user.
-func (dao *DaoNavigator) List(ctx context.Context,
-	qry base.ClientQuery,
-) ([]fndmodel.Navigator, error) {
-	res := make([]fndmodel.Navigator, 0)
-	params, err := FndRole.ParseFilter(qry)
-	if err != nil {
-		return nil, err
-	}
 
 	query := NewSelect(T.FndNavigator).
 		Select(
@@ -136,12 +75,13 @@ func (dao *DaoNavigator) List(ctx context.Context,
 			FndNavigator.NavParentID,
 			FndNavigator.NavStatus,
 			FndNavigator.NavUpdatedAt,
-		).Where(params.FilterExp).
+		).From(T.FndNavigator).
+		Where(params.FilterExp).
 		Limit(params.Limit).
-		Limit(params.Offset).
+		Offset(params.Offset).
 		Order(params.Sort...)
 
-	rows, err := QueryContext(ctx, dao.Exe, query)
+	rows, err := QueryContext(ctx, exe, query)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return res, nil
@@ -175,7 +115,7 @@ func (dao *DaoNavigator) List(ctx context.Context,
 }
 
 // New creates a new record.
-func (dao *DaoNavigator) New(ctx context.Context,
+func (dao *DaoNavigator) New(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Navigator,
 ) error {
 	now := time.Now()
@@ -194,7 +134,7 @@ func (dao *DaoNavigator) New(ctx context.Context,
 		}
 	}
 	ins := NewInsert(T.FndNavigator).Rows(record)
-	row, err := DoInsertReturning(ctx, dao.Exe, ins, FndNavigator.NavID)
+	row, err := DoInsertReturning(ctx, tx, ins, FndNavigator.NavID)
 	if err != nil {
 		return WrapErr(ctx, err)
 	}
@@ -207,7 +147,7 @@ func (dao *DaoNavigator) New(ctx context.Context,
 }
 
 // Edit edits the record.
-func (dao *DaoNavigator) Edit(ctx context.Context,
+func (dao *DaoNavigator) Edit(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Navigator,
 ) error {
 	now := time.Now()
@@ -232,7 +172,7 @@ func (dao *DaoNavigator) Edit(ctx context.Context,
 			goqu.C(FndNavigator.NavID).Eq(rec.ID),
 			goqu.C(FndNavigator.NavUpdatedAt).Eq(rec.UpdatedAt),
 		)
-	res, err := DoUpdate(ctx, dao.Exe, query)
+	res, err := DoUpdate(ctx, tx, query)
 	if err != nil {
 		return WrapErr(ctx, err)
 	}
@@ -241,7 +181,7 @@ func (dao *DaoNavigator) Edit(ctx context.Context,
 }
 
 // SetStatus updates the logical status of the record.
-func (dao *DaoNavigator) SetStatus(ctx context.Context,
+func (dao *DaoNavigator) SetStatus(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Navigator,
 ) error {
 	now := time.Now()
@@ -254,7 +194,7 @@ func (dao *DaoNavigator) SetStatus(ctx context.Context,
 			goqu.C(FndNavigator.NavID).Eq(rec.ID),
 			goqu.C(FndNavigator.NavUpdatedAt).Eq(rec.UpdatedAt),
 		)
-	res, err := DoUpdate(ctx, dao.Exe, query)
+	res, err := DoUpdate(ctx, tx, query)
 	if err != nil {
 		return WrapErr(ctx, err)
 	}
@@ -262,8 +202,8 @@ func (dao *DaoNavigator) SetStatus(ctx context.Context,
 	return CheckOneRowUpdated(ctx, res)
 }
 
-// Delete physical delete of the record.
-func (dao *DaoNavigator) Delete(ctx context.Context,
+// Delete performs a physical delete of the record.
+func (dao *DaoNavigator) Delete(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Navigator,
 ) error {
 	query := NewDelete(T.FndNavigator).
@@ -271,7 +211,7 @@ func (dao *DaoNavigator) Delete(ctx context.Context,
 			goqu.C(FndNavigator.NavID).Eq(rec.ID),
 			goqu.C(FndNavigator.NavUpdatedAt).Eq(rec.UpdatedAt),
 		)
-	res, err := DoDelete(ctx, dao.Exe, query)
+	res, err := DoDelete(ctx, tx, query)
 	if err != nil {
 		return WrapErr(ctx, err)
 	}

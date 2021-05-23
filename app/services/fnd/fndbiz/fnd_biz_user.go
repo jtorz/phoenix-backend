@@ -2,6 +2,7 @@ package fndbiz
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"regexp"
 
@@ -14,23 +15,20 @@ import (
 
 // BizUser business component.
 type BizUser struct {
-	Exe base.Executor
 	dao *fnddao.DaoUser
 }
 
-func NewBizUser(exe base.Executor) BizUser {
+func NewBizUser() BizUser {
 	return BizUser{
-		Exe: exe,
-		dao: &fnddao.DaoUser{Exe: exe},
+		dao: &fnddao.DaoUser{},
 	}
 }
 
 // Login retrieves the necessary data to log in a user given its email/username.
-func (biz *BizUser) Login(ctx context.Context,
+func (biz *BizUser) Login(ctx context.Context, exe base.Executor,
 	user, pass string,
 ) (*fndmodel.User, error) {
-
-	u, err := biz.dao.Login(ctx, user)
+	u, err := biz.dao.Login(ctx, exe, user)
 	if err != nil {
 		return nil, err
 	}
@@ -46,18 +44,18 @@ func (biz *BizUser) Login(ctx context.Context,
 var usernameStyle = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9\._]*$`)
 
 // New creates a new user anf sends the email to activate the account.
-func (biz *BizUser) New(ctx context.Context, senderSvc baseservice.MailSenderSvc,
+func (biz *BizUser) New(ctx context.Context, tx *sql.Tx, senderSvc baseservice.MailSenderSvc,
 	u *fndmodel.User,
 ) error {
 	if !usernameStyle.MatchString(u.Username) {
 		return fmt.Errorf("%w: username must start with a letter and contain only letter, numbers, dots or underscores", baseerrors.ErrInvalidData)
 	}
 	u.Status = base.StatusCaptured
-	if err := biz.dao.New(ctx, u); err != nil {
+	if err := biz.dao.New(ctx, tx, u); err != nil {
 		return err
 	}
-	bizAcc := NewBizAccountAccess(biz.Exe)
-	if err := bizAcc.NewAccessRestore(ctx, senderSvc, *u, true); err != nil {
+	bizAcc := NewBizAccountAccess()
+	if err := bizAcc.NewAccessRestore(ctx, tx, senderSvc, *u, true); err != nil {
 		return err
 	}
 	u.SimpleActions(u.Status)
@@ -65,10 +63,10 @@ func (biz *BizUser) New(ctx context.Context, senderSvc baseservice.MailSenderSvc
 }
 
 // GetUserByMail returns a user given its email.
-func (biz *BizUser) GetUserByMail(ctx context.Context,
+func (biz *BizUser) GetUserByMail(ctx context.Context, exe base.Executor,
 	email string,
 ) (*fndmodel.User, error) {
-	u, err := biz.dao.GetUserByMail(ctx, email)
+	u, err := biz.dao.GetUserByMail(ctx, exe, email)
 	if err != nil {
 		return nil, err
 	}
@@ -77,10 +75,10 @@ func (biz *BizUser) GetUserByMail(ctx context.Context,
 }
 
 // GetUserByID retrives the user information using its ID.
-func (biz *BizUser) GetUserByID(ctx context.Context,
+func (biz *BizUser) GetUserByID(ctx context.Context, exe base.Executor,
 	userID string,
 ) (*fndmodel.User, error) {
-	u, err := biz.dao.GetUserByID(ctx, userID)
+	u, err := biz.dao.GetUserByID(ctx, exe, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -89,10 +87,10 @@ func (biz *BizUser) GetUserByID(ctx context.Context,
 }
 
 // RequestRestore creates an account access to allow the user change the password their own.
-func (biz *BizUser) RequestRestore(ctx context.Context, senderSvc baseservice.MailSenderSvc,
+func (biz *BizUser) RequestRestore(ctx context.Context, tx *sql.Tx, senderSvc baseservice.MailSenderSvc,
 	email string,
 ) (*fndmodel.User, error) {
-	u, err := biz.GetUserByMail(ctx, email)
+	u, err := biz.GetUserByMail(ctx, tx, email)
 	if err != nil {
 		if baseerrors.IsErrNotFound(err) {
 			return nil, baseerrors.ErrAuth
@@ -103,8 +101,8 @@ func (biz *BizUser) RequestRestore(ctx context.Context, senderSvc baseservice.Ma
 		return nil, fmt.Errorf("can't activate user account on status inactive: %w", baseerrors.ErrActionNotAllowedStatus)
 	}
 
-	bizAcc := NewBizAccountAccess(biz.Exe)
-	if err = bizAcc.NewAccessRestore(ctx, senderSvc, *u, false); err != nil {
+	bizAcc := NewBizAccountAccess()
+	if err = bizAcc.NewAccessRestore(ctx, tx, senderSvc, *u, false); err != nil {
 		return nil, err
 	}
 	return u, nil
@@ -113,15 +111,15 @@ func (biz *BizUser) RequestRestore(ctx context.Context, senderSvc baseservice.Ma
 // Restore activates the user account sets their password,
 // marks the restore account access as active,
 // and sends the information to the email service to notify the user.
-func (biz *BizUser) Restore(ctx context.Context, senderSvc baseservice.MailSenderSvc,
+func (biz *BizUser) Restore(ctx context.Context, tx *sql.Tx, senderSvc baseservice.MailSenderSvc,
 	key string,
 ) (*fndmodel.User, error) {
-	bizAcc := NewBizAccountAccess(biz.Exe)
-	userID, err := bizAcc.UseAccountAccess(ctx, key, fndmodel.AccAccRestoreAccount)
+	bizAcc := NewBizAccountAccess()
+	userID, err := bizAcc.UseAccountAccess(ctx, tx, key, fndmodel.AccAccRestoreAccount)
 	if err != nil {
 		return nil, err
 	}
-	u, err := biz.GetUserByID(ctx, userID)
+	u, err := biz.GetUserByID(ctx, tx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +128,7 @@ func (biz *BizUser) Restore(ctx context.Context, senderSvc baseservice.MailSende
 	}
 
 	u.Status = base.StatusActive
-	if err = biz.dao.SetStatus(ctx, u); err != nil {
+	if err = biz.dao.SetStatus(ctx, tx, u); err != nil {
 		return nil, err
 	}
 	// TODO:

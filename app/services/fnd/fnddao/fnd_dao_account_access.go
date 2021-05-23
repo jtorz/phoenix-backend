@@ -15,11 +15,9 @@ import (
 )
 
 // DaoAccountAccess Data Access structure.
-type DaoAccountAccess struct {
-	Exe base.Executor
-}
+type DaoAccountAccess struct{}
 
-func (dao *DaoAccountAccess) Insert(ctx context.Context,
+func (dao *DaoAccountAccess) Insert(ctx context.Context, exe *sql.Tx,
 	ac *fndmodel.AccountAccess,
 ) error {
 	ins := NewInsert(T.FndAccountAccess).Rows(goqu.Record{
@@ -28,11 +26,11 @@ func (dao *DaoAccountAccess) Insert(ctx context.Context,
 		FndAccountAccess.AcaUserID: ac.User.ID,
 		FndAccountAccess.AcaStatus: ac.Status,
 	})
-	_, err := DoInsert(ctx, dao.Exe, ins)
+	_, err := DoInsert(ctx, exe, ins)
 	return WrapErr(ctx, err)
 }
 
-func (dao *DaoAccountAccess) UseAccountAccess(ctx context.Context,
+func (dao *DaoAccountAccess) UseAccountAccess(ctx context.Context, exe *sql.Tx,
 	key string, accType fndmodel.AccountAccessType,
 ) (string, error) {
 	query := NewUpdate(T.FndAccountAccess).
@@ -46,7 +44,7 @@ func (dao *DaoAccountAccess) UseAccountAccess(ctx context.Context,
 			goqu.C(FndAccountAccess.AcaExpirationDate).Gt(goqu.L("CURRENT_TIMESTAMP")),
 		)
 
-	row, err := DoUpdateReturningRow(ctx, dao.Exe, query, FndAccountAccess.AcaUserID)
+	row, err := DoUpdateReturningRow(ctx, exe, query, FndAccountAccess.AcaUserID)
 
 	if err != nil {
 		return "", WrapErr(ctx, err)
@@ -61,7 +59,7 @@ func (dao *DaoAccountAccess) UseAccountAccess(ctx context.Context,
 	return userID, WrapErr(ctx, err)
 }
 
-func (dao *DaoAccountAccess) GetAccessByUserID(ctx context.Context,
+func (dao *DaoAccountAccess) GetAccessByUserID(ctx context.Context, exe base.Executor,
 	userID string, accType fndmodel.AccountAccessType,
 ) (*fndmodel.AccountAccess, error) {
 	res := fndmodel.AccountAccess{}
@@ -74,7 +72,7 @@ func (dao *DaoAccountAccess) GetAccessByUserID(ctx context.Context,
 			goqu.C(FndAccountAccess.AcaExpirationDate).Lt(goqu.L("CURRENT_TIMESTAMP")),
 		)
 
-	row, err := QueryRowContext(ctx, dao.Exe, query)
+	row, err := QueryRowContext(ctx, exe, query)
 	if err != nil {
 		return nil, WrapErr(ctx, err)
 	}

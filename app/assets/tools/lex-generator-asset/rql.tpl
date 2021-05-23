@@ -6,10 +6,10 @@ package {{.PackageName}}
 import (
 	"fmt"
 
-	"github.com/doug-martin/goqu/v9"
+	//"github.com/doug-martin/goqu/v9"
 	"github.com/doug-martin/goqu/v9/exp"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
-	rqlgq "github.com/jtorz/rql-goqu"
+	rqlgq "github.com/jtorz/phoenix-backend/utils/rql-goqu"
 )
 
 var rql map[string]*rqlgq.Parser
@@ -48,14 +48,15 @@ func initParser(tablename string, model interface{}) {
 
 
 // ParseFilter parser the client query for the given table.
-func ParseFilter(tablename, statusColumn string, qry base.ClientQuery) (rqlParams *rqlgq.Params, err error) {
-	if qry.RQL == nil {
-		return &rqlgq.Params{}, nil
+func ParseFilter(tablename string, qry base.ClientQuery) (rqlParams *rqlgq.Params, err error) {
+	if len(qry.RQL) == 0 {
+		return &rqlgq.Params{
+			FilterExp: exp.NewExpressionList(exp.AndType),
+		}, nil
 	}
 	p, err := rql[tablename].Parse(qry.RQL)
 	if err != nil {
 		return nil, err
 	}
-	where = append(where, p.FilterExp)
 	return p, nil
 }

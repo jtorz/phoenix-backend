@@ -73,6 +73,9 @@ func WrapIfErrDuplicated(err error) error {
 
 // WrapErr wraps the error with extra information if ocurred.
 func WrapErr(ctx context.Context, err error) error {
+	if err == nil {
+		return nil
+	}
 	if ctxinfo.LogginAllowed(ctx, config.LogDebug) {
 		// Added stack trace info only for debug.
 		// code repeated to avoid adding info to the stack.

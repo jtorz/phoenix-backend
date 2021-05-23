@@ -8,11 +8,11 @@ import (
 
 // Component system component.
 type Component struct {
-	ID            int                `json:"id"`
-	Name          string             `json:"name"`
-	Description   string             `json:"description"`
-	CreatedAt     time.Time          `json:"createdAt"`
-	UpdatedAt     time.Time          `json:"updatedAt"`
-	Status        base.Status        `json:"status"`
-	RecordActions base.RecordActions `json:"recordActions"`
+	ID            int
+	Name          string
+	Description   string
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	Status        base.Status
+	RecordActions base.RecordActions
 }

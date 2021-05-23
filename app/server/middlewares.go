@@ -1,6 +1,7 @@
 package server
 
 import (
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -68,6 +69,8 @@ func (server *Server) configureMiddlewares(r *gin.Engine, jwtSvc authorization.J
 			return
 		}
 
+		c.Status(http.StatusInternalServerError)
+		log.Printf("uknown error: %s", err)
 	})
 }
 

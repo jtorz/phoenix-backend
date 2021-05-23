@@ -1,6 +1,8 @@
 package httphandler
 
 import (
+	"log"
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -9,6 +11,9 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	es_translations "github.com/go-playground/validator/v10/translations/es"
+	"github.com/jtorz/jsont/v2"
+	"github.com/jtorz/phoenix-backend/app/config"
+	"github.com/jtorz/phoenix-backend/app/shared/ctxinfo"
 )
 
 var (
@@ -93,4 +98,18 @@ func (c *Context) ParamInt64(paramName string) (int64, bool) {
 		return 0, true
 	}
 	return num, false
+}
+
+// JSONWithFields responds with the JSON encoding of v using the whitelist of fields to include.
+func (c *Context) JSONWithFields(v interface{}, fields jsont.F) {
+	json, err := jsont.MarshalFields(v, fields)
+	if err != nil {
+		if ctxinfo.LogginAllowed(c, config.LogError) {
+			log.Printf("Marshaling response error %s\n", err)
+		}
+		c.JSON(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+	c.Header("Content-Type", "application/json; charset=utf-8")
+	c.String(http.StatusOK, string(json))
 }

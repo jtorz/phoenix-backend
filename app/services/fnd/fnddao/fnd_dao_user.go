@@ -16,11 +16,11 @@ import (
 )
 
 // DaoUser Data Access structure.
-type DaoUser struct {
-	Exe base.Executor
-}
+type DaoUser struct{}
 
-func (dao *DaoUser) New(ctx context.Context, u *fndmodel.User) error {
+func (dao *DaoUser) New(ctx context.Context, tx *sql.Tx,
+	u *fndmodel.User,
+) error {
 	ins := NewInsert(T.FndUser).Rows(goqu.Record{
 		FndUser.UseName:       u.Name,
 		FndUser.UseMiddleName: u.MiddleName,
@@ -29,7 +29,7 @@ func (dao *DaoUser) New(ctx context.Context, u *fndmodel.User) error {
 		FndUser.UseUsername:   u.Username,
 		FndUser.UseStatus:     u.Status,
 	})
-	r, err := DoInsertReturning(ctx, dao.Exe, ins, FndUser.UseID, FndUser.UseUpdatedAt)
+	r, err := DoInsertReturning(ctx, tx, ins, FndUser.UseID, FndUser.UseUpdatedAt)
 	if err != nil {
 		return WrapErr(ctx, err)
 	}
@@ -38,7 +38,7 @@ func (dao *DaoUser) New(ctx context.Context, u *fndmodel.User) error {
 }
 
 // Login retrieves the necessary data to login a user given its email/username.
-func (dao *DaoUser) Login(ctx context.Context,
+func (dao *DaoUser) Login(ctx context.Context, exe base.Executor,
 	user string,
 ) (*fndmodel.User, error) {
 	res := &fndmodel.User{Password: &fndmodel.Password{}}
@@ -63,7 +63,7 @@ func (dao *DaoUser) Login(ctx context.Context,
 			goqu.C(FndPassword.PasStatus).Eq(base.StatusActive),
 		)
 
-	row, err := QueryRowContext(ctx, dao.Exe, query)
+	row, err := QueryRowContext(ctx, exe, query)
 	if err != nil {
 		return nil, WrapErr(ctx, err)
 	}
@@ -88,21 +88,21 @@ func (dao *DaoUser) Login(ctx context.Context,
 }
 
 // GetUserByMail returns a user given its email.
-func (dao *DaoUser) GetUserByMail(ctx context.Context,
+func (dao *DaoUser) GetUserByMail(ctx context.Context, exe base.Executor,
 	email string,
 ) (*fndmodel.User, error) {
-	return dao.getUser(ctx, goqu.C(FndUser.UseEmail).Eq(email))
+	return dao.getUser(ctx, exe, goqu.C(FndUser.UseEmail).Eq(email))
 }
 
 // GetUserByID retrives the record information using its ID.
-func (dao *DaoUser) GetUserByID(ctx context.Context,
+func (dao *DaoUser) GetUserByID(ctx context.Context, exe base.Executor,
 	userID string,
 ) (*fndmodel.User, error) {
-	return dao.getUser(ctx, goqu.C(FndUser.UseID).Eq(userID))
+	return dao.getUser(ctx, exe, goqu.C(FndUser.UseID).Eq(userID))
 }
 
 // getUser searchs the user with the given filters.
-func (dao *DaoUser) getUser(ctx context.Context,
+func (dao *DaoUser) getUser(ctx context.Context, exe base.Executor,
 	filter ...exp.Expression,
 ) (*fndmodel.User, error) {
 	query := NewSelect(T.FndUser).
@@ -118,7 +118,7 @@ func (dao *DaoUser) getUser(ctx context.Context,
 		).
 		Where(filter...)
 
-	row, err := QueryRowContext(ctx, dao.Exe, query)
+	row, err := QueryRowContext(ctx, exe, query)
 	if err != nil {
 		return nil, WrapErr(ctx, err)
 	}
@@ -140,7 +140,7 @@ func (dao *DaoUser) getUser(ctx context.Context,
 }
 
 // SetStatus changes the logical status of the user.
-func (dao *DaoUser) SetStatus(ctx context.Context,
+func (dao *DaoUser) SetStatus(ctx context.Context, tx *sql.Tx,
 	u *fndmodel.User,
 ) error {
 	now := time.Now()
@@ -153,7 +153,7 @@ func (dao *DaoUser) SetStatus(ctx context.Context,
 			goqu.C(FndUser.UseID).Eq(u.ID),
 			goqu.C(FndUser.UseUpdatedAt).Eq(u.UpdatedAt),
 		)
-	res, err := DoUpdate(ctx, dao.Exe, query)
+	res, err := DoUpdate(ctx, tx, query)
 	if err != nil {
 		return WrapErr(ctx, err)
 	}

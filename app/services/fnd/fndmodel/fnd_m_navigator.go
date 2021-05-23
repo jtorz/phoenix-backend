@@ -7,15 +7,15 @@ import (
 )
 
 type Navigator struct {
-	ID            string             `json:"id"`
-	Name          string             `json:"name"`
-	Description   string             `json:"description"`
-	Icon          string             `json:"icon"`
-	Order         int                `json:"order"`
-	URL           string             `json:"url"`
-	Parent        *Navigator         `json:"parent"`
-	CreatedAt     time.Time          `json:"createdAt"`
-	UpdatedAt     time.Time          `json:"updatedAt"`
-	Status        base.Status        `json:"status"`
-	RecordActions base.RecordActions `json:"recordActions"`
+	ID            string
+	Name          string
+	Description   string
+	Icon          string
+	Order         int
+	URL           string
+	Parent        *Navigator
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	Status        base.Status
+	RecordActions base.RecordActions
 }

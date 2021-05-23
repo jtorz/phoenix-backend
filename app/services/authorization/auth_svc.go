@@ -27,6 +27,11 @@ func NewAuthService(c *httphandler.Context, jwtSvc JWTSvc, db *sql.DB) (*Service
 		JWTData: *jwtData,
 	}
 
+	if ok, err := svc.IsAdmin(); err != nil {
+		return nil, err
+	} else if ok {
+		return &svc, nil
+	}
 	privs, err := svc.GetPrivileges()
 	if err != nil {
 		return nil, err
@@ -49,9 +54,11 @@ func (svc *Service) GetPrivilegeByPriority(privileges ...string) (string, error)
 	}
 	return "", nil
 }
+
 func (svc *Service) HasPrivilege(string) (bool, error) {
 	return true, nil
 }
+
 func (svc *Service) IsAdmin() (bool, error) {
 	return true, nil
 }

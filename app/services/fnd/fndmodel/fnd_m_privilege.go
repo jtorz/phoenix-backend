@@ -5,8 +5,8 @@ type Privileges []Privilege
 
 // Privilege action that an user is allowed to do.
 type Privilege struct {
-	Role   Role   `json:"role"`
-	Action Action `json:"action"`
+	Role   Role
+	Action Action
 }
 
 func (p Privilege) Code() string {

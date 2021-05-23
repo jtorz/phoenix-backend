@@ -11,11 +11,11 @@ type Modules []Module
 
 // Module del sistema
 type Module struct {
-	ID            string             `json:"id"`
-	Name          string             `json:"name"`
-	Description   string             `json:"description"`
-	CreatedAt     time.Time          `json:"createdAt"`
-	UpdatedAt     time.Time          `json:"updatedAt"`
-	Status        base.Status        `json:"status"`
-	RecordActions base.RecordActions `json:"recordActions"`
+	ID            string
+	Name          string
+	Description   string
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	Status        base.Status
+	RecordActions base.RecordActions
 }

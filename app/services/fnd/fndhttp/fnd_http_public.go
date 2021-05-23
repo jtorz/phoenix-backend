@@ -50,8 +50,8 @@ func (handler httpPublic) Signup() httphandler.HandlerFunc {
 		}
 
 		tx := c.BeginTx(handler.DB)
-		biz := fndbiz.NewBizUser(tx.Tx)
-		err := biz.New(c, handler.MailSvc, &u)
+		biz := fndbiz.NewBizUser()
+		err := biz.New(c, tx.Tx, handler.MailSvc, &u)
 		if baseerrors.IsErrAuth(err) {
 			c.Status(http.StatusUnauthorized)
 			tx.Rollback(c)
@@ -77,8 +77,8 @@ func (handler httpPublic) Login() httphandler.HandlerFunc {
 			return
 		}
 
-		biz := fndbiz.NewBizUser(handler.DB)
-		u, err := biz.Login(c, req.User, req.Password)
+		biz := fndbiz.NewBizUser()
+		u, err := biz.Login(c, handler.DB, req.User, req.Password)
 		if baseerrors.IsErrAuth(err) {
 			c.Status(http.StatusUnauthorized)
 			return
@@ -94,15 +94,15 @@ func (handler httpPublic) Login() httphandler.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{
-			"user": gin.H{
-				"id":         u.ID,
-				"name":       u.Name,
-				"middleName": u.MiddleName,
-				"lastName":   u.LastName,
-				"email":      u.Email,
-				"username":   u.Username,
+			"User": gin.H{
+				"ID":         u.ID,
+				"Name":       u.Name,
+				"MiddleName": u.MiddleName,
+				"LastName":   u.LastName,
+				"Email":      u.Email,
+				"Username":   u.Username,
 			},
-			"jwt": jwt,
+			"JWT": jwt,
 		})
 	}
 }
@@ -118,8 +118,8 @@ func (handler httpPublic) RequestRestore() httphandler.HandlerFunc {
 			return
 		}
 		tx := c.BeginTx(handler.DB)
-		biz := fndbiz.NewBizUser(tx.Tx)
-		_, err := biz.RequestRestore(c, handler.MailSvc, req.Email)
+		biz := fndbiz.NewBizUser()
+		_, err := biz.RequestRestore(c, tx.Tx, handler.MailSvc, req.Email)
 		if c.HandleError(err) {
 			tx.Rollback(c)
 			return

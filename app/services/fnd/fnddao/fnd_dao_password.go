@@ -2,6 +2,7 @@ package fnddao
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"time"
 
@@ -19,7 +20,9 @@ type DaoPassword struct {
 }
 
 /// New saves the password record in the database.
-func (dao *DaoPassword) New(ctx context.Context, usuarioID string, p *fndmodel.Password) error {
+func (dao *DaoPassword) New(ctx context.Context, tx *sql.Tx,
+	usuarioID string, p *fndmodel.Password,
+) error {
 	jsonData, err := json.Marshal(p.Data)
 	if err != nil {
 		return err

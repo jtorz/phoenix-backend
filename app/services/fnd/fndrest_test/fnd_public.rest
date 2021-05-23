@@ -19,7 +19,7 @@ Content-Type: application/json
     "MiddleName": "phoenix",
     "LastName": "phoenix",
     "Email": "phoenix@gmail.com",
-    "Username": "5phoenix"
+    "Username": "phoenix"
 }
 
 

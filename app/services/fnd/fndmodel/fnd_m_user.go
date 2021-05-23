@@ -8,19 +8,19 @@ import (
 
 // User struct.
 type User struct {
-	ID         string `json:"id"`
-	Name       string `json:"name"`
-	MiddleName string `json:"middleName"`
-	LastName   string `json:"lastName"`
-	Email      string `json:"email"`
-	Username   string `json:"username"`
-	//UserInformation *UserInformation `json:"userInformation"`
-	Password           *Password   `json:"password"`
-	Roles              Roles       `json:"role"`
-	CreatedAt          time.Time   `json:"createdAt"`
-	UpdatedAt          time.Time   `json:"updatedAt"`
-	Status             base.Status `json:"status"`
-	base.RecordActions `json:"recordActions"`
+	ID         string
+	Name       string
+	MiddleName string
+	LastName   string
+	Email      string
+	Username   string
+	//UserInformation *UserInformation
+	Password  *Password
+	Roles     Roles
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Status    base.Status
+	base.RecordActions
 }
 
 // UserID returns the id of the user.
