@@ -4,21 +4,24 @@
 package {{.PackageName}}
 
 
-var (	{{range .Tables }}
-	// {{.GoCase}} column names for table {{.Name}}.
-	{{.GoCase}} = struct { {{range .Columns }}
-			{{.GoCase}} string `database:"{{.Nullable}},{{.DataType}}"` {{end}}
-	}{ {{range .Columns }}
-			{{.GoCase}}: "{{.Name}}", {{end}}
-	}
-	{{end}}
+{{range .Tables }}
+// Table{{.GoCase}} column names for table {{.Name}}.
+type Table{{.GoCase}} struct { {{range .Columns }}
+	{{.GoCase}} string `database:"{{.Nullable}},{{.DataType}}"` {{end}}
+}
 
-	{{range .Views }}
-	// {{.GoCase}} column names for view {{.Name}}.
-	{{.GoCase}} = struct { {{range .Columns }}
-			{{.GoCase}} string `database:"{{.Nullable}},{{.DataType}}"` {{end}}
-	}{ {{range .Columns }}
-			{{.GoCase}}: "{{.Name}}", {{end}}
-	}
-	{{end}}
-)
+var {{.GoCase}} = Table{{.GoCase}}{ {{range .Columns }}
+	{{.GoCase}}: "{{.Name}}", {{end}}
+}
+{{end}}
+
+{{range .Views }}
+// View{{.GoCase}} column names for view {{.Name}}.
+type View{{.GoCase}} struct { {{range .Columns }}
+	{{.GoCase}} string `database:"{{.Nullable}},{{.DataType}}"` {{end}}
+}
+
+var {{.GoCase}} = View{{.GoCase}}{ {{range .Columns }}
+	{{.GoCase}}: "{{.Name}}", {{end}}
+}
+{{end}}

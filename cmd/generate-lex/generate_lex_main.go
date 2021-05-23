@@ -45,6 +45,7 @@ type TplColumn struct {
 	Name     string
 	Nullable string
 	DataType string
+	Domain   string
 }
 
 type Fk struct {
@@ -76,67 +77,66 @@ func getReqFlag(key string) string {
 	return v
 }
 
+type templateInfo struct {
+	template *string
+	ouput    string
+}
+
 func main() {
-	var objects, objectNames, testFile []byte
+	templates := []templateInfo{
+		{
+			template: &lexasset.ObjectNamesTpl,
+			ouput:    "/lex_object_names.go",
+		},
+		{
+			template: &lexasset.ObjectColumnNamesTpl,
+			ouput:    "/lex_object_columns.go",
+		},
+		{
+			template: &lexasset.RqlTpl,
+			ouput:    "/lex_rql.go",
+		},
+		{
+			template: &lexasset.TestTpl,
+			ouput:    "/lex_test.go",
+		},
+	}
+
 	gen := Generator{}
 	gen.TPLData.PackageName = getReqFlag("pkg")
 	gen.TPLData.TestPackage = getReqFlag("testPkg")
 	gen.OutputDir = getReqFlag("out")
 	gen.Schema = getReqFlag("schema")
 	gen.FilterPrefix = viper.GetString("filterPrefix")
-	gen.checkAvoidOverwrite()
+	gen.checkAvoidOverwrite(templates)
 	gen.loadDB()
 	err := gen.getObjects()
 	if err != nil {
 		log.Fatal(err)
 	}
-	//fmt.Println(gen)
-	//os.Exit(0)
-	objects, err = gen.executeTemplate(lexasset.ObjectNamesTpl)
-	if err != nil {
-		log.Fatal("objects", err)
-	}
-	objectNames, err = gen.executeTemplate(lexasset.ObjectColumnNamesTpl)
-	if err != nil {
-		log.Fatal("objectNames", err)
-	}
 
-	testFile, err = gen.executeTemplate(lexasset.TestTpl)
-	if err != nil {
-		log.Fatal("tets", err)
-	}
-	file := gen.OutputDir + "/lex_object_names.go"
-	err = ioutil.WriteFile(file, objects, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-	file = gen.OutputDir + "/lex_object_columns.go"
-	err = ioutil.WriteFile(file, objectNames, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-	file = gen.OutputDir + "/lex_test.go"
-	err = ioutil.WriteFile(file, testFile, 0644)
-	if err != nil {
-		log.Fatal(err)
+	for _, tpl := range templates {
+		var file []byte
+		file, err = gen.executeTemplate(*tpl.template)
+		if err != nil {
+			log.Fatal("objects", err)
+		}
+		err = ioutil.WriteFile(gen.OutputDir+tpl.ouput, file, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
-func (gen *Generator) checkAvoidOverwrite() {
+func (gen *Generator) checkAvoidOverwrite(templates []templateInfo) {
 	if viper.GetBool("overwrite") {
 		return
 	}
-	file := gen.OutputDir + "/lex_object_names.go"
-	if _, err := os.Stat(file); os.IsNotExist(err) {
-		log.Fatalf("File %s already exists. Use --overwrite flag or delete file to continue.", file)
-	}
-	file = gen.OutputDir + "/lex_object_columns.go"
-	if _, err := os.Stat(file); os.IsNotExist(err) {
-		log.Fatalf("File %s already exists. Use --overwrite flag or delete file to continue.", file)
-	}
-	file = gen.OutputDir + "/lex_test.go"
-	if _, err := os.Stat(file); os.IsNotExist(err) {
-		log.Fatalf("File %s already exists. Use --overwrite flag or delete file to continue.", file)
+	for _, tpl := range templates {
+		file := gen.OutputDir + tpl.ouput
+		if _, err := os.Stat(file); os.IsNotExist(err) {
+			log.Fatalf("File %s already exists. Use --overwrite flag or delete file to continue.", file)
+		}
 	}
 }
 

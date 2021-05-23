@@ -13,7 +13,7 @@
     ALTER TABLE ONLY fnd_module ADD CONSTRAINT
         fnd_module_pk PRIMARY KEY (mod_id);
 
-    call create_fk('fnd_module', 'mod_parent_id', 'fnd_module', 'mod_id', 'padre');
+    CALL create_fk('fnd_module', 'mod_parent_id', 'fnd_module', 'mod_id', 'padre');
 -- END fnd_module
 
 
@@ -34,7 +34,7 @@
     ALTER TABLE ONLY fnd_action ADD CONSTRAINT
         fndtaction_pk PRIMARY KEY (act_module_id, act_action_id);
 
-    call create_fk('fnd_action', 'act_module_id', 'fnd_module', 'mod_id', '');
+    CALL create_fk('fnd_action', 'act_module_id', 'fnd_module', 'mod_id', '');
 -- END fnd_action
 
 
@@ -64,9 +64,9 @@
     ALTER TABLE ONLY fnd_privilege ADD CONSTRAINT
         fndtprivilege_pk PRIMARY KEY (pri_role_id, pri_module_id, pri_action_id);
 
-    call create_fk('fnd_privilege', 'pri_role_id', 'fnd_role', 'rol_id', '');
+    CALL create_fk('fnd_privilege', 'pri_role_id', 'fnd_role', 'rol_id', '');
 
-    call create_fk('fnd_privilege', 'pri_module_id,pri_action_id', 'fnd_action', 'act_module_id,act_action_id', '');
+    CALL create_fk('fnd_privilege', 'pri_module_id,pri_action_id', 'fnd_action', 'act_module_id,act_action_id', '');
 -- END fnd_privilege
 
 -- BEGIN fnd_user
@@ -112,7 +112,7 @@
     ALTER TABLE ONLY fnd_password ADD CONSTRAINT
         fndtpassword_pk PRIMARY KEY (pas_id);
 
-    call create_fk('fnd_password', 'pas_user_id', 'fnd_user', 'use_id', '');
+    CALL create_fk('fnd_password', 'pas_user_id', 'fnd_user', 'use_id', '');
 
     CREATE INDEX fndtpassword_idx_pas_user_id ON fnd_password USING HASH (pas_user_id);
 -- END fnd_password
@@ -127,9 +127,9 @@
     ALTER TABLE ONLY fnd_user_role ADD CONSTRAINT
         fndtuser_role_pk PRIMARY KEY (usr_user_id, usr_role_id);
 
-    call create_fk('fnd_user_role', 'usr_user_id', 'fnd_user', 'use_id', '');
+    CALL create_fk('fnd_user_role', 'usr_user_id', 'fnd_user', 'use_id', '');
 
-    call create_fk('fnd_user_role', 'usr_role_id', 'fnd_role', 'rol_id', '');
+    CALL create_fk('fnd_user_role', 'usr_role_id', 'fnd_role', 'rol_id', '');
 -- END fnd_user_role
 
 
@@ -141,6 +141,7 @@
         nav_icon                TEXT NOT NULL,
         nav_order               TEXT NOT NULL,
         nav_url                 TEXT NOT NULL,
+        nav_parent_id           TEXT,
         nav_created_at          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
         nav_updated_at          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
         nav_status              fnd_dm_record_status
@@ -148,6 +149,8 @@
 
     ALTER TABLE ONLY fnd_navigator ADD CONSTRAINT
         fndtnavigator_pk PRIMARY KEY (nav_id);
+
+    CALL create_fk('fnd_navigator', 'nav_parent_id', 'fnd_navigator', 'nav_id', 'parent');
 -- END fnd_navigator
 
 
@@ -160,9 +163,9 @@
     ALTER TABLE ONLY fnd_role_navigator ADD CONSTRAINT
         fndtrole_navigator_pk PRIMARY KEY (ron_role_id, ron_navigator_id);
 
-    call create_fk('fnd_role_navigator', 'ron_role_id', 'fnd_role', 'rol_id', '');
+    CALL create_fk('fnd_role_navigator', 'ron_role_id', 'fnd_role', 'rol_id', '');
 
-    call create_fk('fnd_role_navigator', 'ron_navigator_id', 'fnd_navigator', 'nav_id', '');
+    CALL create_fk('fnd_role_navigator', 'ron_navigator_id', 'fnd_navigator', 'nav_id', '');
 -- END fnd_role_navigator
 
 
@@ -184,7 +187,7 @@
     ALTER TABLE ONLY fnd_account_access ADD CONSTRAINT
         fndtaccess_account_pk PRIMARY KEY (aca_id);
 
-    call create_fk('fnd_account_access', 'aca_user_id', 'fnd_user', 'use_id', '');
+    CALL create_fk('fnd_account_access', 'aca_user_id', 'fnd_user', 'use_id', '');
 -- END fnd_account_access
 
 

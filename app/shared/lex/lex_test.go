@@ -53,16 +53,16 @@ func TestColumns(t *testing.T) {
 		tableName   string
 		tableStruct interface{}
 	}{
-		{T.FndModule, FndModule},
-		{T.FndAction, FndAction},
-		{T.FndRole, FndRole},
-		{T.FndPrivilege, FndPrivilege},
-		{T.FndUser, FndUser},
-		{T.FndPassword, FndPassword},
-		{T.FndUserRole, FndUserRole},
-		{T.FndRoleNavigator, FndRoleNavigator},
-		{T.FndNavigator, FndNavigator},
 		{T.FndAccountAccess, FndAccountAccess},
+		{T.FndAction, FndAction},
+		{T.FndModule, FndModule},
+		{T.FndNavigator, FndNavigator},
+		{T.FndPassword, FndPassword},
+		{T.FndPrivilege, FndPrivilege},
+		{T.FndRole, FndRole},
+		{T.FndRoleNavigator, FndRoleNavigator},
+		{T.FndUser, FndUser},
+		{T.FndUserRole, FndUserRole},
 
 		{V.FndVPrivilegeRole, FndVPrivilegeRole},
 	}

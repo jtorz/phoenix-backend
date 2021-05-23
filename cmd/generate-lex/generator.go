@@ -2,14 +2,14 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strings"
 
 	"github.com/doug-martin/goqu/v9"
+	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
 	"github.com/doug-martin/goqu/v9/exp"
-	"github.com/jtorz/phoenix-backend/app/shared/lex"
 	"github.com/jtorz/phoenix-backend/utils/stringset"
-	"github.com/volatiletech/sqlboiler/strmangle"
 )
 
 func (g *Generator) getObjects() (err error) {
@@ -28,8 +28,8 @@ func (g *Generator) getDbObjects(objname, objtype string) ([]TplObject, error) {
 	if g.FilterPrefix != "" {
 		where = append(where, goqu.C(objname).Like(g.FilterPrefix+"%"))
 	}
-	query := lex.NewSelect(objname).From(objtype).Where(where...)
-	rows, err := lex.QueryContext(context.Background(), g.DB, query)
+	query := goqu.Dialect("postgres").Select(objname).From(objtype).Where(where...).Order(goqu.I(objname).Asc())
+	rows, err := QueryContext(context.Background(), g.DB, query)
 	if err != nil {
 		return nil, err
 	}
@@ -56,30 +56,39 @@ func (g *Generator) getDbObjects(objname, objtype string) ([]TplObject, error) {
 
 func (g *Generator) getDbObjectColumns(objname string) ([]TplColumn, error) {
 	var columns []TplColumn
-	query := lex.NewSelect("column_name", "is_nullable", "data_type").
+	query := goqu.Dialect("postgres").Select("column_name", "is_nullable", "data_type", "domain_name").
 		From("information_schema.columns").
 		Where(
 			goqu.C("table_schema").Table("columns").Eq(g.Schema),
 			goqu.C("table_name").Table("columns").Eq(objname),
-		)
+		).
+		Order(goqu.I("ordinal_position").Asc())
 
-	rows, err := lex.QueryContext(context.Background(), g.DB, query)
+	rows, err := QueryContext(context.Background(), g.DB, query)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
 		col := TplColumn{Nullable: "-"}
+		var dm sql.NullString
 		var nullable string
-		if err := rows.Scan(&col.Name, &nullable, &col.DataType); err != nil {
+		err := rows.Scan(
+			&col.Name,
+			&nullable,
+			&col.DataType,
+			&dm,
+		)
+		if err != nil {
 			return nil, err
 		}
 		if nullable == "YES" {
 			col.Nullable = "N"
 		}
+		col.Domain = dm.String
 		col.DataType = strings.ReplaceAll(col.DataType, `"`, "")
 		col.DataType = strings.ReplaceAll(col.DataType, "`", "")
 		col.DataType = strings.ReplaceAll(col.DataType, ",", "")
-		col.GoCase = stringset.UpperFirst(strmangle.CamelCase(col.Name))
+		col.GoCase = goCase(col.Name)
 		columns = append(columns, col)
 	}
 	return columns, nil
