@@ -59,7 +59,7 @@ func (dao *DaoNavigator) List(ctx context.Context, exe base.Executor,
 	qry base.ClientQuery,
 ) ([]fndmodel.Navigator, error) {
 	res := make([]fndmodel.Navigator, 0)
-	params, err := FndNavigator.ParseFilter(qry)
+	params, err := ParseClientFilter(qry, fndmodel.Navigator{})
 	if err != nil {
 		return nil, WrapErr(ctx, err)
 	}

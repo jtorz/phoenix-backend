@@ -10,14 +10,12 @@ import (
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 
-	//lint:ignore ST1001 dot import allowed only in dao packages for lex.
+	//lint:ignore ST1001 dot import allowed only in dao packages for
 	. "github.com/jtorz/phoenix-backend/app/shared/lex"
 )
 
 // DaoPassword Data Access structure.
-type DaoPassword struct {
-	Exe base.Executor
-}
+type DaoPassword struct{}
 
 /// New saves the password record in the database.
 func (dao *DaoPassword) New(ctx context.Context, tx *sql.Tx,
@@ -35,7 +33,7 @@ func (dao *DaoPassword) New(ctx context.Context, tx *sql.Tx,
 		FndPassword.PasStatus:    p.Status,
 		FndPassword.PasUpdatedAt: now,
 	})
-	row, err := DoInsertReturning(ctx, dao.Exe, ins, FndPassword.PasID)
+	row, err := DoInsertReturning(ctx, tx, ins, FndPassword.PasID)
 	if err != nil {
 		return WrapErr(ctx, err)
 	}
@@ -44,4 +42,21 @@ func (dao *DaoPassword) New(ctx context.Context, tx *sql.Tx,
 	}
 	p.UpdatedAt = now
 	return nil
+}
+
+// InvalidateForUser invalidates all the passwords of a user.
+func (dao DaoPassword) InvalidateForUser(ctx context.Context, tx *sql.Tx,
+	userID string,
+) error {
+	query := NewUpdate(T.FndPassword).
+		Set(goqu.Record{
+			FndPassword.PasInvalidationDate: goqu.L("CURRENT_TIMESTAMP"),
+			FndPassword.PasStatus:           base.StatusInactive,
+		}).
+		Where(
+			goqu.C(FndPassword.PasUserID).Eq(userID),
+			goqu.C(FndPassword.PasStatus).Eq(base.StatusActive),
+		)
+	_, err := DoUpdate(ctx, tx, query)
+	return WrapErr(ctx, err)
 }

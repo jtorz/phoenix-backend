@@ -41,11 +41,11 @@ type TplObject struct {
 }
 
 type TplColumn struct {
-	GoCase   string
-	Name     string
-	Nullable string
-	DataType string
-	Domain   string
+	GoCase   string // database column name in Go case (Examples: UseID, UseName)
+	Name     string // database column name (Examples: use_id, use_name)
+	Nullable string // database value is nullable
+	DataType string // database data type
+	Field    string // Go field name (Examples: ID, Name)
 }
 
 type Fk struct {
@@ -91,10 +91,6 @@ func main() {
 		{
 			template: &lexasset.ObjectColumnNamesTpl,
 			ouput:    "/lex_object_columns.go",
-		},
-		{
-			template: &lexasset.RqlTpl,
-			ouput:    "/lex_rql.go",
 		},
 		{
 			template: &lexasset.TestTpl,

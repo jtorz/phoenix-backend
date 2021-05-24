@@ -107,8 +107,8 @@ func (handler httpPublic) Login() httphandler.HandlerFunc {
 	}
 }
 
-// RequestRestore creates an account access to allow the user change the password.
-func (handler httpPublic) RequestRestore() httphandler.HandlerFunc {
+// RequestRestoreAccount creates an account access to allow the user change the password.
+func (handler httpPublic) RequestRestoreAccount() httphandler.HandlerFunc {
 	type Req struct {
 		Email string `binding:"required,email"`
 	}
@@ -119,7 +119,30 @@ func (handler httpPublic) RequestRestore() httphandler.HandlerFunc {
 		}
 		tx := c.BeginTx(handler.DB)
 		biz := fndbiz.NewBizUser()
-		_, err := biz.RequestRestore(c, tx.Tx, handler.MailSvc, req.Email)
+		_, err := biz.RequestRestoreAccount(c, tx.Tx, handler.MailSvc, req.Email)
+		if c.HandleError(err) {
+			tx.Rollback(c)
+			return
+		}
+		tx.Commit(c)
+		c.Status(http.StatusOK)
+	}
+}
+
+// RestoreAccount creates an account access to allow the user change the password.
+func (handler httpPublic) RestoreAccount() httphandler.HandlerFunc {
+	type Req struct {
+		Key      string `binding:"required"`
+		Password string `binding:"required"`
+	}
+	return func(c *httphandler.Context) {
+		req := Req{}
+		if c.BindJSON(&req) {
+			return
+		}
+		tx := c.BeginTx(handler.DB)
+		biz := fndbiz.NewBizUser()
+		_, err := biz.RestoreAccount(c, tx.Tx, handler.MailSvc, req.Key, req.Password)
 		if c.HandleError(err) {
 			tx.Rollback(c)
 			return

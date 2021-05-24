@@ -33,8 +33,8 @@ func (s Service) APIPublic(apiGroup *gin.RouterGroup) {
 		//g.POST("/account/logout", httpPublic.Logout().Func())
 		apiGroup.POST("/account/login", httphandler.Secret(httpPublic.Login()))
 		apiGroup.POST("/account/signup", httphandler.Secret(httpPublic.Signup()))
-		apiGroup.POST("/account/restore/request", httpPublic.RequestRestore().Func())
-		//apiGroup.POST("/account/restore", httpPublic.Restore().Func())
+		apiGroup.POST("/account/restore/request", httpPublic.RequestRestoreAccount().Func())
+		apiGroup.POST("/account/restore", httpPublic.RestoreAccount().Func())
 		//apiGroup.GET("/account/session", httpPublic.GetSession().Func())
 	}
 }
@@ -56,7 +56,8 @@ func (s Service) API(apiGroup *gin.RouterGroup) {
 	{
 		apiGroup.GET("/navigators/navigator/:id", navigator.GetByID().Func())
 		apiGroup.GET("/navigators", navigator.List(false).Func())
-		apiGroup.GET("/navigators/catalogue", navigator.List(true).Func())
+		apiGroup.GET("/navigators/active-records", navigator.List(true).Func())
+		apiGroup.POST("/navigators/active-records", navigator.List(true).Func())
 		apiGroup.POST("/navigators/navigator", navigator.New().Func())
 		apiGroup.PUT("/navigators/navigator", navigator.Edit().Func())
 		apiGroup.PUT("/navigators/navigator/validate", navigator.SetStatus(base.StatusActive).Func())

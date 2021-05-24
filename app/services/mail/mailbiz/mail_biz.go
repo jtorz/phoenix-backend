@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/jtorz/phoenix-backend/app/services/mail/maildao"
@@ -38,7 +37,7 @@ func (biz BizMail) SendMail(ctx context.Context, mail baseservice.MailTemplate) 
 		return err
 	}
 	fmt.Println(string(bytez))
-	log.Println("TODO: not implemented", strings.Repeat("*", 100))
+	fmt.Println("TODO: BizMail.SendMail", strings.Repeat("*", 100))
 	return nil
 }
 
@@ -49,6 +48,6 @@ func (biz BizMail) SendMailGeneral(ctx context.Context, mail baseservice.MailGen
 		return err
 	}
 	fmt.Println(string(bytez))
-	log.Println("TODO: not implemented", strings.Repeat("*", 100))
+	fmt.Println("TODO: BizMail.SendMailGeneral", strings.Repeat("*", 100))
 	return nil
 }

@@ -77,7 +77,7 @@ var FndModule = TableFndModule{
 // TableFndNavigator column names for table fnd_navigator.
 type TableFndNavigator struct {
 	NavID          string `database:"-,text"`
-	NavName        string `database:"-,text" rql:"filter,sort,alias=Name"`
+	NavName        string `database:"-,text"`
 	NavDescription string `database:"-,text"`
 	NavIcon        string `database:"-,text"`
 	NavOrder       string `database:"-,text"`

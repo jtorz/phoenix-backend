@@ -86,8 +86,8 @@ func (biz *BizUser) GetUserByID(ctx context.Context, exe base.Executor,
 	return u, nil
 }
 
-// RequestRestore creates an account access to allow the user change the password their own.
-func (biz *BizUser) RequestRestore(ctx context.Context, tx *sql.Tx, senderSvc baseservice.MailSenderSvc,
+// RequestRestoreAccount creates an account access to allow the user change the password their own.
+func (biz *BizUser) RequestRestoreAccount(ctx context.Context, tx *sql.Tx, senderSvc baseservice.MailSenderSvc,
 	email string,
 ) (*fndmodel.User, error) {
 	u, err := biz.GetUserByMail(ctx, tx, email)
@@ -108,11 +108,11 @@ func (biz *BizUser) RequestRestore(ctx context.Context, tx *sql.Tx, senderSvc ba
 	return u, nil
 }
 
-// Restore activates the user account sets their password,
+// RestoreAccount activates the user account sets their password,
 // marks the restore account access as active,
 // and sends the information to the email service to notify the user.
-func (biz *BizUser) Restore(ctx context.Context, tx *sql.Tx, senderSvc baseservice.MailSenderSvc,
-	key string,
+func (biz *BizUser) RestoreAccount(ctx context.Context, tx *sql.Tx, senderSvc baseservice.MailSenderSvc,
+	key, password string,
 ) (*fndmodel.User, error) {
 	bizAcc := NewBizAccountAccess()
 	userID, err := bizAcc.UseAccountAccess(ctx, tx, key, fndmodel.AccAccRestoreAccount)
@@ -131,21 +131,8 @@ func (biz *BizUser) Restore(ctx context.Context, tx *sql.Tx, senderSvc baseservi
 	if err = biz.dao.SetStatus(ctx, tx, u); err != nil {
 		return nil, err
 	}
-	// TODO:
-	/*
-
-	 */
-
-	data := map[string]interface{}{
-		"user": u,
-	}
-	err = senderSvc.SendMail(ctx, baseservice.MailTemplate{
-		SenderUserID: u.ID,
-		Type:         baseservice.MailTypeRestoreAccount,
-		Data:         data,
-		To:           []string{u.Email},
-	})
-	if err != nil {
+	bizPass := NewBizPassword()
+	if err = bizPass.ChangeUserPassword(ctx, tx, senderSvc, *u, password); err != nil {
 		return nil, err
 	}
 	return u, nil

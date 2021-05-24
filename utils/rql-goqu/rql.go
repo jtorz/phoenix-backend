@@ -2,6 +2,7 @@ package rqlgq
 
 import (
 	"container/list"
+	"database/sql"
 	"errors"
 	"fmt"
 	"math"
@@ -106,8 +107,8 @@ func (p ParseError) Error() string {
 type field struct {
 	// Alias of the column.
 	Alias string
-	// Name of the column.
-	Name string
+	// Column name of the column.
+	Column string
 	// Has a "sort" option in the tag.
 	Sortable bool
 	// Has a "filter" option in the tag.
@@ -115,7 +116,7 @@ type field struct {
 	// All supported operators for this field.
 	FilterOps map[string]bool
 	// Validation for the type. for example, unit8 greater than or equal to 0.
-	//ValidateFn func(interface{}) error
+	ValidateFn func(interface{}) error
 	// ConvertFn converts the given value to the type value.
 	CovertFn func(interface{}) interface{}
 }
@@ -264,14 +265,14 @@ func (p *Parser) init() error {
 // in the parser according to its type and the options that were set on the tag.
 func (p *Parser) parseField(sf reflect.StructField) error {
 	f := &field{
-		Name:      p.ColumnFn(sf.Name),
+		Column:    p.ColumnFn(sf.Name),
 		Alias:     p.ColumnFn(sf.Name),
 		CovertFn:  valueFn,
 		FilterOps: make(map[string]bool),
 	}
 	layout := time.RFC3339
 	opts := strings.Split(sf.Tag.Get(p.TagName), ",")
-	datatype := "text"
+	datatype := ""
 	for _, opt := range opts {
 		switch s := strings.TrimSpace(opt); {
 		case s == "sort":
@@ -279,7 +280,7 @@ func (p *Parser) parseField(sf reflect.StructField) error {
 		case s == "filter":
 			f.Filterable = true
 		case strings.HasPrefix(opt, "column"):
-			f.Name = strings.TrimPrefix(opt, "column=")
+			f.Column = strings.TrimPrefix(opt, "column=")
 		case strings.HasPrefix(opt, "alias"):
 			f.Alias = strings.TrimPrefix(opt, "alias=")
 		case strings.HasPrefix(opt, "datatype"):
@@ -302,29 +303,72 @@ func (p *Parser) parseField(sf reflect.StructField) error {
 		}
 	}
 	var filterOps []Op
-	switch datatype {
-	//	case reflect.Bool:
-	case "bool":
-		//f.ValidateFn = validateBool
+	switch typ := indirect(sf.Type); typ.Kind() {
+	case reflect.Bool:
+		f.ValidateFn = validateBool
 		filterOps = append(filterOps, EQ, NEQ)
-	//	case reflect.String:
-	case "text":
-		//f.ValidateFn = validateString
+	case reflect.String:
+		f.ValidateFn = validateString
 		filterOps = append(filterOps, EQ, NEQ, LT, LTE, GT, GTE, LIKE, NLIKE, ILIKE, NILIKE)
-	//	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-	case "int":
-		//f.ValidateFn = validateInt
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		f.ValidateFn = validateInt
 		f.CovertFn = convertInt
 		filterOps = append(filterOps, EQ, NEQ, LT, LTE, GT, GTE)
-	//	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-	case "uint":
-		//f.ValidateFn = validateUInt
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		f.ValidateFn = validateUInt
 		f.CovertFn = convertInt
 		filterOps = append(filterOps, EQ, NEQ, LT, LTE, GT, GTE)
-	//	case reflect.Float32, reflect.Float64:
-	case "float":
-		//f.ValidateFn = validateFloat
+	case reflect.Float32, reflect.Float64:
+		f.ValidateFn = validateFloat
 		filterOps = append(filterOps, EQ, NEQ, LT, LTE, GT, GTE)
+	case reflect.Struct:
+		switch v := reflect.Zero(typ); v.Interface().(type) {
+		case sql.NullBool:
+			f.ValidateFn = validateBool
+			filterOps = append(filterOps, EQ, NEQ)
+		case sql.NullString:
+			f.ValidateFn = validateString
+			filterOps = append(filterOps, EQ, NEQ)
+		case sql.NullInt64:
+			f.ValidateFn = validateInt
+			f.CovertFn = convertInt
+			filterOps = append(filterOps, EQ, NEQ, LT, LTE, GT, GTE)
+		case sql.NullFloat64:
+			f.ValidateFn = validateFloat
+			filterOps = append(filterOps, EQ, NEQ, LT, LTE, GT, GTE)
+		case time.Time:
+			f.ValidateFn = validateTime(layout)
+			f.CovertFn = convertTime(layout)
+			filterOps = append(filterOps, EQ, NEQ, LT, LTE, GT, GTE)
+		default:
+			if v.Type().ConvertibleTo(reflect.TypeOf(time.Time{})) {
+				f.ValidateFn = validateTime(layout)
+				f.CovertFn = convertTime(layout)
+				filterOps = append(filterOps, EQ, NEQ, LT, LTE, GT, GTE)
+			} else {
+				switch datatype {
+				case "bool":
+					f.ValidateFn = validateBool
+					filterOps = append(filterOps, EQ, NEQ)
+				case "string":
+					f.ValidateFn = validateString
+					filterOps = append(filterOps, EQ, NEQ, LT, LTE, GT, GTE, LIKE, NLIKE, ILIKE, NILIKE)
+				case "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64":
+					f.ValidateFn = validateInt
+					f.CovertFn = convertInt
+					filterOps = append(filterOps, EQ, NEQ, LT, LTE, GT, GTE)
+				case "float32", "float64":
+					f.ValidateFn = validateFloat
+					filterOps = append(filterOps, EQ, NEQ, LT, LTE, GT, GTE)
+				case "time.Time":
+					f.ValidateFn = validateTime(layout)
+					f.CovertFn = convertTime(layout)
+					filterOps = append(filterOps, EQ, NEQ, LT, LTE, GT, GTE)
+				default:
+					return fmt.Errorf("rql: field type for %q is not supported", sf.Name)
+				}
+			}
+		}
 	default:
 		return fmt.Errorf("rql: field type for %q is not supported", sf.Name)
 	}
@@ -373,7 +417,7 @@ func (p *Parser) sort(fields []string) []exp.OrderedExpression {
 		}
 		expect(p.fields[field] != nil, "unrecognized key %q for sorting", field)
 		expect(p.fields[field].Sortable, "field %q is not sortable", field)
-		colName := p.colName(p.fields[field].Name)
+		colName := p.colName(p.fields[field].Column)
 		col := goqu.I(colName)
 		if orderBy == Asc {
 			sortParams[i] = col.Asc()
@@ -428,16 +472,16 @@ func (p *parseState) field(f *field, v interface{}) exp.ExpressionList {
 	if !ok {
 		//must(f.ValidateFn(v), "invalid datatype for field %q", f.Name)
 		value := f.CovertFn(v)
-		and = append(and, p.fmtOp(f.Name, EQ, value))
+		and = append(and, p.fmtOp(f.Column, EQ, value))
 		p.values = append(p.values, value)
 	}
 
 	for opName, opVal := range terms {
-		expect(f.FilterOps[opName], "can not apply op %q on field %q", opName, f.Name)
+		expect(f.FilterOps[opName], "can not apply op %q on field %q", opName, f.Alias)
 		//must(f.ValidateFn(opVal), "invalid datatype or format for field %q", f.Name)
 
 		value := f.CovertFn(opVal)
-		and = append(and, p.fmtOp(f.Name, Op(opName[1:]), value))
+		and = append(and, p.fmtOp(f.Column, Op(opName[1:]), value))
 		p.values = append(p.values, value)
 	}
 	return goqu.And(and...)

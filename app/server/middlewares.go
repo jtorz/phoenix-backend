@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -75,7 +76,7 @@ func (server *Server) configureMiddlewares(r *gin.Engine, jwtSvc authorization.J
 }
 
 func (server *Server) serveStaticFiles(r *gin.Engine) {
-	// TODO:
+	fmt.Println("TODO: middleware.serveStaticFiles")
 }
 
 func isAPIRoute(c *gin.Context) bool {

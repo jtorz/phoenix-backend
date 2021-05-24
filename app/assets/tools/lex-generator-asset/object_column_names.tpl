@@ -7,7 +7,7 @@ package {{.PackageName}}
 {{range .Tables }}
 // Table{{.GoCase}} column names for table {{.Name}}.
 type Table{{.GoCase}} struct { {{range .Columns }}
-	{{.GoCase}} string `database:"{{.Nullable}},{{.DataType}}"` {{end}}
+	{{.GoCase}} string `database:"{{.Nullable}},{{.DataType}}"`{{end}}
 }
 
 var {{.GoCase}} = Table{{.GoCase}}{ {{range .Columns }}

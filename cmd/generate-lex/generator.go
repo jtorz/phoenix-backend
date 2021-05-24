@@ -84,11 +84,11 @@ func (g *Generator) getDbObjectColumns(objname string) ([]TplColumn, error) {
 		if nullable == "YES" {
 			col.Nullable = "N"
 		}
-		col.Domain = dm.String
 		col.DataType = strings.ReplaceAll(col.DataType, `"`, "")
 		col.DataType = strings.ReplaceAll(col.DataType, "`", "")
 		col.DataType = strings.ReplaceAll(col.DataType, ",", "")
 		col.GoCase = goCase(col.Name)
+		col.Field = col.GoCase[3:]
 		columns = append(columns, col)
 	}
 	return columns, nil
