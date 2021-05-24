@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/doug-martin/goqu/v9"
-	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 	"github.com/jtorz/phoenix-backend/utils/stringset"
 )

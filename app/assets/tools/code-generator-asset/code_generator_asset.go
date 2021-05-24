@@ -2,3 +2,6 @@
 package codegenasset
 
 import _ "embed"
+
+//go:embed model.tpl
+var ModelTPL string

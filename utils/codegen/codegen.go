@@ -8,11 +8,17 @@ import (
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/doug-martin/goqu/v9/exp"
+
+	// postgres driver
+	_ "github.com/lib/pq"
+	// postgres goqu dialect
+	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
 )
 
 type Entity struct {
 	DBName   string // database table name (Examples: fnd_user, fnd_role)
 	DBGoCase string // database table name in Go Case (Examples: FndUser, FndRole)
+	GoStruct string // Struct name for go
 	Columns  []Attribute
 	Fks      []Fk
 }
@@ -37,6 +43,20 @@ type Fk struct {
 type FKColumns struct {
 	O Attribute // origin
 	D Attribute // destiny
+}
+
+func NewEntity(ctx context.Context, db *sql.DB, schema, tableName string) (*Entity, error) {
+	cols, err := GetAttributes(ctx, db, schema, tableName)
+	if err != nil {
+		return nil, err
+	}
+	e := Entity{
+		Columns:  cols,
+		DBGoCase: goCase(tableName),
+		DBName:   tableName,
+	}
+	e.GoStruct = e.DBGoCase[3:]
+	return &e, nil
 }
 
 func GetEntities(ctx context.Context, db *sql.DB, schema, filterprefix string) (tables, views []Entity, err error) {
@@ -76,6 +96,11 @@ func GetEntitiesFromType(ctx context.Context, db *sql.DB, entType EntityType, sc
 	}
 	query := goqu.Dialect("postgres").Select(entityType).From(datasource).Where(where...).Order(goqu.I(entityType).Asc())
 	rows, err := QueryContext(context.Background(), db, query)
+	defer func() {
+		if err != nil {
+			err = rows.Close()
+		}
+	}()
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +110,7 @@ func GetEntitiesFromType(ctx context.Context, db *sql.DB, entType EntityType, sc
 			return nil, err
 		}
 		obj.DBGoCase = goCase(obj.DBName)
-
+		obj.GoStruct = obj.DBGoCase[3:]
 		obj.Columns, err = GetAttributes(ctx, db, schema, obj.DBName)
 		if err != nil {
 			return nil, err
@@ -100,8 +125,7 @@ func GetEntitiesFromType(ctx context.Context, db *sql.DB, entType EntityType, sc
 	return entities, nil
 }
 
-func GetAttributes(ctx context.Context, db *sql.DB, schema, objname string) ([]Attribute, error) {
-	var columns []Attribute
+func GetAttributes(ctx context.Context, db *sql.DB, schema, objname string) (columns []Attribute, err error) {
 	query := goqu.Dialect("postgres").Select("column_name", "is_nullable", "data_type", "domain_name").
 		From("information_schema.columns").
 		Where(
@@ -111,14 +135,24 @@ func GetAttributes(ctx context.Context, db *sql.DB, schema, objname string) ([]A
 		Order(goqu.I("ordinal_position").Asc())
 
 	rows, err := QueryContext(ctx, db, query)
+	defer func() {
+		if err != nil {
+			if err2 := rows.Close(); err2 != nil {
+				err = err2
+			}
+
+		}
+	}()
 	if err != nil {
 		return nil, err
 	}
+	ok := false
 	for rows.Next() {
+		ok = true
 		col := Attribute{}
 		var dm sql.NullString
 		var nullable string
-		err := rows.Scan(
+		err = rows.Scan(
 			&col.DBName,
 			&nullable,
 			&col.DBDataType,
@@ -136,6 +170,12 @@ func GetAttributes(ctx context.Context, db *sql.DB, schema, objname string) ([]A
 		col.GoField = col.DBGoCase[3:]
 
 		columns = append(columns, col)
+	}
+	if err = rows.Err(); err != nil {
+		return
+	}
+	if !ok {
+		return nil, fmt.Errorf("no columns found for object %s.%s", schema, objname)
 	}
 	return columns, nil
 }
@@ -157,6 +197,11 @@ func GetFK(ctx context.Context, db *sql.DB, objname string) ([]Fk, error) {
 		AND tc.table_name = $1
 	GROUP BY tc.constraint_name, tc.table_name, ccu.table_name;`
 	rows, err := db.QueryContext(ctx, qry, objname)
+	defer func() {
+		if err != nil {
+			err = rows.Close()
+		}
+	}()
 	if err != nil {
 		return nil, err
 	}

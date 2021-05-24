@@ -15,9 +15,6 @@ import (
 	"github.com/jtorz/phoenix-backend/utils/codegen"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-
-	// postgres driver
-	_ "github.com/lib/pq"
 )
 
 type Generator struct {

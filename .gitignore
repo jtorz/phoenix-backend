@@ -30,3 +30,4 @@ app/assets/certs/*
 .vscode/launch.json
 
 scripts/generate-lex.ps1
+scripts/generate-code.ps1
