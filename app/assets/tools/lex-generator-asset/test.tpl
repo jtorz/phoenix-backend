@@ -53,9 +53,9 @@ func TestColumns(t *testing.T) {
 		tableName   string
 		tableStruct interface{}
 	}{ {{range .Tables}}
-		{T.{{.GoCase}}, {{.GoCase}} },  {{end}}
+		{T.{{.DBGoCase}}, {{.DBGoCase}} },  {{end}}
 		{{range .Views}}
-		{V.{{.GoCase}}, {{.GoCase}} },  {{end}}
+		{V.{{.DBGoCase}}, {{.DBGoCase}} },  {{end}}
 	}
 	m := getObjectMap()
 	for _, test := range testCases {

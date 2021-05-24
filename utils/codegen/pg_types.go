@@ -1,4 +1,4 @@
-package rqlgq
+package codegen
 
 // TranslateColumnType converts postgres database types to Go types, for example
 // "varchar" to "string" and "bigint" to "int64". It returns this parsed data

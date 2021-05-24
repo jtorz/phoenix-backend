@@ -10,29 +10,27 @@ import (
 
 // T database table names.
 var T = struct { {{range .Tables}}
-	{{.GoCase}} string {{end}}
+	{{.DBGoCase}} string {{end}}
 }{ {{range .Tables}}
-	{{.GoCase}} :"{{.Name}}", {{end}}
+	{{.DBGoCase}} :"{{.DBName}}", {{end}}
 }
 
 // V database view names.
 var V = struct { {{range .Views}}
-	{{.GoCase}} string {{end}}
+	{{.DBGoCase}} string {{end}}
 }{ {{range .Views}}
-	{{.GoCase}} :"{{.Name}}", {{end}}
+	{{.DBGoCase}} :"{{.DBName}}", {{end}}
 }
-
 
 
 {{range $T := .Tables }}
 	{{range $FK := .Fks}}
-	// {{$FK.ConstraintName}} returns the join expression for the foreign key from {{$T.GoCase}} to {{$FK.FTable}}.
-	func {{$FK.ConstraintName}}(exps ...exp.Expression) exp.JoinCondition{
+	// {{$FK.DBGoCase}} returns the join expression for the foreign key from {{$T.DBGoCase}} to {{$FK.FTableGoCase}}.
+	func {{$FK.DBGoCase}}(exps ...exp.Expression) exp.JoinCondition{
 		exps = append(exps, goqu.Ex{ {{range $fkCol := $FK.Columns}}
-				{{$T.GoCase}}.{{$fkCol.Orig}}: goqu.I({{$FK.FTable}}.{{$fkCol.Dest}}), {{end}}
+				{{$T.DBGoCase}}.{{$fkCol.O.DBGoCase}}: goqu.I({{$FK.FTableGoCase}}.{{$fkCol.D.DBGoCase}}), {{end}}
 		})
 		return goqu.On(exps...)
 	}
 	{{end}}
 {{end}}
-

@@ -2,26 +2,26 @@
 // This file is a generated binding and any manual changes will be lost.
 
 package {{.PackageName}}
-
+{{define "NULLABLE"}}{{if . }}N{{else}}-{{end}}{{end}}
 
 {{range .Tables }}
-// Table{{.GoCase}} column names for table {{.Name}}.
-type Table{{.GoCase}} struct { {{range .Columns }}
-	{{.GoCase}} string `database:"{{.Nullable}},{{.DataType}}"`{{end}}
+// Table{{.DBGoCase}} column names for table {{.DBName}}.
+type Table{{.DBGoCase}} struct { {{range .Columns }}
+	{{.DBGoCase}} string `database:"{{template "NULLABLE" .DBNullable}},datatype={{.DBDataType}}"`{{end}}
 }
 
-var {{.GoCase}} = Table{{.GoCase}}{ {{range .Columns }}
-	{{.GoCase}}: "{{.Name}}", {{end}}
+var {{.DBGoCase}} = Table{{.DBGoCase}}{ {{range .Columns }}
+	{{.DBGoCase}}: "{{.DBName}}", {{end}}
 }
 {{end}}
 
 {{range .Views }}
-// View{{.GoCase}} column names for view {{.Name}}.
-type View{{.GoCase}} struct { {{range .Columns }}
-	{{.GoCase}} string `database:"{{.Nullable}},{{.DataType}}"` {{end}}
+// View{{.DBGoCase}} column names for view {{.DBName}}.
+type View{{.DBGoCase}} struct { {{range .Columns }}
+	{{.DBGoCase}} string `database:"{{template "NULLABLE" .DBNullable}},datatype={{.DBDataType}}"` {{end}}
 }
 
-var {{.GoCase}} = View{{.GoCase}}{ {{range .Columns }}
-	{{.GoCase}}: "{{.Name}}", {{end}}
+var {{.DBGoCase}} = View{{.DBGoCase}}{ {{range .Columns }}
+	{{.DBGoCase}}: "{{.DBName}}", {{end}}
 }
 {{end}}

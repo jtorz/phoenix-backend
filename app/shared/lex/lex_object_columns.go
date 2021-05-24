@@ -5,13 +5,13 @@ package lex
 
 // TableFndAccountAccess column names for table fnd_account_access.
 type TableFndAccountAccess struct {
-	AcaID             string `database:"-,text"`
-	AcaType           string `database:"-,text"`
-	AcaUserID         string `database:"-,uuid"`
-	AcaExpirationDate string `database:"-,timestamp with time zone"`
-	AcaCreatedAt      string `database:"-,timestamp with time zone"`
-	AcaUpdatedAt      string `database:"-,timestamp with time zone"`
-	AcaStatus         string `database:"-,smallint"`
+	AcaID             string `database:"-,datatype=text"`
+	AcaType           string `database:"-,datatype=text"`
+	AcaUserID         string `database:"-,datatype=uuid"`
+	AcaExpirationDate string `database:"-,datatype=timestamp with time zone"`
+	AcaCreatedAt      string `database:"-,datatype=timestamp with time zone"`
+	AcaUpdatedAt      string `database:"-,datatype=timestamp with time zone"`
+	AcaStatus         string `database:"-,datatype=smallint"`
 }
 
 var FndAccountAccess = TableFndAccountAccess{
@@ -26,16 +26,16 @@ var FndAccountAccess = TableFndAccountAccess{
 
 // TableFndAction column names for table fnd_action.
 type TableFndAction struct {
-	ActModuleID    string `database:"-,text"`
-	ActActionID    string `database:"-,text"`
-	ActName        string `database:"-,text"`
-	ActDescription string `database:"-,text"`
-	ActOrder       string `database:"-,integer"`
-	ActRoute       string `database:"-,text"`
-	ActMethod      string `database:"-,text"`
-	ActCreatedAt   string `database:"-,timestamp with time zone"`
-	ActUpdatedAt   string `database:"-,timestamp with time zone"`
-	ActStatus      string `database:"-,smallint"`
+	ActModuleID    string `database:"-,datatype=text"`
+	ActActionID    string `database:"-,datatype=text"`
+	ActName        string `database:"-,datatype=text"`
+	ActDescription string `database:"-,datatype=text"`
+	ActOrder       string `database:"-,datatype=integer"`
+	ActRoute       string `database:"-,datatype=text"`
+	ActMethod      string `database:"-,datatype=text"`
+	ActCreatedAt   string `database:"-,datatype=timestamp with time zone"`
+	ActUpdatedAt   string `database:"-,datatype=timestamp with time zone"`
+	ActStatus      string `database:"-,datatype=smallint"`
 }
 
 var FndAction = TableFndAction{
@@ -53,14 +53,14 @@ var FndAction = TableFndAction{
 
 // TableFndModule column names for table fnd_module.
 type TableFndModule struct {
-	ModID          string `database:"-,text"`
-	ModName        string `database:"-,text"`
-	ModDescription string `database:"-,text"`
-	ModOrder       string `database:"-,integer"`
-	ModParentID    string `database:"N,text"`
-	ModCreatedAt   string `database:"-,timestamp with time zone"`
-	ModUpdatedAt   string `database:"-,timestamp with time zone"`
-	ModStatus      string `database:"-,smallint"`
+	ModID          string `database:"-,datatype=text"`
+	ModName        string `database:"-,datatype=text"`
+	ModDescription string `database:"-,datatype=text"`
+	ModOrder       string `database:"-,datatype=integer"`
+	ModParentID    string `database:"N,datatype=text"`
+	ModCreatedAt   string `database:"-,datatype=timestamp with time zone"`
+	ModUpdatedAt   string `database:"-,datatype=timestamp with time zone"`
+	ModStatus      string `database:"-,datatype=smallint"`
 }
 
 var FndModule = TableFndModule{
@@ -76,16 +76,16 @@ var FndModule = TableFndModule{
 
 // TableFndNavigator column names for table fnd_navigator.
 type TableFndNavigator struct {
-	NavID          string `database:"-,text"`
-	NavName        string `database:"-,text"`
-	NavDescription string `database:"-,text"`
-	NavIcon        string `database:"-,text"`
-	NavOrder       string `database:"-,text"`
-	NavURL         string `database:"-,text"`
-	NavParentID    string `database:"N,text"`
-	NavCreatedAt   string `database:"-,timestamp with time zone"`
-	NavUpdatedAt   string `database:"-,timestamp with time zone"`
-	NavStatus      string `database:"-,smallint"`
+	NavID          string `database:"-,datatype=text"`
+	NavName        string `database:"-,datatype=text"`
+	NavDescription string `database:"-,datatype=text"`
+	NavIcon        string `database:"-,datatype=text"`
+	NavOrder       string `database:"-,datatype=text"`
+	NavURL         string `database:"-,datatype=text"`
+	NavParentID    string `database:"N,datatype=text"`
+	NavCreatedAt   string `database:"-,datatype=timestamp with time zone"`
+	NavUpdatedAt   string `database:"-,datatype=timestamp with time zone"`
+	NavStatus      string `database:"-,datatype=smallint"`
 }
 
 var FndNavigator = TableFndNavigator{
@@ -103,14 +103,14 @@ var FndNavigator = TableFndNavigator{
 
 // TableFndPassword column names for table fnd_password.
 type TableFndPassword struct {
-	PasID               string `database:"-,bigint"`
-	PasData             string `database:"-,json"`
-	PasType             string `database:"-,text"`
-	PasUserID           string `database:"-,uuid"`
-	PasInvalidationDate string `database:"N,timestamp with time zone"`
-	PasCreatedAt        string `database:"-,timestamp with time zone"`
-	PasUpdatedAt        string `database:"-,timestamp with time zone"`
-	PasStatus           string `database:"-,smallint"`
+	PasID               string `database:"-,datatype=bigint"`
+	PasData             string `database:"-,datatype=json"`
+	PasType             string `database:"-,datatype=text"`
+	PasUserID           string `database:"-,datatype=uuid"`
+	PasInvalidationDate string `database:"N,datatype=timestamp with time zone"`
+	PasCreatedAt        string `database:"-,datatype=timestamp with time zone"`
+	PasUpdatedAt        string `database:"-,datatype=timestamp with time zone"`
+	PasStatus           string `database:"-,datatype=smallint"`
 }
 
 var FndPassword = TableFndPassword{
@@ -126,9 +126,9 @@ var FndPassword = TableFndPassword{
 
 // TableFndPrivilege column names for table fnd_privilege.
 type TableFndPrivilege struct {
-	PriRoleID   string `database:"-,text"`
-	PriModuleID string `database:"-,text"`
-	PriActionID string `database:"-,text"`
+	PriRoleID   string `database:"-,datatype=text"`
+	PriModuleID string `database:"-,datatype=text"`
+	PriActionID string `database:"-,datatype=text"`
 }
 
 var FndPrivilege = TableFndPrivilege{
@@ -139,13 +139,13 @@ var FndPrivilege = TableFndPrivilege{
 
 // TableFndRole column names for table fnd_role.
 type TableFndRole struct {
-	RolID          string `database:"-,text"`
-	RolName        string `database:"-,text"`
-	RolDescription string `database:"-,text"`
-	RolIcon        string `database:"-,text"`
-	RolCreatedAt   string `database:"-,timestamp with time zone"`
-	RolUpdatedAt   string `database:"-,timestamp with time zone"`
-	RolStatus      string `database:"-,smallint"`
+	RolID          string `database:"-,datatype=text"`
+	RolName        string `database:"-,datatype=text"`
+	RolDescription string `database:"-,datatype=text"`
+	RolIcon        string `database:"-,datatype=text"`
+	RolCreatedAt   string `database:"-,datatype=timestamp with time zone"`
+	RolUpdatedAt   string `database:"-,datatype=timestamp with time zone"`
+	RolStatus      string `database:"-,datatype=smallint"`
 }
 
 var FndRole = TableFndRole{
@@ -160,8 +160,8 @@ var FndRole = TableFndRole{
 
 // TableFndRoleNavigator column names for table fnd_role_navigator.
 type TableFndRoleNavigator struct {
-	RonRoleID      string `database:"-,text"`
-	RonNavigatorID string `database:"-,text"`
+	RonRoleID      string `database:"-,datatype=text"`
+	RonNavigatorID string `database:"-,datatype=text"`
 }
 
 var FndRoleNavigator = TableFndRoleNavigator{
@@ -171,15 +171,15 @@ var FndRoleNavigator = TableFndRoleNavigator{
 
 // TableFndUser column names for table fnd_user.
 type TableFndUser struct {
-	UseID         string `database:"-,uuid"`
-	UseName       string `database:"-,text"`
-	UseMiddleName string `database:"-,text"`
-	UseLastName   string `database:"-,text"`
-	UseEmail      string `database:"-,text"`
-	UseUsername   string `database:"-,text"`
-	UseCreatedAt  string `database:"-,timestamp with time zone"`
-	UseUpdatedAt  string `database:"-,timestamp with time zone"`
-	UseStatus     string `database:"-,smallint"`
+	UseID         string `database:"-,datatype=uuid"`
+	UseName       string `database:"-,datatype=text"`
+	UseMiddleName string `database:"-,datatype=text"`
+	UseLastName   string `database:"-,datatype=text"`
+	UseEmail      string `database:"-,datatype=text"`
+	UseUsername   string `database:"-,datatype=text"`
+	UseCreatedAt  string `database:"-,datatype=timestamp with time zone"`
+	UseUpdatedAt  string `database:"-,datatype=timestamp with time zone"`
+	UseStatus     string `database:"-,datatype=smallint"`
 }
 
 var FndUser = TableFndUser{
@@ -196,8 +196,8 @@ var FndUser = TableFndUser{
 
 // TableFndUserRole column names for table fnd_user_role.
 type TableFndUserRole struct {
-	UsrUserID string `database:"-,uuid"`
-	UsrRoleID string `database:"-,text"`
+	UsrUserID string `database:"-,datatype=uuid"`
+	UsrRoleID string `database:"-,datatype=text"`
 }
 
 var FndUserRole = TableFndUserRole{
@@ -207,11 +207,11 @@ var FndUserRole = TableFndUserRole{
 
 // ViewFndVPrivilegeRole column names for view fnd_v_privilege_role.
 type ViewFndVPrivilegeRole struct {
-	PrrRoleID   string `database:"N,text"`
-	PrrModuleID string `database:"N,text"`
-	PrrActionID string `database:"N,text"`
-	PrrRoute    string `database:"N,text"`
-	PrrMethod   string `database:"N,text"`
+	PrrRoleID   string `database:"N,datatype=text"`
+	PrrModuleID string `database:"N,datatype=text"`
+	PrrActionID string `database:"N,datatype=text"`
+	PrrRoute    string `database:"N,datatype=text"`
+	PrrMethod   string `database:"N,datatype=text"`
 }
 
 var FndVPrivilegeRole = ViewFndVPrivilegeRole{
