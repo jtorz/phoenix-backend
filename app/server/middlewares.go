@@ -66,11 +66,11 @@ func (server *Server) configureMiddlewares(r *gin.Engine, jwtSvc authorization.J
 		}
 
 		if err == baseerrors.ErrPrivilege {
-			c.JSON(http.StatusUnauthorized, "fobidden: "+c.Request.RequestURI)
+			c.JSON(http.StatusForbidden, "fobidden: "+c.Request.RequestURI)
 			return
 		}
 
-		c.Status(http.StatusInternalServerError)
+		c.Status(http.StatusUnauthorized)
 		log.Printf("uknown error: %s", err)
 	})
 }

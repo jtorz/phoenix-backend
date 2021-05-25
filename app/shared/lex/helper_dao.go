@@ -16,6 +16,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"runtime"
 
 	"github.com/jtorz/phoenix-backend/app/config"
@@ -35,8 +36,7 @@ func CheckOneRowUpdated(ctx context.Context, name string, r sql.Result) error {
 			runtime.Callers(2, pc)
 			f := runtime.FuncForPC(pc[0])
 			file, line := f.FileLine(pc[0])
-			data := fmt.Sprintf("%s:%d %s/n", file, line, f.Name())
-			return fmt.Errorf("%w %s", err, data)
+			log.Printf("%s:%d %s/n", file, line, f.Name())
 		}
 		return err
 	}
@@ -61,8 +61,8 @@ func WrapIfErrDuplicated(err error) error {
 	return err
 }
 
-// WrapErr wraps the error with extra information if ocurred.
-func WrapErr(ctx context.Context, err error) error {
+// DebugErr logs the information of the error with extra information if ocurred.
+func DebugErr(ctx context.Context, err error) error {
 	if err == nil {
 		return nil
 	}
@@ -73,9 +73,7 @@ func WrapErr(ctx context.Context, err error) error {
 		runtime.Callers(2, pc)
 		f := runtime.FuncForPC(pc[0])
 		file, line := f.FileLine(pc[0])
-		data := fmt.Sprintf("%s:%d %s/n", file, line, f.Name())
-
-		return fmt.Errorf("%s %w", data, err)
+		log.Printf("%s:%d %s/n", file, line, f.Name())
 	}
 	return err
 }

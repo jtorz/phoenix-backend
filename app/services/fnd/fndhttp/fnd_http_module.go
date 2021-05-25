@@ -106,9 +106,10 @@ func (handler httpModule) ListActive() httphandler.HandlerFunc {
 // New creates a new record.
 func (handler httpModule) New() httphandler.HandlerFunc {
 	type Req struct {
+		ID          string `binding:"required"`
 		Name        string `binding:"required"`
 		Description string `binding:"required"`
-		Order       int    `binding:"required"`
+		Order       int
 		ParentID    string
 	}
 	resp := jsont.F{
@@ -124,10 +125,11 @@ func (handler httpModule) New() httphandler.HandlerFunc {
 		}
 
 		rec := fndmodel.Module{
+			ID:          req.ID,
 			Name:        req.Name,
 			Description: req.Description,
 			Order:       req.Order,
-			ParentID:    req.ParentID,
+			Parent:      &fndmodel.Module{ID: req.ParentID},
 		}
 		biz := fndbiz.NewBizModule()
 		tx := c.BeginTx(handler.DB)
@@ -147,7 +149,7 @@ func (handler httpModule) Edit() httphandler.HandlerFunc {
 		ID          string `binding:"required"`
 		Name        string `binding:"required"`
 		Description string `binding:"required"`
-		Order       int    `binding:"required"`
+		Order       int
 		ParentID    string
 		UpdatedAt   time.Time `binding:"required"`
 	}
@@ -164,7 +166,7 @@ func (handler httpModule) Edit() httphandler.HandlerFunc {
 			Name:        req.Name,
 			Description: req.Description,
 			Order:       req.Order,
-			ParentID:    req.ParentID,
+			Parent:      &fndmodel.Module{ID: req.ParentID},
 			UpdatedAt:   req.UpdatedAt,
 		}
 

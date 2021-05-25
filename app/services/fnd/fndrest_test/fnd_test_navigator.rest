@@ -14,88 +14,81 @@ Content-Type: application/json
 #############################################################
 
 ###
-# @name LIST_ALL_Modules
-GET {{app-host}}/api/foundation/modules
+# @name LIST_ALL_Navigators
+GET {{app-host}}/api/foundation/navigators
 Content-Type: application/json
 Authorization: {{Authorization}}
 
 ###
-# @name LIST_ACTIVE_Modules
-GET {{app-host}}/api/foundation/modules/active-records
+# @name LIST_ACTIVE_Navigators
+GET {{app-host}}/api/foundation/navigators/active-records
 Content-Type: application/json
 Authorization: {{Authorization}}
 
 ###
-# @name LIST_FILTERED_Modules
-POST {{app-host}}/api/foundation/modules
+# @name LIST_FILTERED_Navigators
+POST {{app-host}}/api/foundation/navigators
 Content-Type: application/json
 Authorization: {{Authorization}}
 
 {
     "limit": 0,
     "offset": 0,
-    "sort": ["+ID","+Name","+Description","+Order","+Parent","+CreatedAt","+UpdatedAt"]
+    "sort": ["+ID","+Name","+Description","+Icon","+Order","+URL","+Parent","+CreatedAt","+UpdatedAt"
+    ]
 }
 
 
 
 ###############################################################
 ###############################################################
-# @name GET_BY_ID_Module
-GET {{app-host}}/api/foundation/modules/module/{{ID}}
+# @name GET_BY_ID_Navigator
+GET {{app-host}}/api/foundation/navigators/navigator/MAIL
 Content-Type: application/json
 Authorization: {{Authorization}}
 
 ###
-@ID = FND
-@UpdatedAt = {{GET_BY_ID_Module.response.body.$.UpdatedAt}}
+@ID = MAIL
+@UpdatedAt = {{GET_BY_ID_Navigator.response.body.$.UpdatedAt}}
 
 ###
-# @name INSERT_Module
-POST {{app-host}}/api/foundation/modules/module
+# @name INSERT_Navigator
+POST {{app-host}}/api/foundation/navigators/navigator
 Content-Type: application/json
 Authorization: {{Authorization}}
 
 {
-    "ID": "FND",
-    "Name": "foundation",
-    "Description": "foundation service",
+    "ID": "MAIL",
+    "Name": "Mail",
+    "Description": "Mail Templates",
+    "Icon": "mail",
     "Order": 0,
+    "URL": "#",
     "ParentID": ""
 }
 
 
 ###
-# @name EDIT_Module
-PUT  {{app-host}}/api/foundation/modules/module
+# @name EDIT_Navigator
+PUT  {{app-host}}/api/foundation/navigators/navigator
 Content-Type: application/json
 Authorization: {{Authorization}}
 
 {
     "ID": "{{ID}}",
-    "Name": "Foundation",
-    "Description": "Foundation service.",
-    "Order": 10,
-    "ParentID": "",
+    "Name": "Mail",
+    "Description": "Mail Templates.",
+    "Icon": "mail",
+    "Order": 0,
+    "URL": "#",
+    "Parent": "",
     "UpdatedAt": "{{UpdatedAt}}"
 }
 
 
 ###
-# @name VALIDATE_Module
-PUT  {{app-host}}/api/foundation/modules/module/validate
-Content-Type: application/json
-Authorization: {{Authorization}}
-
-{
-    "ID": "{{ID}}",
-    "UpdatedAt": "{{UpdatedAt}}"
-}
-
-
-###
-# @name INVALIDATE_Module
-PUT  {{app-host}}/api/foundation/modules/module/invalidate
+# @name VALIDATE_Navigator
+PUT  {{app-host}}/api/foundation/navigators/navigator/validate
 Content-Type: application/json
 Authorization: {{Authorization}}
 
@@ -104,9 +97,10 @@ Authorization: {{Authorization}}
     "UpdatedAt": "{{UpdatedAt}}"
 }
 
+
 ###
-# @name SOFT-DELETE_Module
-PUT  {{app-host}}/api/foundation/modules/module/soft-delete
+# @name INVALIDATE_Navigator
+PUT  {{app-host}}/api/foundation/navigators/navigator/invalidate
 Content-Type: application/json
 Authorization: {{Authorization}}
 
@@ -116,8 +110,19 @@ Authorization: {{Authorization}}
 }
 
 ###
-# @name HARD-DELETE_Module
-PUT  {{app-host}}/api/foundation/modules/module/hard-delete
+# @name SOFT-DELETE_Navigator
+PUT  {{app-host}}/api/foundation/navigators/navigator/soft-delete
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "ID": "{{ID}}",
+    "UpdatedAt": "{{UpdatedAt}}"
+}
+
+###
+# @name HARD-DELETE_Navigator
+PUT  {{app-host}}/api/foundation/navigators/navigator/hard-delete
 Content-Type: application/json
 Authorization: {{Authorization}}
 

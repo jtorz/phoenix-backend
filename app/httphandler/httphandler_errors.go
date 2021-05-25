@@ -54,11 +54,15 @@ func (c *Context) HandleError(err error) bool {
 		return true
 	}
 	if baseerrors.IsErrStatus(err) {
-		c.JSON(http.StatusConflict, err.Error()) //409
+		c.JSON(http.StatusBadRequest, err.Error()) // 400
 		return true
 	}
-	if baseerrors.IsErrNotUpdated(err) || baseerrors.IsErrDuplicated(err) {
-		c.JSON(http.StatusConflict, err.Error())
+	if baseerrors.IsErrNotUpdated(err) {
+		c.JSON(http.StatusBadRequest, err.Error()) // 400
+		return true
+	}
+	if baseerrors.IsErrDuplicated(err) {
+		c.JSON(http.StatusConflict, err.Error()) //409
 		return true
 	}
 	return c.UnexpectedError(err)

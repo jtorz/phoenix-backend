@@ -15,7 +15,7 @@ type Module struct {
 	Name        string    `rql:"filter,sort,column=mod_name"`
 	Description string    `rql:"filter,sort,column=mod_description"`
 	Order       int       `rql:"filter,sort,column=mod_order"`
-	ParentID    string    `rql:"filter,sort,column=mod_parent_id"`
+	Parent      *Module   `rql:"filter,sort,column=mod_parent_id,datatype=string"`
 	CreatedAt   time.Time `rql:"filter,sort,column=mod_created_at"`
 	UpdatedAt   time.Time `rql:"filter,sort,column=mod_updated_at"`
 	Status      base.Status

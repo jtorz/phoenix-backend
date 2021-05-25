@@ -40,7 +40,7 @@ func (dao *DaoModule) GetByID(ctx context.Context, exe base.Executor,
 
 	row, err := QueryRowContext(ctx, exe, query)
 	if err != nil {
-		return nil, WrapErr(ctx, err)
+		return nil, DebugErr(ctx, err)
 	}
 	var parentID ZeroString
 	err = row.Scan(
@@ -54,12 +54,12 @@ func (dao *DaoModule) GetByID(ctx context.Context, exe base.Executor,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("module %w", baseerrors.ErrNotFound)
+			return nil, fmt.Errorf("%s %w", T.FndModule, baseerrors.ErrNotFound)
 		}
-		return nil, WrapErr(ctx, err)
+		return nil, DebugErr(ctx, err)
 	}
 	if parentID != "" {
-		rec.ParentID = string(parentID)
+		rec.Parent = &fndmodel.Module{ID: string(parentID)}
 	}
 	rec.ID = id
 	return &rec, nil
@@ -72,7 +72,7 @@ func (dao *DaoModule) List(ctx context.Context, exe base.Executor,
 	res := make(fndmodel.Modules, 0)
 	params, err := ParseClientFilter(qry, fndmodel.Module{})
 	if err != nil {
-		return nil, WrapErr(ctx, err)
+		return nil, err
 	}
 	if qry.OnlyActive {
 		params.FilterExp = params.FilterExp.Append(goqu.C(FndModule.ModStatus).Eq(base.StatusActive))
@@ -98,7 +98,7 @@ func (dao *DaoModule) List(ctx context.Context, exe base.Executor,
 		if err == sql.ErrNoRows {
 			return res, nil
 		}
-		return nil, WrapErr(ctx, err)
+		return nil, DebugErr(ctx, err)
 	}
 	defer rows.Close()
 	for rows.Next() {
@@ -115,10 +115,10 @@ func (dao *DaoModule) List(ctx context.Context, exe base.Executor,
 			&rec.Status,
 		)
 		if err != nil {
-			return nil, WrapErr(ctx, err)
+			return nil, DebugErr(ctx, err)
 		}
 		if parentID != "" {
-			rec.ParentID = string(parentID)
+			rec.Parent = &fndmodel.Module{ID: string(parentID)}
 		}
 		res = append(res, rec)
 	}
@@ -131,25 +131,21 @@ func (dao *DaoModule) New(ctx context.Context, tx *sql.Tx,
 ) error {
 	now := time.Now()
 	record := goqu.Record{
-		FndModule.ModID:          goqu.L("uuid_generate_v1mc()"),
+		FndModule.ModID:          rec.ID,
 		FndModule.ModName:        rec.Name,
 		FndModule.ModDescription: rec.Description,
 		FndModule.ModOrder:       rec.Order,
-		FndModule.ModParentID:    ZeroString(rec.ParentID),
 		FndModule.ModCreatedAt:   rec.CreatedAt,
 		FndModule.ModUpdatedAt:   now,
 		FndModule.ModStatus:      rec.Status,
 	}
-	ins := NewInsert(T.FndModule).Rows(record)
-	row, err := DoInsertReturning(ctx, tx, ins,
-		FndModule.ModID,
-	)
-	if err != nil {
-		return WrapErr(ctx, err)
+	if rec.Parent != nil {
+		record[FndModule.ModParentID] = ZeroString(rec.Parent.ID)
 	}
-	err = row.Scan(&rec.ID)
+	ins := NewInsert(T.FndModule).Rows(record)
+	_, err := DoInsert(ctx, tx, ins)
 	if err != nil {
-		return WrapErr(ctx, err)
+		return DebugErr(ctx, err)
 	}
 	rec.UpdatedAt = now
 	return nil
@@ -164,12 +160,14 @@ func (dao *DaoModule) Edit(ctx context.Context, tx *sql.Tx,
 		FndModule.ModName:        rec.Name,
 		FndModule.ModDescription: rec.Description,
 		FndModule.ModOrder:       rec.Order,
-		FndModule.ModParentID:    ZeroString(rec.ParentID),
 		FndModule.ModCreatedAt:   rec.CreatedAt,
 		FndModule.ModUpdatedAt:   now,
 		FndModule.ModStatus:      rec.Status,
 	}
 
+	if rec.Parent != nil {
+		record[FndModule.ModParentID] = ZeroString(rec.Parent.ID)
+	}
 	query := NewUpdate(T.FndModule).
 		Set(record).
 		Where(
@@ -179,7 +177,7 @@ func (dao *DaoModule) Edit(ctx context.Context, tx *sql.Tx,
 		)
 	res, err := DoUpdate(ctx, tx, query)
 	if err != nil {
-		return WrapErr(ctx, err)
+		return DebugErr(ctx, err)
 	}
 	rec.UpdatedAt = now
 	return CheckOneRowUpdated(ctx, T.FndModule, res)
@@ -201,7 +199,7 @@ func (dao *DaoModule) SetStatus(ctx context.Context, tx *sql.Tx,
 		)
 	res, err := DoUpdate(ctx, tx, query)
 	if err != nil {
-		return WrapErr(ctx, err)
+		return DebugErr(ctx, err)
 	}
 	rec.UpdatedAt = now
 	return CheckOneRowUpdated(ctx, T.FndModule, res)
@@ -218,7 +216,7 @@ func (dao *DaoModule) Delete(ctx context.Context, tx *sql.Tx,
 		)
 	res, err := DoDelete(ctx, tx, query)
 	if err != nil {
-		return WrapErr(ctx, err)
+		return DebugErr(ctx, err)
 	}
 	return CheckOneRowUpdated(ctx, T.FndModule, res)
 }

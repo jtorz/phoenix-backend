@@ -3,8 +3,11 @@ package lex
 import (
 
 	//"github.com/doug-martin/goqu/v9"
+	"fmt"
+
 	"github.com/doug-martin/goqu/v9/exp"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
+	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
 	rqlgq "github.com/jtorz/phoenix-backend/utils/rql-goqu"
 )
 
@@ -21,7 +24,11 @@ func ParseClientFilter(qry base.ClientQuery, model interface{}) (rqlParams *rqlg
 	}
 	p, err := parser(model)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w %s", baseerrors.ErrInvalidData, err.Error())
 	}
-	return p.Parse(qry.RQL)
+	rqlParams, err = p.Parse(qry.RQL)
+	if err != nil {
+		return nil, fmt.Errorf("%w %s", baseerrors.ErrInvalidData, err.Error())
+	}
+	return
 }

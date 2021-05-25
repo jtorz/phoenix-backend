@@ -31,7 +31,7 @@ func (dao *DaoUser) New(ctx context.Context, tx *sql.Tx,
 	})
 	r, err := DoInsertReturning(ctx, tx, ins, FndUser.UseID, FndUser.UseUpdatedAt)
 	if err != nil {
-		return WrapErr(ctx, err)
+		return DebugErr(ctx, err)
 	}
 	err = r.Scan(&u.ID, &u.UpdatedAt)
 	return err
@@ -65,7 +65,7 @@ func (dao *DaoUser) Login(ctx context.Context, exe base.Executor,
 
 	row, err := QueryRowContext(ctx, exe, query)
 	if err != nil {
-		return nil, WrapErr(ctx, err)
+		return nil, DebugErr(ctx, err)
 	}
 	err = row.Scan(
 		&res.ID,
@@ -82,7 +82,7 @@ func (dao *DaoUser) Login(ctx context.Context, exe base.Executor,
 		if err == sql.ErrNoRows {
 			return nil, baseerrors.ErrAuth
 		}
-		return nil, WrapErr(ctx, err)
+		return nil, DebugErr(ctx, err)
 	}
 	return res, nil
 }
@@ -120,7 +120,7 @@ func (dao *DaoUser) getUser(ctx context.Context, exe base.Executor,
 
 	row, err := QueryRowContext(ctx, exe, query)
 	if err != nil {
-		return nil, WrapErr(ctx, err)
+		return nil, DebugErr(ctx, err)
 	}
 	rec := fndmodel.User{}
 	err = row.Scan(
@@ -134,7 +134,7 @@ func (dao *DaoUser) getUser(ctx context.Context, exe base.Executor,
 		&rec.UpdatedAt,
 	)
 	if err != nil {
-		return nil, WrapErr(ctx, err)
+		return nil, DebugErr(ctx, err)
 	}
 	return &rec, nil
 }
@@ -155,7 +155,7 @@ func (dao *DaoUser) SetStatus(ctx context.Context, tx *sql.Tx,
 		)
 	res, err := DoUpdate(ctx, tx, query)
 	if err != nil {
-		return WrapErr(ctx, err)
+		return DebugErr(ctx, err)
 	}
 	if err = CheckOneRowUpdated(ctx, T.FndUser, res); err != nil {
 		return err

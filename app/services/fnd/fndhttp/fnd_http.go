@@ -52,32 +52,34 @@ func (s Service) APIAdmin(apiGroup *gin.RouterGroup) {
 //
 // current path: /api/foundation
 func (s Service) API(apiGroup *gin.RouterGroup) {
-	navigator := newHttpNavigator(s.DB)
+
+	httpNavigator := newHttpNavigator(s.DB)
 	{
-		apiGroup.GET("/navigators/navigator/:id", navigator.GetByID().Func())
-		apiGroup.GET("/navigators", navigator.List(false).Func())
-		apiGroup.GET("/navigators/active-records", navigator.List(true).Func())
-		apiGroup.POST("/navigators/active-records", navigator.List(true).Func())
-		apiGroup.POST("/navigators/navigator", navigator.New().Func())
-		apiGroup.PUT("/navigators/navigator", navigator.Edit().Func())
-		apiGroup.PUT("/navigators/navigator/validate", navigator.SetStatus(base.StatusActive).Func())
-		apiGroup.PUT("/navigators/navigator/invalidate", navigator.SetStatus(base.StatusInactive).Func())
-		apiGroup.PUT("/navigators/navigator/soft-delete", navigator.SetStatus(base.StatusDroppped).Func())
-		apiGroup.PUT("/navigators/navigator/hard-delete", navigator.Delete().Func())
+		apiGroup.GET("/navigators/navigator/:id", httpNavigator.GetByID().Func())
+		apiGroup.GET("/navigators", httpNavigator.ListAll().Func())
+		apiGroup.POST("/navigators", httpNavigator.ListAll().Func())
+		apiGroup.GET("/navigators/active-records", httpNavigator.ListActive().Func())
+		apiGroup.POST("/navigators/active-records", httpNavigator.ListActive().Func())
+		apiGroup.POST("/navigators/navigator", httpNavigator.New().Func())
+		apiGroup.PUT("/navigators/navigator", httpNavigator.Edit().Func())
+		apiGroup.PUT("/navigators/navigator/validate", httpNavigator.SetStatus(base.StatusActive).Func())
+		apiGroup.PUT("/navigators/navigator/invalidate", httpNavigator.SetStatus(base.StatusInactive).Func())
+		apiGroup.PUT("/navigators/navigator/soft-delete", httpNavigator.SetStatus(base.StatusDroppped).Func())
+		apiGroup.PUT("/navigators/navigator/hard-delete", httpNavigator.Delete().Func())
 	}
 
-	module := newHttpModule(s.DB)
+	httpModule := newHttpModule(s.DB)
 	{
-		apiGroup.GET("/modules/module/:id", module.GetByID().Func())
-		apiGroup.GET("/modules", module.ListAll().Func())
-		apiGroup.POST("/modules", module.ListAll().Func())
-		apiGroup.GET("/modules/active-records", module.ListActive().Func())
-		apiGroup.POST("/modules/active-records", module.ListActive().Func())
-		apiGroup.POST("/modules/module", module.New().Func())
-		apiGroup.PUT("/modules/module", module.Edit().Func())
-		apiGroup.PUT("/modules/module/validate", module.SetStatus(base.StatusActive).Func())
-		apiGroup.PUT("/modules/module/invalidate", module.SetStatus(base.StatusInactive).Func())
-		apiGroup.PUT("/modules/module/soft-delete", module.SetStatus(base.StatusDroppped).Func())
-		apiGroup.PUT("/modules/module/hard-delete", module.Delete().Func())
+		apiGroup.GET("/modules/module/:id", httpModule.GetByID().Func())
+		apiGroup.GET("/modules", httpModule.ListAll().Func())
+		apiGroup.POST("/modules", httpModule.ListAll().Func())
+		apiGroup.GET("/modules/active-records", httpModule.ListActive().Func())
+		apiGroup.POST("/modules/active-records", httpModule.ListActive().Func())
+		apiGroup.POST("/modules/module", httpModule.New().Func())
+		apiGroup.PUT("/modules/module", httpModule.Edit().Func())
+		apiGroup.PUT("/modules/module/validate", httpModule.SetStatus(base.StatusActive).Func())
+		apiGroup.PUT("/modules/module/invalidate", httpModule.SetStatus(base.StatusInactive).Func())
+		apiGroup.PUT("/modules/module/soft-delete", httpModule.SetStatus(base.StatusDroppped).Func())
+		apiGroup.PUT("/modules/module/hard-delete", httpModule.Delete().Func())
 	}
 }

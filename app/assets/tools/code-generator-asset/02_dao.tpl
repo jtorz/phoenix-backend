@@ -3,11 +3,13 @@ package {{$.ServiceAbbr | lowercase}}dao
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/jtorz/phoenix-backend/app/services/{{$.ServiceAbbr | lowercase}}/{{$.ServiceAbbr | lowercase}}model"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
+	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
 
 	//lint:ignore ST1001 dot import allowed only in dao packages for
 	. "github.com/jtorz/phoenix-backend/app/shared/lex"
@@ -42,7 +44,7 @@ func (dao *Dao{{$.Entity.GoStruct}}) GetByID(ctx context.Context, exe base.Execu
 
 	row, err := QueryRowContext(ctx, exe, query)
 	if err != nil {
-		return nil, WrapErr(ctx, err)
+		return nil, DebugErr(ctx, err)
 	}
 
 	{{- range $Col := $.Entity.Columns}}
@@ -63,9 +65,9 @@ func (dao *Dao{{$.Entity.GoStruct}}) GetByID(ctx context.Context, exe base.Execu
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, WrapErr(ctx, fmt.Errorf("T.{{$.Entity.DBGoCase}}  %w", baseerrors.ErrNotFound))
+			return nil, fmt.Errorf("%s %w", T.{{$.Entity.DBGoCase}}, baseerrors.ErrNotFound)
 		}
-		return nil, WrapErr(ctx, err)
+		return nil, DebugErr(ctx, err)
 	}
 
 	{{- range $Col := $.Entity.Columns}}
@@ -90,7 +92,7 @@ func (dao *Dao{{$.Entity.GoStruct}}) List(ctx context.Context, exe base.Executor
 	res := make({{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoSlice}}, 0)
 	params, err := ParseClientFilter(qry, {{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoStruct}}{})
 	if err != nil {
-		return nil, WrapErr(ctx, err)
+		return nil, err
 	}
 	if qry.OnlyActive {
 		{{- range $Col := $.Entity.Columns}}
@@ -115,7 +117,7 @@ func (dao *Dao{{$.Entity.GoStruct}}) List(ctx context.Context, exe base.Executor
 		if err == sql.ErrNoRows {
 			return res, nil
 		}
-		return nil, WrapErr(ctx, err)
+		return nil, DebugErr(ctx, err)
 	}
 	defer rows.Close()
 	for rows.Next() {
@@ -135,7 +137,7 @@ func (dao *Dao{{$.Entity.GoStruct}}) List(ctx context.Context, exe base.Executor
 			{{- end}}
 		)
 		if err != nil {
-			return nil, WrapErr(ctx, err)
+			return nil, DebugErr(ctx, err)
 		}
 		{{- range $Col := $.Entity.Columns}}
 		{{- if $Col.DBNullable}}
@@ -176,11 +178,11 @@ func (dao *Dao{{$.Entity.GoStruct}}) New(ctx context.Context, tx *sql.Tx,
 		{{- end}}
 	)
 	if err != nil {
-		return WrapErr(ctx, err)
+		return DebugErr(ctx, err)
 	}
 	err = row.Scan(&rec.ID)
 	if err != nil {
-		return WrapErr(ctx, err)
+		return DebugErr(ctx, err)
 	}
 	rec.UpdatedAt = now
 	return nil
@@ -217,7 +219,7 @@ func (dao *Dao{{$.Entity.GoStruct}}) Edit(ctx context.Context, tx *sql.Tx,
 		)
 	res, err := DoUpdate(ctx, tx, query)
 	if err != nil {
-		return WrapErr(ctx, err)
+		return DebugErr(ctx, err)
 	}
 	rec.UpdatedAt = now
 	return CheckOneRowUpdated(ctx, T.{{$.Entity.DBGoCase}}, res)
@@ -248,7 +250,7 @@ func (dao *Dao{{$.Entity.GoStruct}}) SetStatus(ctx context.Context, tx *sql.Tx,
 		)
 	res, err := DoUpdate(ctx, tx, query)
 	if err != nil {
-		return WrapErr(ctx, err)
+		return DebugErr(ctx, err)
 	}
 	rec.UpdatedAt = now
 	return CheckOneRowUpdated(ctx, T.{{$.Entity.DBGoCase}}, res)
@@ -268,7 +270,7 @@ func (dao *Dao{{$.Entity.GoStruct}}) Delete(ctx context.Context, tx *sql.Tx,
 		)
 	res, err := DoDelete(ctx, tx, query)
 	if err != nil {
-		return WrapErr(ctx, err)
+		return DebugErr(ctx, err)
 	}
 	return CheckOneRowUpdated(ctx, T.{{$.Entity.DBGoCase}}, res)
 }

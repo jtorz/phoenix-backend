@@ -37,7 +37,7 @@ func (biz *BizNavigator) GetByID(ctx context.Context, exe base.Executor,
 // List returns the list of records that can be filtered by the user.
 func (biz *BizNavigator) List(ctx context.Context, exe base.Executor,
 	qry base.ClientQuery,
-) ([]fndmodel.Navigator, error) {
+) (fndmodel.Navigators, error) {
 	rows, err := biz.dao.List(ctx, exe, qry)
 	if err != nil {
 		return nil, err

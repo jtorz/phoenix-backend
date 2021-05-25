@@ -139,7 +139,7 @@
         nav_name                TEXT NOT NULL,
         nav_description         TEXT NOT NULL,
         nav_icon                TEXT NOT NULL,
-        nav_order               TEXT NOT NULL,
+        nav_order               INTEGER NOT NULL,
         nav_url                 TEXT NOT NULL,
         nav_parent_id           TEXT,
         nav_created_at          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,

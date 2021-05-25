@@ -23,6 +23,24 @@ import (
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 )
 
+/* CUT & PASTE TO {{$.ServiceAbbr | lowercase}}_http.go
+http{{$.Entity.GoStruct}} := newHttp{{$.Entity.GoStruct}}(s.DB)
+{
+	apiGroup.GET("/{{$.Entity.GoSlice | lowercase}}/{{$.Entity.GoStruct | lowercase}}/{{range $Col := $.Entity.Columns}}
+{{- if $Col.IsPK}}:{{$Col.GoVarName}}/{{end}}{{end}}"remove_slash, http{{$.Entity.GoStruct}}.GetByID().Func())
+	apiGroup.GET("/{{$.Entity.GoSlice | lowercase}}", http{{$.Entity.GoStruct}}.ListAll().Func())
+	apiGroup.POST("/{{$.Entity.GoSlice | lowercase}}", http{{$.Entity.GoStruct}}.ListAll().Func())
+	apiGroup.GET("/{{$.Entity.GoSlice | lowercase}}/active-records", http{{$.Entity.GoStruct}}.ListActive().Func())
+	apiGroup.POST("/{{$.Entity.GoSlice | lowercase}}/active-records", http{{$.Entity.GoStruct}}.ListActive().Func())
+	apiGroup.POST("/{{$.Entity.GoSlice | lowercase}}/{{$.Entity.GoStruct | lowercase}}", http{{$.Entity.GoStruct}}.New().Func())
+	apiGroup.PUT("/{{$.Entity.GoSlice | lowercase}}/{{$.Entity.GoStruct | lowercase}}", http{{$.Entity.GoStruct}}.Edit().Func())
+	apiGroup.PUT("/{{$.Entity.GoSlice | lowercase}}/{{$.Entity.GoStruct | lowercase}}/validate", http{{$.Entity.GoStruct}}.SetStatus(base.StatusActive).Func())
+	apiGroup.PUT("/{{$.Entity.GoSlice | lowercase}}/{{$.Entity.GoStruct | lowercase}}/invalidate", http{{$.Entity.GoStruct}}.SetStatus(base.StatusInactive).Func())
+	apiGroup.PUT("/{{$.Entity.GoSlice | lowercase}}/{{$.Entity.GoStruct | lowercase}}/soft-delete", http{{$.Entity.GoStruct}}.SetStatus(base.StatusDroppped).Func())
+	apiGroup.PUT("/{{$.Entity.GoSlice | lowercase}}/{{$.Entity.GoStruct | lowercase}}/hard-delete", http{{$.Entity.GoStruct}}.Delete().Func())
+}
+*/
+
 // http{{$.Entity.GoStruct}} http handler component.
 type http{{$.Entity.GoStruct}} struct {
 	DB *sql.DB

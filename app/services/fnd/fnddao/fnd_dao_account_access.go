@@ -27,7 +27,7 @@ func (dao *DaoAccountAccess) Insert(ctx context.Context, exe *sql.Tx,
 		FndAccountAccess.AcaStatus: ac.Status,
 	})
 	_, err := DoInsert(ctx, exe, ins)
-	return WrapErr(ctx, err)
+	return DebugErr(ctx, err)
 }
 
 func (dao *DaoAccountAccess) UseAccountAccess(ctx context.Context, exe *sql.Tx,
@@ -47,7 +47,7 @@ func (dao *DaoAccountAccess) UseAccountAccess(ctx context.Context, exe *sql.Tx,
 	row, err := DoUpdateReturningRow(ctx, exe, query, FndAccountAccess.AcaUserID)
 
 	if err != nil {
-		return "", WrapErr(ctx, err)
+		return "", DebugErr(ctx, err)
 	}
 	var userID string
 	err = row.Scan(&userID)
@@ -56,7 +56,7 @@ func (dao *DaoAccountAccess) UseAccountAccess(ctx context.Context, exe *sql.Tx,
 			return "", fmt.Errorf("account access %w", baseerrors.ErrNotFound)
 		}
 	}
-	return userID, WrapErr(ctx, err)
+	return userID, DebugErr(ctx, err)
 }
 
 func (dao *DaoAccountAccess) GetAccessByUserID(ctx context.Context, exe base.Executor,
@@ -74,11 +74,11 @@ func (dao *DaoAccountAccess) GetAccessByUserID(ctx context.Context, exe base.Exe
 
 	row, err := QueryRowContext(ctx, exe, query)
 	if err != nil {
-		return nil, WrapErr(ctx, err)
+		return nil, DebugErr(ctx, err)
 	}
 	err = row.Scan(&res.Key)
 	if err != nil {
-		return nil, WrapErr(ctx, err)
+		return nil, DebugErr(ctx, err)
 	}
 	return &res, nil
 }
