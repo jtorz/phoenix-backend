@@ -177,7 +177,7 @@ func (dao *DaoNavigator) Edit(ctx context.Context, tx *sql.Tx,
 		return WrapErr(ctx, err)
 	}
 	rec.UpdatedAt = now
-	return CheckOneRowUpdated(ctx, res)
+	return CheckOneRowUpdated(ctx, T.FndModule, res)
 }
 
 // SetStatus updates the logical status of the record.
@@ -199,7 +199,7 @@ func (dao *DaoNavigator) SetStatus(ctx context.Context, tx *sql.Tx,
 		return WrapErr(ctx, err)
 	}
 	rec.UpdatedAt = now
-	return CheckOneRowUpdated(ctx, res)
+	return CheckOneRowUpdated(ctx, T.FndModule, res)
 }
 
 // Delete performs a physical delete of the record.
@@ -215,5 +215,5 @@ func (dao *DaoNavigator) Delete(ctx context.Context, tx *sql.Tx,
 	if err != nil {
 		return WrapErr(ctx, err)
 	}
-	return CheckOneRowUpdated(ctx, res)
+	return CheckOneRowUpdated(ctx, T.FndModule, res)
 }

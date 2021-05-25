@@ -1,6 +1,9 @@
 package stringset
 
-import "bytes"
+import (
+	"bytes"
+	"strings"
+)
 
 var uppercaseWords = map[string]struct{}{
 	"ascii": {},
@@ -13,6 +16,22 @@ var uppercaseWords = map[string]struct{}{
 	"uuid":  {},
 	"url":   {},
 	"utf8":  {},
+}
+
+// UpperFirst transforms the first letter to upper case, the rest is left as is.
+func UpperFirst(s string) string {
+	if s == "" {
+		return ""
+	}
+	return strings.ToUpper(string(s[0])) + s[1:]
+}
+
+// LowerFirst transforms the first letter to lower case, the rest is left as is.
+func LowerFirst(s string) string {
+	if s == "" {
+		return ""
+	}
+	return strings.ToLower(string(s[0])) + s[1:]
 }
 
 // SnakeToGoCase changes a snake-case variable name

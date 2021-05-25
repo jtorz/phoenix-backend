@@ -45,6 +45,10 @@ func (c *Context) HandleError(err error) bool {
 		c.JSON(http.StatusBadRequest, err.Error()) // 400
 		return true
 	}
+	if baseerrors.IsErrNotFound(err) {
+		c.JSON(http.StatusBadRequest, err.Error()) // 400
+		return true
+	}
 	if baseerrors.IsErrPrivilege(err) {
 		c.JSON(http.StatusForbidden, err.Error()) // 403
 		return true

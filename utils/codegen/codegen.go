@@ -8,17 +8,20 @@ import (
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/doug-martin/goqu/v9/exp"
+	"github.com/jtorz/phoenix-backend/utils/stringset"
 
 	// postgres driver
 	_ "github.com/lib/pq"
 	// postgres goqu dialect
 	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
+	"github.com/volatiletech/strmangle"
 )
 
 type Entity struct {
 	DBName   string // database table name (Examples: fnd_user, fnd_role)
 	DBGoCase string // database table name in Go Case (Examples: FndUser, FndRole)
 	GoStruct string // Struct name for go
+	GoSlice  string //Slice name for go
 	Columns  []Attribute
 	Fks      []Fk
 }
@@ -30,6 +33,8 @@ type Attribute struct {
 	DBDataType string // database data type
 	GoField    string // Go field name (Examples: ID, Name)
 	GoDataType string // Go field name (Examples: ID, Name)
+	GoVarName  string // Go field name (Examples: ID, Name)
+	IsPK       bool   // is primary key
 }
 
 type Fk struct {
@@ -56,6 +61,7 @@ func NewEntity(ctx context.Context, db *sql.DB, schema, tableName string) (*Enti
 		DBName:   tableName,
 	}
 	e.GoStruct = e.DBGoCase[3:]
+	e.GoSlice = strmangle.Plural(e.GoStruct)
 	return &e, nil
 }
 
@@ -126,7 +132,14 @@ func GetEntitiesFromType(ctx context.Context, db *sql.DB, entType EntityType, sc
 }
 
 func GetAttributes(ctx context.Context, db *sql.DB, schema, objname string) (columns []Attribute, err error) {
-	query := goqu.Dialect("postgres").Select("column_name", "is_nullable", "data_type", "domain_name").
+	query := goqu.Dialect("postgres").Select(
+		"column_name",
+		"is_nullable",
+		"data_type",
+		"domain_name",
+		goqu.L(`( SELECT MAX(kcu.column_name) IS NOT NULL FROM information_schema.key_column_usage kcu
+			INNER JOIN information_schema.table_constraints tc ON tc.constraint_name = kcu.constraint_name
+			WHERE tc.constraint_type = 'PRIMARY KEY' AND kcu.table_name = columns.table_name AND kcu.column_name = columns.column_name ) is_pk`)).
 		From("information_schema.columns").
 		Where(
 			goqu.C("table_schema").Table("columns").Eq(schema),
@@ -157,6 +170,7 @@ func GetAttributes(ctx context.Context, db *sql.DB, schema, objname string) (col
 			&nullable,
 			&col.DBDataType,
 			&dm,
+			&col.IsPK,
 		)
 		if err != nil {
 			return nil, err
@@ -168,7 +182,11 @@ func GetAttributes(ctx context.Context, db *sql.DB, schema, objname string) (col
 		col.DBDataType = strings.ReplaceAll(col.DBDataType, ",", " ")
 		col.GoDataType = TranslateColumnType(col.DBDataType)
 		col.GoField = col.DBGoCase[3:]
-
+		if col.GoField == "ID" {
+			col.GoVarName = "id"
+		} else {
+			col.GoVarName = stringset.LowerFirst(col.GoField)
+		}
 		columns = append(columns, col)
 	}
 	if err = rows.Err(); err != nil {

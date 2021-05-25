@@ -25,7 +25,7 @@ import (
 )
 
 // CheckOneRowUpdated checks that only one records was affected.
-func CheckOneRowUpdated(ctx context.Context, r sql.Result) error {
+func CheckOneRowUpdated(ctx context.Context, name string, r sql.Result) error {
 	n, err := r.RowsAffected()
 	if err != nil {
 		if ctxinfo.LogginAllowed(ctx, config.LogDebug) {
@@ -46,20 +46,10 @@ func CheckOneRowUpdated(ctx context.Context, r sql.Result) error {
 	if n == 0 {
 		err = baseerrors.ErrNotUpdated
 	}
-	if n == 1 {
+	if n > 1 {
 		err = baseerrors.ErrMultiUpdated
 	}
-	if ctxinfo.LogginAllowed(ctx, config.LogDebug) {
-		// Added stack trace info only for debug.
-		// code repeated to avoid adding info to the stack.
-		pc := make([]uintptr, 10)
-		runtime.Callers(2, pc)
-		f := runtime.FuncForPC(pc[0])
-		file, line := f.FileLine(pc[0])
-		data := fmt.Sprintf("%s:%d %s/n", file, line, f.Name())
-		return fmt.Errorf("%s %w", data, baseerrors.ErrMultiUpdated)
-	}
-	return err
+	return fmt.Errorf("%s %w", name, err)
 
 }
 

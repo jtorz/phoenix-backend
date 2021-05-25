@@ -157,7 +157,7 @@ func (dao *DaoUser) SetStatus(ctx context.Context, tx *sql.Tx,
 	if err != nil {
 		return WrapErr(ctx, err)
 	}
-	if err = CheckOneRowUpdated(ctx, res); err != nil {
+	if err = CheckOneRowUpdated(ctx, T.FndUser, res); err != nil {
 		return err
 	}
 	u.UpdatedAt = now

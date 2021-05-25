@@ -9,13 +9,15 @@ import (
 // Modules slice.
 type Modules []Module
 
-// Module del sistema
+// Modules data.
 type Module struct {
-	ID            string
-	Name          string
-	Description   string
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	Status        base.Status
-	RecordActions base.RecordActions
+	ID          string    `rql:"filter,sort,column=mod_id"`
+	Name        string    `rql:"filter,sort,column=mod_name"`
+	Description string    `rql:"filter,sort,column=mod_description"`
+	Order       int       `rql:"filter,sort,column=mod_order"`
+	ParentID    string    `rql:"filter,sort,column=mod_parent_id"`
+	CreatedAt   time.Time `rql:"filter,sort,column=mod_created_at"`
+	UpdatedAt   time.Time `rql:"filter,sort,column=mod_updated_at"`
+	Status      base.Status
+	base.RecordActions
 }

@@ -21,11 +21,5 @@ Authorization: {{Authorization}}
 {
     "limit": 1,
     "offset": 2,
-    "sort": ["+Name"],
-    "filter":{
-        "$and":[
-            {"Name":{"$nilike":"something%"}},
-            {"Icon":"hey"}
-        ]
-    }
+    "sort": ["+Name"]
 }

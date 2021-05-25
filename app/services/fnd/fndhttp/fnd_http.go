@@ -65,4 +65,19 @@ func (s Service) API(apiGroup *gin.RouterGroup) {
 		apiGroup.PUT("/navigators/navigator/soft-delete", navigator.SetStatus(base.StatusDroppped).Func())
 		apiGroup.PUT("/navigators/navigator/hard-delete", navigator.Delete().Func())
 	}
+
+	module := newHttpModule(s.DB)
+	{
+		apiGroup.GET("/modules/module/:id", module.GetByID().Func())
+		apiGroup.GET("/modules", module.ListAll().Func())
+		apiGroup.POST("/modules", module.ListAll().Func())
+		apiGroup.GET("/modules/active-records", module.ListActive().Func())
+		apiGroup.POST("/modules/active-records", module.ListActive().Func())
+		apiGroup.POST("/modules/module", module.New().Func())
+		apiGroup.PUT("/modules/module", module.Edit().Func())
+		apiGroup.PUT("/modules/module/validate", module.SetStatus(base.StatusActive).Func())
+		apiGroup.PUT("/modules/module/invalidate", module.SetStatus(base.StatusInactive).Func())
+		apiGroup.PUT("/modules/module/soft-delete", module.SetStatus(base.StatusDroppped).Func())
+		apiGroup.PUT("/modules/module/hard-delete", module.Delete().Func())
+	}
 }
