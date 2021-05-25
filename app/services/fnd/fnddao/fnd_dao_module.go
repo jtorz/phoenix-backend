@@ -40,7 +40,8 @@ func (dao *DaoModule) GetByID(ctx context.Context, exe base.Executor,
 
 	row, err := QueryRowContext(ctx, exe, query)
 	if err != nil {
-		return nil, DebugErr(ctx, err)
+		DebugErr(ctx, err)
+		return nil, err
 	}
 	var parentID ZeroString
 	err = row.Scan(
@@ -56,7 +57,8 @@ func (dao *DaoModule) GetByID(ctx context.Context, exe base.Executor,
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("%s %w", T.FndModule, baseerrors.ErrNotFound)
 		}
-		return nil, DebugErr(ctx, err)
+		DebugErr(ctx, err)
+		return nil, err
 	}
 	if parentID != "" {
 		rec.Parent = &fndmodel.Module{ID: string(parentID)}
@@ -98,7 +100,8 @@ func (dao *DaoModule) List(ctx context.Context, exe base.Executor,
 		if err == sql.ErrNoRows {
 			return res, nil
 		}
-		return nil, DebugErr(ctx, err)
+		DebugErr(ctx, err)
+		return nil, err
 	}
 	defer rows.Close()
 	for rows.Next() {
@@ -115,7 +118,8 @@ func (dao *DaoModule) List(ctx context.Context, exe base.Executor,
 			&rec.Status,
 		)
 		if err != nil {
-			return nil, DebugErr(ctx, err)
+			DebugErr(ctx, err)
+			return nil, err
 		}
 		if parentID != "" {
 			rec.Parent = &fndmodel.Module{ID: string(parentID)}
@@ -145,7 +149,8 @@ func (dao *DaoModule) New(ctx context.Context, tx *sql.Tx,
 	ins := NewInsert(T.FndModule).Rows(record)
 	_, err := DoInsert(ctx, tx, ins)
 	if err != nil {
-		return DebugErr(ctx, err)
+		DebugErr(ctx, err)
+		return err
 	}
 	rec.UpdatedAt = now
 	return nil
@@ -177,7 +182,8 @@ func (dao *DaoModule) Edit(ctx context.Context, tx *sql.Tx,
 		)
 	res, err := DoUpdate(ctx, tx, query)
 	if err != nil {
-		return DebugErr(ctx, err)
+		DebugErr(ctx, err)
+		return err
 	}
 	rec.UpdatedAt = now
 	return CheckOneRowUpdated(ctx, T.FndModule, res)
@@ -199,7 +205,8 @@ func (dao *DaoModule) SetStatus(ctx context.Context, tx *sql.Tx,
 		)
 	res, err := DoUpdate(ctx, tx, query)
 	if err != nil {
-		return DebugErr(ctx, err)
+		DebugErr(ctx, err)
+		return err
 	}
 	rec.UpdatedAt = now
 	return CheckOneRowUpdated(ctx, T.FndModule, res)
@@ -216,7 +223,8 @@ func (dao *DaoModule) Delete(ctx context.Context, tx *sql.Tx,
 		)
 	res, err := DoDelete(ctx, tx, query)
 	if err != nil {
-		return DebugErr(ctx, err)
+		DebugErr(ctx, err)
+		return err
 	}
 	return CheckOneRowUpdated(ctx, T.FndModule, res)
 }

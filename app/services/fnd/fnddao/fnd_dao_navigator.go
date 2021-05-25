@@ -42,7 +42,8 @@ func (dao *DaoNavigator) GetByID(ctx context.Context, exe base.Executor,
 
 	row, err := QueryRowContext(ctx, exe, query)
 	if err != nil {
-		return nil, DebugErr(ctx, err)
+		DebugErr(ctx, err)
+		return nil, err
 	}
 	var parentID ZeroString
 	err = row.Scan(
@@ -60,7 +61,8 @@ func (dao *DaoNavigator) GetByID(ctx context.Context, exe base.Executor,
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("%s %w", T.FndNavigator, baseerrors.ErrNotFound)
 		}
-		return nil, DebugErr(ctx, err)
+		DebugErr(ctx, err)
+		return nil, err
 	}
 	if parentID != "" {
 		rec.Parent = &fndmodel.Navigator{ID: string(parentID)}
@@ -106,7 +108,8 @@ func (dao *DaoNavigator) List(ctx context.Context, exe base.Executor,
 		if err == sql.ErrNoRows {
 			return res, nil
 		}
-		return nil, DebugErr(ctx, err)
+		DebugErr(ctx, err)
+		return nil, err
 	}
 	defer rows.Close()
 	for rows.Next() {
@@ -125,7 +128,8 @@ func (dao *DaoNavigator) List(ctx context.Context, exe base.Executor,
 			&rec.Status,
 		)
 		if err != nil {
-			return nil, DebugErr(ctx, err)
+			DebugErr(ctx, err)
+			return nil, err
 		}
 		if parentID != "" {
 			rec.Parent = &fndmodel.Navigator{ID: string(parentID)}
@@ -159,11 +163,13 @@ func (dao *DaoNavigator) New(ctx context.Context, tx *sql.Tx,
 		FndNavigator.NavID,
 	)
 	if err != nil {
-		return DebugErr(ctx, err)
+		DebugErr(ctx, err)
+		return err
 	}
 	err = row.Scan(&rec.ID)
 	if err != nil {
-		return DebugErr(ctx, err)
+		DebugErr(ctx, err)
+		return err
 	}
 	rec.UpdatedAt = now
 	return nil
@@ -197,7 +203,8 @@ func (dao *DaoNavigator) Edit(ctx context.Context, tx *sql.Tx,
 		)
 	res, err := DoUpdate(ctx, tx, query)
 	if err != nil {
-		return DebugErr(ctx, err)
+		DebugErr(ctx, err)
+		return err
 	}
 	rec.UpdatedAt = now
 	return CheckOneRowUpdated(ctx, T.FndNavigator, res)
@@ -219,7 +226,8 @@ func (dao *DaoNavigator) SetStatus(ctx context.Context, tx *sql.Tx,
 		)
 	res, err := DoUpdate(ctx, tx, query)
 	if err != nil {
-		return DebugErr(ctx, err)
+		DebugErr(ctx, err)
+		return err
 	}
 	rec.UpdatedAt = now
 	return CheckOneRowUpdated(ctx, T.FndNavigator, res)
@@ -236,7 +244,8 @@ func (dao *DaoNavigator) Delete(ctx context.Context, tx *sql.Tx,
 		)
 	res, err := DoDelete(ctx, tx, query)
 	if err != nil {
-		return DebugErr(ctx, err)
+		DebugErr(ctx, err)
+		return err
 	}
 	return CheckOneRowUpdated(ctx, T.FndNavigator, res)
 }

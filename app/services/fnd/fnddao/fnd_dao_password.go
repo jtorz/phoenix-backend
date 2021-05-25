@@ -35,7 +35,8 @@ func (dao *DaoPassword) New(ctx context.Context, tx *sql.Tx,
 	})
 	row, err := DoInsertReturning(ctx, tx, ins, FndPassword.PasID)
 	if err != nil {
-		return DebugErr(ctx, err)
+		DebugErr(ctx, err)
+		return err
 	}
 	if err := row.Scan(&p.ID); err != nil {
 		return err
@@ -58,5 +59,6 @@ func (dao DaoPassword) InvalidateForUser(ctx context.Context, tx *sql.Tx,
 			goqu.C(FndPassword.PasStatus).Eq(base.StatusActive),
 		)
 	_, err := DoUpdate(ctx, tx, query)
-	return DebugErr(ctx, err)
+	DebugErr(ctx, err)
+	return err
 }

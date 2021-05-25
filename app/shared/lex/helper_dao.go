@@ -62,9 +62,9 @@ func WrapIfErrDuplicated(err error) error {
 }
 
 // DebugErr logs the information of the error with extra information if ocurred.
-func DebugErr(ctx context.Context, err error) error {
+func DebugErr(ctx context.Context, err error) {
 	if err == nil {
-		return nil
+		return
 	}
 	if ctxinfo.LogginAllowed(ctx, config.LogDebug) {
 		// Added stack trace info only for debug.
@@ -75,5 +75,4 @@ func DebugErr(ctx context.Context, err error) error {
 		file, line := f.FileLine(pc[0])
 		log.Printf("%s:%d %s/n", file, line, f.Name())
 	}
-	return err
 }
