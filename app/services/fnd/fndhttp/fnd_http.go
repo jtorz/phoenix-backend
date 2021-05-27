@@ -35,7 +35,6 @@ func (s Service) APIPublic(apiGroup *gin.RouterGroup) {
 		apiGroup.POST("/account/signup", httphandler.Secret(httpPublic.Signup()))
 		apiGroup.POST("/account/restore/request", httpPublic.RequestRestoreAccount().Func())
 		apiGroup.POST("/account/restore", httpPublic.RestoreAccount().Func())
-		//apiGroup.GET("/account/session", httpPublic.GetSession().Func())
 	}
 }
 
@@ -52,20 +51,24 @@ func (s Service) APIAdmin(apiGroup *gin.RouterGroup) {
 //
 // current path: /api/foundation
 func (s Service) API(apiGroup *gin.RouterGroup) {
-
-	httpNavigator := newHttpNavigator(s.DB)
+	httpAccount := newHttpAccount(s.DB)
 	{
-		apiGroup.GET("/navigators/navigator/:id", httpNavigator.GetByID().Func())
-		apiGroup.GET("/navigators", httpNavigator.ListAll().Func())
-		apiGroup.POST("/navigators", httpNavigator.ListAll().Func())
-		apiGroup.GET("/navigators/active-records", httpNavigator.ListActive().Func())
-		apiGroup.POST("/navigators/active-records", httpNavigator.ListActive().Func())
-		apiGroup.POST("/navigators/navigator", httpNavigator.New().Func())
-		apiGroup.PUT("/navigators/navigator", httpNavigator.Edit().Func())
-		apiGroup.PUT("/navigators/navigator/validate", httpNavigator.SetStatus(base.StatusActive).Func())
-		apiGroup.PUT("/navigators/navigator/invalidate", httpNavigator.SetStatus(base.StatusInactive).Func())
-		apiGroup.PUT("/navigators/navigator/soft-delete", httpNavigator.SetStatus(base.StatusDroppped).Func())
-		apiGroup.PUT("/navigators/navigator/hard-delete", httpNavigator.Delete().Func())
+		apiGroup.GET("/account/session", httpAccount.GetSessionData().Func())
+	}
+
+	httpNavElement := newHttpNavElement(s.DB)
+	{
+		apiGroup.GET("/navigator/elements/element/:id", httpNavElement.GetByID().Func())
+		apiGroup.GET("/navigator/elements/active-records", httpNavElement.ListActive().Func())
+		apiGroup.GET("/navigator/elements/active-records/role/:roleID", httpNavElement.ListActive().Func())
+		apiGroup.POST("/navigator/elements/element", httpNavElement.New().Func())
+		apiGroup.PUT("/navigator/elements/element", httpNavElement.Edit().Func())
+		apiGroup.PUT("/navigator/elements/element/validate", httpNavElement.SetStatus(base.StatusActive).Func())
+		apiGroup.PUT("/navigator/elements/element/invalidate", httpNavElement.SetStatus(base.StatusInactive).Func())
+		apiGroup.PUT("/navigator/elements/element/soft-delete", httpNavElement.SetStatus(base.StatusDroppped).Func())
+		apiGroup.PUT("/navigator/elements/element/hard-delete", httpNavElement.Delete().Func())
+		apiGroup.PUT("/navigator/elements/element/associate-role", httpNavElement.AssociateRole().Func())
+		apiGroup.PUT("/navigator/elements/element/dissociate-role", httpNavElement.DissociateRole().Func())
 	}
 
 	httpModule := newHttpModule(s.DB)

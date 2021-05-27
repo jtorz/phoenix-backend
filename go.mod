@@ -8,6 +8,7 @@ require (
 	github.com/doug-martin/goqu/v9 v9.13.0
 	github.com/friendsofgo/errors v0.9.2 // indirect
 	github.com/gin-contrib/sessions v0.0.3
+	github.com/gin-contrib/static v0.0.1
 	github.com/gin-gonic/gin v1.7.1
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0

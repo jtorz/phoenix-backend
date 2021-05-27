@@ -10,27 +10,27 @@ import (
 
 // T database table names.
 var T = struct {
-	FndAccountAccess string
-	FndAction        string
-	FndModule        string
-	FndNavigator     string
-	FndPassword      string
-	FndPrivilege     string
-	FndRole          string
-	FndRoleNavigator string
-	FndUser          string
-	FndUserRole      string
+	FndAccountAccess  string
+	FndAction         string
+	FndModule         string
+	FndNavElement     string
+	FndNavElementRole string
+	FndPassword       string
+	FndPrivilege      string
+	FndRole           string
+	FndUser           string
+	FndUserRole       string
 }{
-	FndAccountAccess: "fnd_account_access",
-	FndAction:        "fnd_action",
-	FndModule:        "fnd_module",
-	FndNavigator:     "fnd_navigator",
-	FndPassword:      "fnd_password",
-	FndPrivilege:     "fnd_privilege",
-	FndRole:          "fnd_role",
-	FndRoleNavigator: "fnd_role_navigator",
-	FndUser:          "fnd_user",
-	FndUserRole:      "fnd_user_role",
+	FndAccountAccess:  "fnd_account_access",
+	FndAction:         "fnd_action",
+	FndModule:         "fnd_module",
+	FndNavElement:     "fnd_nav_element",
+	FndNavElementRole: "fnd_nav_element_role",
+	FndPassword:       "fnd_password",
+	FndPrivilege:      "fnd_privilege",
+	FndRole:           "fnd_role",
+	FndUser:           "fnd_user",
+	FndUserRole:       "fnd_user_role",
 }
 
 // V database view names.
@@ -64,10 +64,26 @@ func FndModuleFkFndModulePadre(exps ...exp.Expression) exp.JoinCondition {
 	return goqu.On(exps...)
 }
 
-// FndNavigatorFkFndNavigatorParent returns the join expression for the foreign key from FndNavigator to FndNavigator.
-func FndNavigatorFkFndNavigatorParent(exps ...exp.Expression) exp.JoinCondition {
+// FndNavElementFkFndNavElementParent returns the join expression for the foreign key from FndNavElement to FndNavElement.
+func FndNavElementFkFndNavElementParent(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
-		FndNavigator.NavParentID: goqu.I(FndNavigator.NavID),
+		FndNavElement.NaeParentID: goqu.I(FndNavElement.NaeID),
+	})
+	return goqu.On(exps...)
+}
+
+// FndNavElementRoleFkFndNavElement returns the join expression for the foreign key from FndNavElementRole to FndNavElement.
+func FndNavElementRoleFkFndNavElement(exps ...exp.Expression) exp.JoinCondition {
+	exps = append(exps, goqu.Ex{
+		FndNavElementRole.NerNavElementID: goqu.I(FndNavElement.NaeID),
+	})
+	return goqu.On(exps...)
+}
+
+// FndNavElementRoleFkFndRole returns the join expression for the foreign key from FndNavElementRole to FndRole.
+func FndNavElementRoleFkFndRole(exps ...exp.Expression) exp.JoinCondition {
+	exps = append(exps, goqu.Ex{
+		FndNavElementRole.NerRoleID: goqu.I(FndRole.RolID),
 	})
 	return goqu.On(exps...)
 }
@@ -93,22 +109,6 @@ func FndPrivilegeFkFndAction(exps ...exp.Expression) exp.JoinCondition {
 func FndPrivilegeFkFndRole(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
 		FndPrivilege.PriRoleID: goqu.I(FndRole.RolID),
-	})
-	return goqu.On(exps...)
-}
-
-// FndRoleNavigatorFkFndNavigator returns the join expression for the foreign key from FndRoleNavigator to FndNavigator.
-func FndRoleNavigatorFkFndNavigator(exps ...exp.Expression) exp.JoinCondition {
-	exps = append(exps, goqu.Ex{
-		FndRoleNavigator.RonNavigatorID: goqu.I(FndNavigator.NavID),
-	})
-	return goqu.On(exps...)
-}
-
-// FndRoleNavigatorFkFndRole returns the join expression for the foreign key from FndRoleNavigator to FndRole.
-func FndRoleNavigatorFkFndRole(exps ...exp.Expression) exp.JoinCondition {
-	exps = append(exps, goqu.Ex{
-		FndRoleNavigator.RonRoleID: goqu.I(FndRole.RolID),
 	})
 	return goqu.On(exps...)
 }

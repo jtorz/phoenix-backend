@@ -133,40 +133,40 @@
 -- END fnd_user_role
 
 
--- BEGIN fnd_navigator
-    CREATE TABLE fnd_navigator(
-        nav_id                  TEXT NOT NULL,
-        nav_name                TEXT NOT NULL,
-        nav_description         TEXT NOT NULL,
-        nav_icon                TEXT NOT NULL,
-        nav_order               INTEGER NOT NULL,
-        nav_url                 TEXT NOT NULL,
-        nav_parent_id           TEXT,
-        nav_created_at          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-        nav_updated_at          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-        nav_status              fnd_dm_record_status
+-- BEGIN fnd_nav_element
+    CREATE TABLE fnd_nav_element(
+        nae_id                  TEXT NOT NULL,
+        nae_name                TEXT NOT NULL,
+        nae_description         TEXT NOT NULL,
+        nae_icon                TEXT NOT NULL,
+        nae_order               INTEGER NOT NULL,
+        nae_url                 TEXT NOT NULL,
+        nae_parent_id           TEXT,
+        nae_created_at          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+        nae_updated_at          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+        nae_status              fnd_dm_record_status
     );
 
-    ALTER TABLE ONLY fnd_navigator ADD CONSTRAINT
-        fndtnavigator_pk PRIMARY KEY (nav_id);
+    ALTER TABLE ONLY fnd_nav_element ADD CONSTRAINT
+        fndtnav_element_pk PRIMARY KEY (nae_id);
 
-    CALL create_fk('fnd_navigator', 'nav_parent_id', 'fnd_navigator', 'nav_id', 'parent');
--- END fnd_navigator
+    CALL create_fk('fnd_nav_element', 'nae_parent_id', 'fnd_nav_element', 'nae_id', 'parent');
+-- END fnd_nav_element
 
 
--- BEGIN fnd_role_navigator
-    CREATE TABLE fnd_role_navigator(
-        ron_role_id             TEXT NOT NULL,
-        ron_navigator_id        TEXT NOT NULL
+-- BEGIN fnd_nav_element_role
+    CREATE TABLE fnd_nav_element_role(
+        ner_nav_element_id      TEXT NOT NULL,
+        ner_role_id             TEXT NOT NULL
     );
 
-    ALTER TABLE ONLY fnd_role_navigator ADD CONSTRAINT
-        fndtrole_navigator_pk PRIMARY KEY (ron_role_id, ron_navigator_id);
+    ALTER TABLE ONLY fnd_nav_element_role ADD CONSTRAINT
+        fndtrole_nav_element_pk PRIMARY KEY (ner_role_id, ner_nav_element_id);
 
-    CALL create_fk('fnd_role_navigator', 'ron_role_id', 'fnd_role', 'rol_id', '');
+    CALL create_fk('fnd_nav_element_role', 'ner_nav_element_id', 'fnd_nav_element', 'nae_id', '');
 
-    CALL create_fk('fnd_role_navigator', 'ron_navigator_id', 'fnd_navigator', 'nav_id', '');
--- END fnd_role_navigator
+    CALL create_fk('fnd_nav_element_role', 'ner_role_id', 'fnd_role', 'rol_id', '');
+-- END fnd_nav_element_role
 
 
 -- BEGIN fnd_account_access

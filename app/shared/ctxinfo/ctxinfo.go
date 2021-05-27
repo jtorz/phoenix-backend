@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jtorz/phoenix-backend/app/config"
+	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
 )
 
 const modeKey = config.EnvPrefix + "_mode_"
@@ -31,6 +32,7 @@ func SetLoggingLevel(c *gin.Context, lvl config.LogginLvl) {
 // and an AuthService to retrive their privileges.
 type Agent struct {
 	UserID string
+	AgentInfoService
 	AuthService
 }
 
@@ -41,13 +43,18 @@ type AuthService interface {
 	IsAdmin() (bool, error)
 }
 
+type AgentInfoService interface {
+	GetInfo(context.Context) (baseservice.AgentInfo, error)
+}
+
 const agentKey = config.EnvPrefix + "_agent_"
 
 // SetAgent sets the agent to the gin.Context.
-func SetAgent(c *gin.Context, userID string, authSvc AuthService) {
+func SetAgent(c *gin.Context, userID string, authSvc AuthService, agentInfoSvc AgentInfoService) {
 	c.Set(agentKey, &Agent{
-		UserID:      userID,
-		AuthService: authSvc,
+		UserID:           userID,
+		AuthService:      authSvc,
+		AgentInfoService: agentInfoSvc,
 	})
 }
 

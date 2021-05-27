@@ -108,17 +108,17 @@ func (dao *DaoUser) GetUserByID(ctx context.Context, exe base.Executor,
 func (dao *DaoUser) getUser(ctx context.Context, exe base.Executor,
 	filter ...exp.Expression,
 ) (*fndmodel.User, error) {
-	query := NewSelect(T.FndUser).
-		Select(
-			FndUser.UseID,
-			FndUser.UseEmail,
-			FndUser.UseUsername,
-			FndUser.UseName,
-			FndUser.UseMiddleName,
-			FndUser.UseLastName,
-			FndUser.UseStatus,
-			FndUser.UseUpdatedAt,
-		).
+	query := NewSelect(
+		FndUser.UseID,
+		FndUser.UseEmail,
+		FndUser.UseUsername,
+		FndUser.UseName,
+		FndUser.UseMiddleName,
+		FndUser.UseLastName,
+		FndUser.UseStatus,
+		FndUser.UseUpdatedAt,
+	).
+		From(T.FndUser).
 		Where(filter...)
 
 	row, err := QueryRowContext(ctx, exe, query)

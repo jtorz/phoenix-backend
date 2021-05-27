@@ -7,8 +7,8 @@ import (
 )
 
 // ZeroString represents a string that may be null.
-// ZeroString implements the Scanner interface.
-// It asumes that a empty string is null.
+// ZeroString implements the Scanner interface
+// where a Zero value string is null.
 type ZeroString string
 
 // Scan implements the Scanner interface.
@@ -17,7 +17,12 @@ func (s *ZeroString) Scan(value interface{}) error {
 		*s = ""
 		return nil
 	}
-	return convert.ConvertAssign(s, value)
+	var ss string
+	if err := convert.ConvertAssign(&ss, value); err != nil {
+		return err
+	}
+	*s = ZeroString(ss)
+	return nil
 }
 
 // Value implements the driver Valuer interface.

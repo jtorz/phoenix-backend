@@ -14,63 +14,45 @@ Content-Type: application/json
 #############################################################
 
 ###
-# @name LIST_ALL_Navigators
-GET {{app-host}}/api/foundation/navigators
+# @name LIST_ACTIVE_NavElementss
+GET {{app-host}}/api/foundation/navigator/elements/active-records/role/ADM_GRL
 Content-Type: application/json
 Authorization: {{Authorization}}
 
-###
-# @name LIST_ACTIVE_Navigators
-GET {{app-host}}/api/foundation/navigators/active-records
-Content-Type: application/json
-Authorization: {{Authorization}}
-
-###
-# @name LIST_FILTERED_Navigators
-POST {{app-host}}/api/foundation/navigators
-Content-Type: application/json
-Authorization: {{Authorization}}
-
-{
-    "limit": 0,
-    "offset": 0,
-    "sort": ["+ID","+Name","+Description","+Icon","+Order","+URL","+Parent","+CreatedAt","+UpdatedAt"
-    ]
-}
 
 
 
 ###############################################################
 ###############################################################
-# @name GET_BY_ID_Navigator
-GET {{app-host}}/api/foundation/navigators/navigator/MAIL
+# @name GET_BY_ID_NavElements
+GET {{app-host}}/api/foundation/navigator/elements/element/MAIL
 Content-Type: application/json
 Authorization: {{Authorization}}
 
 ###
 @ID = MAIL
-@UpdatedAt = {{GET_BY_ID_Navigator.response.body.$.UpdatedAt}}
+@UpdatedAt = {{GET_BY_ID_NavElements.response.body.$.UpdatedAt}}
 
 ###
-# @name INSERT_Navigator
-POST {{app-host}}/api/foundation/navigators/navigator
+# @name INSERT_NavElements
+POST {{app-host}}/api/foundation/navigator/elements/element
 Content-Type: application/json
 Authorization: {{Authorization}}
 
 {
-    "ID": "MAIL",
-    "Name": "Mail",
-    "Description": "Mail Templates",
+    "ID": "MAIL.X",
+    "Name": "Mail X",
+    "Description": "Mail X Templates",
     "Icon": "mail",
     "Order": 0,
     "URL": "#",
-    "ParentID": ""
+    "ParentID": "MAIL"
 }
 
 
 ###
-# @name EDIT_Navigator
-PUT  {{app-host}}/api/foundation/navigators/navigator
+# @name EDIT_NavElements
+PUT  {{app-host}}/api/foundation/navigator/elements/element
 Content-Type: application/json
 Authorization: {{Authorization}}
 
@@ -87,8 +69,8 @@ Authorization: {{Authorization}}
 
 
 ###
-# @name VALIDATE_Navigator
-PUT  {{app-host}}/api/foundation/navigators/navigator/validate
+# @name VALIDATE_NavElements
+PUT  {{app-host}}/api/foundation/navigator/elements/element/validate
 Content-Type: application/json
 Authorization: {{Authorization}}
 
@@ -99,8 +81,8 @@ Authorization: {{Authorization}}
 
 
 ###
-# @name INVALIDATE_Navigator
-PUT  {{app-host}}/api/foundation/navigators/navigator/invalidate
+# @name INVALIDATE_NavElements
+PUT  {{app-host}}/api/foundation/navigator/elements/element/invalidate
 Content-Type: application/json
 Authorization: {{Authorization}}
 
@@ -110,8 +92,8 @@ Authorization: {{Authorization}}
 }
 
 ###
-# @name SOFT-DELETE_Navigator
-PUT  {{app-host}}/api/foundation/navigators/navigator/soft-delete
+# @name SOFT_DELETE_NavElements
+PUT  {{app-host}}/api/foundation/navigator/elements/element/soft-delete
 Content-Type: application/json
 Authorization: {{Authorization}}
 
@@ -121,12 +103,38 @@ Authorization: {{Authorization}}
 }
 
 ###
-# @name HARD-DELETE_Navigator
-PUT  {{app-host}}/api/foundation/navigators/navigator/hard-delete
+# @name HARD_DELETE_NavElements
+PUT  {{app-host}}/api/foundation/navigator/elements/element/hard-delete
 Content-Type: application/json
 Authorization: {{Authorization}}
 
 {
     "ID": "{{ID}}",
     "UpdatedAt": "{{UpdatedAt}}"
+}
+
+
+
+###
+# @name ASSOCIATE_ROLE_NavElements
+PUT  {{app-host}}/api/foundation/navigator/elements/element/associate-role
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "NavElementID": "MAIL.X",
+    "RoleID": "ADM_GRL"
+}
+
+
+
+###
+# @name DISSOCIATE_ROLE_NavElements
+PUT  {{app-host}}/api/foundation/navigator/elements/element/dissociate-role
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "NavElementID": "MAIL.X",
+    "RoleID": "ADM_GRL"
 }

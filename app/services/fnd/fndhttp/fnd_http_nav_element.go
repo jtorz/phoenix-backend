@@ -12,19 +12,19 @@ import (
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 )
 
-// httpNavigator http handler component.
-type httpNavigator struct {
+// httpNavElement http handler component.
+type httpNavElement struct {
 	DB *sql.DB
 }
 
-func newHttpNavigator(db *sql.DB) httpNavigator {
-	return httpNavigator{
+func newHttpNavElement(db *sql.DB) httpNavElement {
+	return httpNavElement{
 		DB: db,
 	}
 }
 
 // GetByID retrives the record information using its ID.
-func (handler httpNavigator) GetByID() httphandler.HandlerFunc {
+func (handler httpNavElement) GetByID() httphandler.HandlerFunc {
 	resp := jsont.F{
 		"ID":            nil,
 		"Name":          nil,
@@ -40,7 +40,7 @@ func (handler httpNavigator) GetByID() httphandler.HandlerFunc {
 	}
 	return func(c *httphandler.Context) {
 		id := c.Param("id")
-		biz := fndbiz.NewBizNavigator()
+		biz := fndbiz.NewBizNavElement()
 		rec, err := biz.GetByID(c, handler.DB, id)
 		if c.HandleError(err) {
 			return
@@ -49,40 +49,8 @@ func (handler httpNavigator) GetByID() httphandler.HandlerFunc {
 	}
 }
 
-// ListAll returns the list of records that can be filtered by the user.
-func (handler httpNavigator) ListAll() httphandler.HandlerFunc {
-	resp := jsont.F{
-		"ID":            nil,
-		"Name":          nil,
-		"Description":   nil,
-		"Icon":          nil,
-		"Order":         nil,
-		"URL":           nil,
-		"ParentID":      nil,
-		"CreatedAt":     nil,
-		"UpdatedAt":     nil,
-		"Status":        nil,
-		"RecordActions": nil,
-	}
-	return func(c *httphandler.Context) {
-		var err error
-		qry := base.ClientQuery{OnlyActive: false}
-		qry.RQL, err = c.GetRawData()
-		if c.HandleError(err) {
-			return
-		}
-
-		biz := fndbiz.NewBizNavigator()
-		recs, err := biz.List(c, handler.DB, qry)
-		if c.HandleError(err) {
-			return
-		}
-		c.JSONWithFields(recs, resp)
-	}
-}
-
 // ListActive returns the list of records that can be filtered by the user.
-func (handler httpNavigator) ListActive() httphandler.HandlerFunc {
+func (handler httpNavElement) ListActive() httphandler.HandlerFunc {
 	resp := jsont.F{
 		"ID":          nil,
 		"Name":        nil,
@@ -90,18 +58,15 @@ func (handler httpNavigator) ListActive() httphandler.HandlerFunc {
 		"Icon":        nil,
 		"Order":       nil,
 		"URL":         nil,
-		"ParentID":    nil,
+		"Children":    jsont.Recursive,
+		"UpdatedAt":   nil,
+		"Status":      nil,
+		"IsAssigned":  nil,
 	}
 	return func(c *httphandler.Context) {
 		var err error
-		qry := base.ClientQuery{OnlyActive: true}
-		qry.RQL, err = c.GetRawData()
-		if c.HandleError(err) {
-			return
-		}
-
-		biz := fndbiz.NewBizNavigator()
-		recs, err := biz.List(c, handler.DB, qry)
+		biz := fndbiz.NewBizNavElement()
+		recs, err := biz.ListActive(c, handler.DB, c.Param("roleID"))
 		if c.HandleError(err) {
 			return
 		}
@@ -110,7 +75,7 @@ func (handler httpNavigator) ListActive() httphandler.HandlerFunc {
 }
 
 // New creates a new record.
-func (handler httpNavigator) New() httphandler.HandlerFunc {
+func (handler httpNavElement) New() httphandler.HandlerFunc {
 	type Req struct {
 		ID          string `binding:"required"`
 		Name        string `binding:"required"`
@@ -132,16 +97,16 @@ func (handler httpNavigator) New() httphandler.HandlerFunc {
 			return
 		}
 
-		rec := fndmodel.Navigator{
+		rec := fndmodel.NavElement{
 			ID:          req.ID,
 			Name:        req.Name,
 			Description: req.Description,
 			Icon:        req.Icon,
 			Order:       req.Order,
 			URL:         req.URL,
-			Parent:      &fndmodel.Navigator{ID: req.ParentID},
+			ParentID:    req.ParentID,
 		}
-		biz := fndbiz.NewBizNavigator()
+		biz := fndbiz.NewBizNavElement()
 		tx := c.BeginTx(handler.DB)
 		err := biz.New(c, tx.Tx, &rec)
 		if c.HandleError(err) {
@@ -154,7 +119,7 @@ func (handler httpNavigator) New() httphandler.HandlerFunc {
 }
 
 // Edit edits the record.
-func (handler httpNavigator) Edit() httphandler.HandlerFunc {
+func (handler httpNavElement) Edit() httphandler.HandlerFunc {
 	type Req struct {
 		ID          string `binding:"required"`
 		Name        string `binding:"required"`
@@ -173,18 +138,18 @@ func (handler httpNavigator) Edit() httphandler.HandlerFunc {
 		if c.BindJSON(&req) {
 			return
 		}
-		rec := fndmodel.Navigator{
+		rec := fndmodel.NavElement{
 			ID:          req.ID,
 			Name:        req.Name,
 			Description: req.Description,
 			Icon:        req.Icon,
 			Order:       req.Order,
 			URL:         req.URL,
-			Parent:      &fndmodel.Navigator{ID: req.ParentID},
+			ParentID:    req.ParentID,
 			UpdatedAt:   req.UpdatedAt,
 		}
 
-		biz := fndbiz.NewBizNavigator()
+		biz := fndbiz.NewBizNavElement()
 		tx := c.BeginTx(handler.DB)
 		err := biz.Edit(c, tx.Tx, &rec)
 		if c.HandleError(err) {
@@ -197,7 +162,7 @@ func (handler httpNavigator) Edit() httphandler.HandlerFunc {
 }
 
 // SetStatus updates the logical status of the record.
-func (handler httpNavigator) SetStatus(status base.Status) httphandler.HandlerFunc {
+func (handler httpNavElement) SetStatus(status base.Status) httphandler.HandlerFunc {
 	type Req struct {
 		ID        string    `binding:"required"`
 		UpdatedAt time.Time `binding:"required"`
@@ -211,12 +176,12 @@ func (handler httpNavigator) SetStatus(status base.Status) httphandler.HandlerFu
 		if c.BindJSON(&req) {
 			return
 		}
-		rec := fndmodel.Navigator{
+		rec := fndmodel.NavElement{
 			ID:        req.ID,
 			UpdatedAt: req.UpdatedAt,
 			Status:    status,
 		}
-		biz := fndbiz.NewBizNavigator()
+		biz := fndbiz.NewBizNavElement()
 		tx := c.BeginTx(handler.DB)
 		err := biz.SetStatus(c, tx.Tx, &rec)
 		if c.HandleError(err) {
@@ -229,7 +194,7 @@ func (handler httpNavigator) SetStatus(status base.Status) httphandler.HandlerFu
 }
 
 // Delete performs a physical delete of the record.
-func (handler httpNavigator) Delete() httphandler.HandlerFunc {
+func (handler httpNavElement) Delete() httphandler.HandlerFunc {
 	type Req struct {
 		ID        string    `binding:"required"`
 		UpdatedAt time.Time `binding:"required"`
@@ -239,13 +204,61 @@ func (handler httpNavigator) Delete() httphandler.HandlerFunc {
 		if c.BindJSON(&req) {
 			return
 		}
-		rec := fndmodel.Navigator{
+		rec := fndmodel.NavElement{
 			ID:        req.ID,
 			UpdatedAt: req.UpdatedAt,
 		}
-		biz := fndbiz.NewBizNavigator()
+		biz := fndbiz.NewBizNavElement()
 		tx := c.BeginTx(handler.DB)
 		err := biz.Delete(c, tx.Tx, &rec)
+		if c.HandleError(err) {
+			tx.Rollback(c)
+			return
+		}
+		tx.Commit(c)
+		c.Status(http.StatusOK)
+	}
+}
+
+// AssociateRole associates the nav element to the role.
+func (handler httpNavElement) AssociateRole() httphandler.HandlerFunc {
+	type Req struct {
+		NavElementID string `binding:"required"`
+		RoleID       string `binding:"required"`
+	}
+	return func(c *httphandler.Context) {
+		req := Req{}
+		if c.BindJSON(&req) {
+			return
+		}
+
+		biz := fndbiz.NewBizNavElement()
+		tx := c.BeginTx(handler.DB)
+		err := biz.AssociateRole(c, tx.Tx, req.NavElementID, req.RoleID)
+		if c.HandleError(err) {
+			tx.Rollback(c)
+			return
+		}
+		tx.Commit(c)
+		c.Status(http.StatusOK)
+	}
+}
+
+// DissociateRole dissociates the nav element from the role.
+func (handler httpNavElement) DissociateRole() httphandler.HandlerFunc {
+	type Req struct {
+		NavElementID string `binding:"required"`
+		RoleID       string `binding:"required"`
+	}
+	return func(c *httphandler.Context) {
+		req := Req{}
+		if c.BindJSON(&req) {
+			return
+		}
+
+		biz := fndbiz.NewBizNavElement()
+		tx := c.BeginTx(handler.DB)
+		err := biz.DissociateRole(c, tx.Tx, req.NavElementID, req.RoleID)
 		if c.HandleError(err) {
 			tx.Rollback(c)
 			return

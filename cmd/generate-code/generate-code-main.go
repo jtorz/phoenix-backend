@@ -63,6 +63,7 @@ func init() {
 	flag.String("svc", "", "REQUIRED - Service name (Example: foundation)")
 	flag.String("svcAbbr", "", "REQUIRED - Service abbreviation (Example: fnd)")
 	flag.String("component", "A", "REQUIRED - Type of component to generate ('M:Model' 'D:Dao' 'B:Business' 'H:HttpHandler' 'R:RestTest' 'A:All')")
+	flag.Bool("write", true, "Should write to output files in the service directory.")
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	pflag.Parse()
 	viper.BindPFlags(pflag.CommandLine)
@@ -156,14 +157,14 @@ func main() {
 			return
 		}
 
-		outFileName := formatOut(tpl.Out, templateData.ServiceAbbr, templateData.Entity.GoStruct)
-		if !fileExists(outFileName) {
+		outFileName := formatOut(tpl.Out, templateData.ServiceAbbr, *templateData.Entity)
+		if !fileExists(outFileName) && viper.GetBool("write") {
 			err = ioutil.WriteFile(outFileName, fileData, 0644)
 			if err != nil {
 				return
 			}
 		} else {
-			fmt.Printf("Component not written file already exists. Check codegen.gotpl file. %s (%s)\n", tpl.Type, outFileName)
+			fmt.Printf("Component not written file already exists or ignored due to flag 'write'. Check codegen.gotpl file. %s (%s)\n", tpl.Type, outFileName)
 		}
 		header := buildHeader(outFileName, tpl.Type)
 		fileData = append(header, fileData...)
@@ -227,10 +228,9 @@ func appendFile(filename string, data []byte) error {
 	return nil
 }
 
-func formatOut(out, serviceAbbr, entityName string) string {
+func formatOut(out, serviceAbbr string, entity codegen.Entity) string {
 	serviceAbbr = strings.ToLower(serviceAbbr)
-	entityName = strings.ToLower(entityName)
-	return fmt.Sprintf(out, serviceAbbr, serviceAbbr, serviceAbbr, entityName)
+	return fmt.Sprintf(out, serviceAbbr, serviceAbbr, serviceAbbr, strings.ToLower(entity.DBName[4:]))
 }
 
 func loadDB() *sql.DB {

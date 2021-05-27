@@ -74,31 +74,42 @@ var FndModule = TableFndModule{
 	ModStatus:      "mod_status",
 }
 
-// TableFndNavigator column names for table fnd_navigator.
-type TableFndNavigator struct {
-	NavID          string `database:"-,datatype=text"`
-	NavName        string `database:"-,datatype=text"`
-	NavDescription string `database:"-,datatype=text"`
-	NavIcon        string `database:"-,datatype=text"`
-	NavOrder       string `database:"-,datatype=text"`
-	NavURL         string `database:"-,datatype=text"`
-	NavParentID    string `database:"N,datatype=text"`
-	NavCreatedAt   string `database:"-,datatype=timestamp with time zone"`
-	NavUpdatedAt   string `database:"-,datatype=timestamp with time zone"`
-	NavStatus      string `database:"-,datatype=smallint"`
+// TableFndNavElement column names for table fnd_nav_element.
+type TableFndNavElement struct {
+	NaeID          string `database:"-,datatype=text"`
+	NaeName        string `database:"-,datatype=text"`
+	NaeDescription string `database:"-,datatype=text"`
+	NaeIcon        string `database:"-,datatype=text"`
+	NaeOrder       string `database:"-,datatype=integer"`
+	NaeURL         string `database:"-,datatype=text"`
+	NaeParentID    string `database:"N,datatype=text"`
+	NaeCreatedAt   string `database:"-,datatype=timestamp with time zone"`
+	NaeUpdatedAt   string `database:"-,datatype=timestamp with time zone"`
+	NaeStatus      string `database:"-,datatype=smallint"`
 }
 
-var FndNavigator = TableFndNavigator{
-	NavID:          "nav_id",
-	NavName:        "nav_name",
-	NavDescription: "nav_description",
-	NavIcon:        "nav_icon",
-	NavOrder:       "nav_order",
-	NavURL:         "nav_url",
-	NavParentID:    "nav_parent_id",
-	NavCreatedAt:   "nav_created_at",
-	NavUpdatedAt:   "nav_updated_at",
-	NavStatus:      "nav_status",
+var FndNavElement = TableFndNavElement{
+	NaeID:          "nae_id",
+	NaeName:        "nae_name",
+	NaeDescription: "nae_description",
+	NaeIcon:        "nae_icon",
+	NaeOrder:       "nae_order",
+	NaeURL:         "nae_url",
+	NaeParentID:    "nae_parent_id",
+	NaeCreatedAt:   "nae_created_at",
+	NaeUpdatedAt:   "nae_updated_at",
+	NaeStatus:      "nae_status",
+}
+
+// TableFndNavElementRole column names for table fnd_nav_element_role.
+type TableFndNavElementRole struct {
+	NerNavElementID string `database:"-,datatype=text"`
+	NerRoleID       string `database:"-,datatype=text"`
+}
+
+var FndNavElementRole = TableFndNavElementRole{
+	NerNavElementID: "ner_nav_element_id",
+	NerRoleID:       "ner_role_id",
 }
 
 // TableFndPassword column names for table fnd_password.
@@ -156,17 +167,6 @@ var FndRole = TableFndRole{
 	RolCreatedAt:   "rol_created_at",
 	RolUpdatedAt:   "rol_updated_at",
 	RolStatus:      "rol_status",
-}
-
-// TableFndRoleNavigator column names for table fnd_role_navigator.
-type TableFndRoleNavigator struct {
-	RonRoleID      string `database:"-,datatype=text"`
-	RonNavigatorID string `database:"-,datatype=text"`
-}
-
-var FndRoleNavigator = TableFndRoleNavigator{
-	RonRoleID:      "ron_role_id",
-	RonNavigatorID: "ron_navigator_id",
 }
 
 // TableFndUser column names for table fnd_user.

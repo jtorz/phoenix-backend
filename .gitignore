@@ -33,3 +33,6 @@ scripts/generate-lex.ps1
 scripts/generate-code.ps1
 
 codegen.gotpl
+
+web/dist/
+web/backup/

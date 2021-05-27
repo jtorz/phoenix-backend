@@ -16,6 +16,8 @@ import (
 // The slice of bytes represents the string key user to cipher the data in the jwt.
 type JWTSvc []byte
 
+const expirationTime = time.Hour * 24 * 7
+
 // NewJWT returns a new JWT.
 func (jwtSvc JWTSvc) NewJWT(authUser baseservice.JWTData) (string, error) {
 	if len(jwtSvc) == 0 {
@@ -23,7 +25,7 @@ func (jwtSvc JWTSvc) NewJWT(authUser baseservice.JWTData) (string, error) {
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userID": authUser.ID,
-		"exp":    time.Now().Add(time.Hour * 24 * 7).Unix(),
+		"exp":    time.Now().Add(expirationTime).Unix(),
 	})
 	return token.SignedString([]byte(jwtSvc))
 }

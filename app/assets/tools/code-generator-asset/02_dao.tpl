@@ -25,8 +25,7 @@ func (dao *Dao{{$.Entity.GoStruct}}) GetByID(ctx context.Context, exe base.Execu
 	{{- end}}
 ) (*{{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoStruct}}, error) {
 	rec := {{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoStruct}}{}
-	query := NewSelect(T.{{$.Entity.DBGoCase}}).
-		Select(
+	query := NewSelect(
 			{{- range $Col := $.Entity.Columns}}
 			{{- if not $Col.IsPK}}
 				{{$.Entity.DBGoCase}}.{{$Col.DBGoCase}},
@@ -103,8 +102,7 @@ func (dao *Dao{{$.Entity.GoStruct}}) List(ctx context.Context, exe base.Executor
 		{{- end}}
 		{{- end}}
 	}
-	query := NewSelect(T.{{$.Entity.DBGoCase}}).
-		Select(
+	query := NewSelect(
 			{{- range $Col := $.Entity.Columns}}
 				{{$.Entity.DBGoCase}}.{{$Col.DBGoCase}},
 			{{- end}}

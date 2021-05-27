@@ -23,16 +23,15 @@ func (dao *DaoModule) GetByID(ctx context.Context, exe base.Executor,
 	id string,
 ) (*fndmodel.Module, error) {
 	rec := fndmodel.Module{}
-	query := NewSelect(T.FndModule).
-		Select(
-			FndModule.ModName,
-			FndModule.ModDescription,
-			FndModule.ModOrder,
-			FndModule.ModParentID,
-			FndModule.ModCreatedAt,
-			FndModule.ModUpdatedAt,
-			FndModule.ModStatus,
-		).
+	query := NewSelect(
+		FndModule.ModName,
+		FndModule.ModDescription,
+		FndModule.ModOrder,
+		FndModule.ModParentID,
+		FndModule.ModCreatedAt,
+		FndModule.ModUpdatedAt,
+		FndModule.ModStatus,
+	).
 		From(goqu.T(T.FndModule)).
 		Where(
 			goqu.C(FndModule.ModID).Eq(id),
@@ -79,17 +78,16 @@ func (dao *DaoModule) List(ctx context.Context, exe base.Executor,
 	if qry.OnlyActive {
 		params.FilterExp = params.FilterExp.Append(goqu.C(FndModule.ModStatus).Eq(base.StatusActive))
 	}
-	query := NewSelect(T.FndModule).
-		Select(
-			FndModule.ModID,
-			FndModule.ModName,
-			FndModule.ModDescription,
-			FndModule.ModOrder,
-			FndModule.ModParentID,
-			FndModule.ModCreatedAt,
-			FndModule.ModUpdatedAt,
-			FndModule.ModStatus,
-		).From(T.FndModule).
+	query := NewSelect(
+		FndModule.ModID,
+		FndModule.ModName,
+		FndModule.ModDescription,
+		FndModule.ModOrder,
+		FndModule.ModParentID,
+		FndModule.ModCreatedAt,
+		FndModule.ModUpdatedAt,
+		FndModule.ModStatus,
+	).From(T.FndModule).
 		Where(params.FilterExp).
 		Limit(params.Limit).
 		Offset(params.Offset).

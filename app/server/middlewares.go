@@ -7,9 +7,11 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/jtorz/phoenix-backend/app/config"
 	"github.com/jtorz/phoenix-backend/app/httphandler"
+	"github.com/jtorz/phoenix-backend/app/services/agentinfo"
 	"github.com/jtorz/phoenix-backend/app/services/authorization"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
 	"github.com/jtorz/phoenix-backend/app/shared/ctxinfo"
@@ -54,29 +56,35 @@ func (server *Server) configureMiddlewares(r *gin.Engine, jwtSvc authorization.J
 		c := httphandler.New(ginCtx)
 
 		auth, err := authorization.NewAuthService(c, jwtSvc, server.MainDB) // check if has jwt
-		if err == nil {
-			ctxinfo.SetAgent(c.Context, auth.ID, auth)
-			c.Next()
-			return
-		}
-		defer c.Abort()
-		if err == baseerrors.ErrAuth {
-			c.JSON(http.StatusUnauthorized, "unauthorized")
+		if err != nil {
+			defer c.Abort()
+			if err == baseerrors.ErrAuth {
+				c.JSON(http.StatusUnauthorized, "unauthorized")
+				return
+			}
+
+			if err == baseerrors.ErrPrivilege {
+				c.JSON(http.StatusForbidden, "fobidden: "+c.Request.RequestURI)
+				return
+			}
+
+			c.Status(http.StatusUnauthorized)
+			log.Printf("uknown error: %s", err)
 			return
 		}
 
-		if err == baseerrors.ErrPrivilege {
-			c.JSON(http.StatusForbidden, "fobidden: "+c.Request.RequestURI)
-			return
-		}
-
-		c.Status(http.StatusUnauthorized)
-		log.Printf("uknown error: %s", err)
+		agentinfo := agentinfo.NewService(server.MainDB, auth.ID)
+		ctxinfo.SetAgent(c.Context, auth.ID, auth, agentinfo)
+		c.Next()
 	})
 }
 
 func (server *Server) serveStaticFiles(r *gin.Engine) {
-	fmt.Println("TODO: middleware.serveStaticFiles")
+	r.Use(static.Serve("/", static.LocalFile(server.Config.AppPathEnv+"/web/dist", true)))
+	fmt.Println("TODO: serve dynamic assets")
+	//path := conf.GetDirWebAssets()
+	//files.CreateDirPanic(path)
+	//r.Use(static.Serve("/dyn-assets/", static.LocalFile(path, true)))
 }
 
 func isAPIRoute(c *gin.Context) bool {
