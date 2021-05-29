@@ -24,18 +24,26 @@ func NewBizNavElement() BizNavElement {
 	}
 }
 
-// New creates a new record.
-func (biz *BizNavElement) UpsertAll(ctx context.Context, tx *sql.Tx,
+// UpsertOrDeleteAll processes the all the records with the Create, Update or Delete actions.
+//
+// Delete: the record is deleted if the field NavElement.Deleted is true.
+// Create: the record is created if doesn't exist.
+// Update: the record is updated if already exists.
+func (biz *BizNavElement) UpsertOrDeleteAll(ctx context.Context, tx *sql.Tx,
 	nav fndmodel.Navigator,
 ) error {
-	if err := biz.upsertAll(ctx, tx, nav, ""); err != nil {
+	if err := biz.upsertOrDeleteAll(ctx, tx, nav, ""); err != nil {
 		return err
 	}
 	return nil
 }
 
-// New creates a new record.
-func (biz *BizNavElement) upsertAll(ctx context.Context, tx *sql.Tx,
+// upsertOrDeleteAll processes the all the records with the Create, Update or Delete actions.
+//
+// Delete: the record is deleted if the field NavElement.Deleted is true.
+// Create: the record is created if doesn't exist.
+// Update: the record is updated if already exists.
+func (biz *BizNavElement) upsertOrDeleteAll(ctx context.Context, tx *sql.Tx,
 	nav fndmodel.Navigator, parentID string,
 ) error {
 	if len(nav) == 0 {
@@ -44,18 +52,22 @@ func (biz *BizNavElement) upsertAll(ctx context.Context, tx *sql.Tx,
 	for i := range nav {
 		nav[i].ParentID = parentID
 		nav[i].Order = i
-		if err := biz.upsert(ctx, tx, &nav[i]); err != nil {
+		if err := biz.upsertOrDelete(ctx, tx, &nav[i]); err != nil {
 			return err
 		}
-		if err := biz.upsertAll(ctx, tx, nav[i].Children, nav[i].ID); err != nil {
+		if err := biz.upsertOrDeleteAll(ctx, tx, nav[i].Children, nav[i].ID); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-// New creates a new record.
-func (biz *BizNavElement) upsert(ctx context.Context, tx *sql.Tx,
+// upsertOrDelete processes the record with the Create, Update or Delete actions.
+//
+// Delete: the record is deleted if the field NavElement.Deleted is true.
+// Create: the record is created if doesn't exist.
+// Update: the record is updated if already exists.
+func (biz *BizNavElement) upsertOrDelete(ctx context.Context, tx *sql.Tx,
 	navElem *fndmodel.NavElement,
 ) error {
 	exists := true
@@ -95,7 +107,7 @@ func (biz *BizNavElement) GetByID(ctx context.Context, exe base.Executor,
 	if err != nil {
 		return nil, err
 	}
-	rec.RecordActions.SimpleActions(rec.Status)
+	biz.setRecordActions(ctx, rec)
 	return rec, nil
 }
 
@@ -124,7 +136,7 @@ func (biz *BizNavElement) New(ctx context.Context, tx *sql.Tx,
 	if err := biz.dao.New(ctx, tx, rec); err != nil {
 		return err
 	}
-	rec.RecordActions.SimpleActions(rec.Status)
+	biz.setRecordActions(ctx, rec)
 	return nil
 }
 
@@ -170,15 +182,16 @@ func (biz *BizNavElement) DissociateRole(ctx context.Context, tx *sql.Tx,
 	return biz.dao.DissociateRole(ctx, tx, elementID, roleID)
 }
 
+// setRecordActionsNavElements sets the records action to every element in the Navigator slice.
 func (biz *BizNavElement) setRecordActionsNavigator(ctx context.Context,
 	nav fndmodel.Navigator,
 ) {
 	for i := range nav {
 		biz.setRecordActions(ctx, &nav[i])
-		biz.setRecordActionsNavigator(ctx, nav[i].Children)
 	}
 }
 
+// setRecordActions sets the record actions to NavElement record.
 func (biz *BizNavElement) setRecordActions(ctx context.Context,
 	navElem *fndmodel.NavElement,
 ) {

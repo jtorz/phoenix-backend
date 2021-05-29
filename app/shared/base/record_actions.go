@@ -3,13 +3,8 @@ package base
 // RecordActions acttion that can be performed with the record.
 type RecordActions []string
 
-// Simple actions that can be performed with a record.
-func (a *RecordActions) SimpleActions(s Status) {
-	*a = NewRecordActionsSimple(s)
-}
-
-// NewRecordActionsSimple simple actions that can be performed with a record.
-func NewRecordActionsSimple(s Status) RecordActions {
+// NewRecordActionsCommon common actions that can be performed with a record.
+func NewRecordActionsCommon(s Status) RecordActions {
 	switch s {
 	case StatusCaptured:
 		return []string{"edit", "delete", "validate"}

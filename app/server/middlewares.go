@@ -14,6 +14,7 @@ import (
 	"github.com/jtorz/phoenix-backend/app/services/agentinfo"
 	"github.com/jtorz/phoenix-backend/app/services/authorization"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
+	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
 	"github.com/jtorz/phoenix-backend/app/shared/ctxinfo"
 )
 
@@ -49,13 +50,22 @@ func (server *Server) configureMiddlewares(r *gin.Engine, jwtSvc authorization.J
 
 	// Auhtentication and Authorization middleware.
 	r.Use(func(ginCtx *gin.Context) {
+		c := httphandler.New(ginCtx)
+		authSvc, err := authorization.NewAuthService(c, jwtSvc, server.MainDB) // check if has jwt
+
 		if isAPIPublicRoute(ginCtx) {
+			var agent *baseservice.Agent
+			if err != nil {
+				agent = baseservice.NewAgentAnonym()
+			} else {
+				agentinfoSvc := agentinfo.NewService(server.MainDB, authSvc.ID)
+				ctxinfo.SetAgent(c.Context, baseservice.NewAgent(authSvc.ID, agentinfoSvc, authSvc))
+			}
+			ctxinfo.SetAgent(c.Context, agent)
 			ginCtx.Next()
 			return
 		}
-		c := httphandler.New(ginCtx)
 
-		auth, err := authorization.NewAuthService(c, jwtSvc, server.MainDB) // check if has jwt
 		if err != nil {
 			defer c.Abort()
 			if err == baseerrors.ErrAuth {
@@ -73,8 +83,8 @@ func (server *Server) configureMiddlewares(r *gin.Engine, jwtSvc authorization.J
 			return
 		}
 
-		agentinfo := agentinfo.NewService(server.MainDB, auth.ID)
-		ctxinfo.SetAgent(c.Context, auth.ID, auth, agentinfo)
+		agentinfoSvc := agentinfo.NewService(server.MainDB, authSvc.ID)
+		ctxinfo.SetAgent(c.Context, baseservice.NewAgent(authSvc.ID, agentinfoSvc, authSvc))
 		c.Next()
 	})
 }

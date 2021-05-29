@@ -197,7 +197,8 @@ func (dao *Dao{{$.Entity.GoStruct}}) Edit(ctx context.Context, tx *sql.Tx,
 	record := goqu.Record{
 		{{- range $Col := $.Entity.Columns}}
 		{{- if not $Col.IsPK}}
-			{{- if eq $Col.GoField "UpdatedAt"}}
+			{{- if eq $Col.GoField "CreatedAt"}}
+			{{- else if eq $Col.GoField "UpdatedAt"}}
 				{{$.Entity.DBGoCase}}.{{$Col.DBGoCase}}:now,
 			{{- else if $Col.DBNullable}}
 				{{$.Entity.DBGoCase}}.{{$Col.DBGoCase}}:Zero{{$Col.GoDataType | upperfirst}}(rec.{{$Col.GoField}}),

@@ -17,6 +17,6 @@ type {{$.Entity.GoStruct}} struct{
 	{{- end}}
 {{- end}}
 	Status base.Status
-	base.RecordActions
+	RecordActions base.RecordActions
 }
 

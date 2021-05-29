@@ -36,7 +36,7 @@ func (biz *BizAccountAccess) NewAccessRestore(ctx context.Context, tx *sql.Tx, s
 
 	data := map[string]interface{}{
 		"user": ac.User,
-		"url":  restoreAccountURLResource(ac.Key, isActivation),
+		"url":  biz.restoreAccountURLResource(ac.Key, isActivation),
 	}
 	sender := ac.User.ID
 	agent := ctxinfo.GetAgent(ctx)
@@ -51,7 +51,7 @@ func (biz *BizAccountAccess) NewAccessRestore(ctx context.Context, tx *sql.Tx, s
 	})
 }
 
-func restoreAccountURLResource(key string, isActivation bool) string {
+func (biz *BizAccountAccess) restoreAccountURLResource(key string, isActivation bool) string {
 	var r = "/restore-account/"
 	if isActivation {
 		r += "activate/"

@@ -58,7 +58,7 @@ func (s Service) API(apiGroup *gin.RouterGroup) {
 
 	httpNavElement := newHttpNavElement(s.DB)
 	{
-		apiGroup.POST("/navigator/upsert", httpNavElement.UpsertAll().Func())
+		apiGroup.POST("/navigator/upsert", httpNavElement.UpsertOrDeleteAll().Func())
 		apiGroup.GET("/navigator/elements/element/:id", httpNavElement.GetByID().Func())
 		apiGroup.GET("/navigator/elements", httpNavElement.ListAll().Func())
 		apiGroup.GET("/navigator/elements/role/:roleID", httpNavElement.ListAll().Func())

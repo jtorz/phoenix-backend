@@ -10,15 +10,15 @@ type Roles []Role
 
 //Role user role.
 type Role struct {
-	ID          string
-	Name        string
-	Description string
-	Icon        string
-	Privileges  Privileges
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Status      base.Status
-	base.RecordActions
+	ID            string
+	Name          string
+	Description   string
+	Icon          string
+	Privileges    Privileges
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	Status        base.Status
+	RecordActions base.RecordActions
 }
 
 func (roles Roles) Privileges() Privileges {

@@ -28,39 +28,16 @@ func SetLoggingLevel(c *gin.Context, lvl config.LogginLvl) {
 	c.Set(modeKey, lvl)
 }
 
-// Agent has the information of the user that is executing an operation,
-// and an AuthService to retrive their privileges.
-type Agent struct {
-	UserID string
-	AgentInfoService
-	AuthService
-}
-
-// AuthService is used to retrieve the privileges of an agent.
-type AuthService interface {
-	GetPrivilegeByPriority(...string) (string, error)
-	HasPrivilege(string) (bool, error)
-	IsAdmin() (bool, error)
-}
-
-type AgentInfoService interface {
-	GetInfo(context.Context) (baseservice.AgentInfo, error)
-}
-
 const agentKey = config.EnvPrefix + "_agent_"
 
 // SetAgent sets the agent to the gin.Context.
-func SetAgent(c *gin.Context, userID string, authSvc AuthService, agentInfoSvc AgentInfoService) {
-	c.Set(agentKey, &Agent{
-		UserID:           userID,
-		AuthService:      authSvc,
-		AgentInfoService: agentInfoSvc,
-	})
+func SetAgent(c *gin.Context, agent *baseservice.Agent) {
+	c.Set(agentKey, agent)
 }
 
 // GetAgent returs the agent from the context.
-func GetAgent(c context.Context) *Agent {
-	a, ok := c.Value(agentKey).(*Agent)
+func GetAgent(c context.Context) *baseservice.Agent {
+	a, ok := c.Value(agentKey).(*baseservice.Agent)
 	if !ok {
 		return nil
 	}

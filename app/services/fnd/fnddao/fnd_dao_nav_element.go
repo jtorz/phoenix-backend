@@ -16,7 +16,7 @@ import (
 // DaoNavElement Data Access structure.
 type DaoNavElement struct{}
 
-// GetByID retrives the record information using its ID.
+// GetByID retrives the record information of the nav element using its ID.
 func (dao *DaoNavElement) GetByID(ctx context.Context, exe base.Executor,
 	id string,
 ) (*fndmodel.NavElement, error) {

@@ -162,7 +162,6 @@ func (dao *DaoAction) Edit(ctx context.Context, tx *sql.Tx,
 		FndAction.ActOrder:       rec.Order,
 		FndAction.ActRoute:       rec.Route,
 		FndAction.ActMethod:      rec.Method,
-		FndAction.ActCreatedAt:   rec.CreatedAt,
 		FndAction.ActUpdatedAt:   now,
 		FndAction.ActStatus:      rec.Status,
 	}

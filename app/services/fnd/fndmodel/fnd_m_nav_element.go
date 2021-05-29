@@ -13,18 +13,18 @@ type Navigator []NavElement
 
 // NavElement data.
 type NavElement struct {
-	ID          string
-	Name        string
-	Description string
-	Icon        string
-	Order       int
-	URL         string
-	ParentID    string
-	Children    Navigator
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Status      base.Status
-	base.RecordActions
+	ID            string
+	Name          string
+	Description   string
+	Icon          string
+	Order         int
+	URL           string
+	ParentID      string
+	Children      Navigator
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	Status        base.Status
+	RecordActions base.RecordActions
 	// IsAssigned to a role.
 	IsAssigned bool
 	// flag in UpsertAll to delete all marked true.

@@ -147,7 +147,6 @@ func (dao *DaoRole) Edit(ctx context.Context, tx *sql.Tx,
 		FndRole.RolName:        rec.Name,
 		FndRole.RolDescription: rec.Description,
 		FndRole.RolIcon:        rec.Icon,
-		FndRole.RolCreatedAt:   rec.CreatedAt,
 		FndRole.RolUpdatedAt:   now,
 		FndRole.RolStatus:      rec.Status,
 	}

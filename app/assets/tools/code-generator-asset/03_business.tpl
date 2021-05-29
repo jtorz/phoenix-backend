@@ -35,7 +35,7 @@ func (biz *Biz{{$.Entity.GoStruct}}) GetByID(ctx context.Context, exe base.Execu
 	if err != nil {
 		return nil, err
 	}
-	rec.RecordActions.SimpleActions(rec.Status)
+	biz.setRecordActions(ctx, rec)
 	return rec, nil
 }
 
@@ -43,14 +43,12 @@ func (biz *Biz{{$.Entity.GoStruct}}) GetByID(ctx context.Context, exe base.Execu
 func (biz *Biz{{$.Entity.GoStruct}}) List(ctx context.Context, exe base.Executor,
 	qry base.ClientQuery,
 ) ({{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoSlice}}, error) {
-	rows, err := biz.dao.List(ctx, exe, qry)
+	recs, err := biz.dao.List(ctx, exe, qry)
 	if err != nil {
 		return nil, err
 	}
-	for i := range rows {
-		rows[i].RecordActions.SimpleActions(rows[i].Status)
-	}
-	return rows, nil
+	biz.setRecordActions{{$.Entity.GoSlice}}(ctx, recs)
+	return recs, nil
 }
 
 // New creates a new record.
@@ -61,7 +59,7 @@ func (biz *Biz{{$.Entity.GoStruct}}) New(ctx context.Context, tx *sql.Tx,
 	if err := biz.dao.New(ctx, tx, rec); err != nil {
 		return err
 	}
-	rec.RecordActions.SimpleActions(rec.Status)
+	biz.setRecordActions(ctx, rec)
 	return nil
 }
 
@@ -79,7 +77,7 @@ func (biz *Biz{{$.Entity.GoStruct}}) SetStatus(ctx context.Context, tx *sql.Tx,
 	if err := biz.dao.SetStatus(ctx, tx, rec); err != nil {
 		return err
 	}
-	rec.RecordActions.SimpleActions(rec.Status)
+	biz.setRecordActions(ctx, rec)
 	return nil
 }
 
@@ -91,4 +89,20 @@ func (biz *Biz{{$.Entity.GoStruct}}) Delete(ctx context.Context, tx *sql.Tx,
 		return err
 	}
 	return nil
+}
+
+// setRecordActions{{$.Entity.GoSlice}} sets the record actiosn to every element in the {{$.Entity.GoSlice}} slice.
+func (biz *Biz{{$.Entity.GoStruct}}) setRecordActions{{$.Entity.GoSlice}}(ctx context.Context,
+	recs {{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoSlice}},
+) {
+	for i := range recs {
+		biz.setRecordActions(ctx, &recs[i])
+	}
+}
+
+// setRecordActions sets the record action sto {{$.Entity.GoStruct}} record.
+func (biz *Biz{{$.Entity.GoStruct}}) setRecordActions(ctx context.Context,
+	rec *{{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoStruct}},
+) {
+	rec.RecordActions = base.NewRecordActionsCommon(rec.Status)
 }

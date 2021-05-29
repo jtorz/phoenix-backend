@@ -23,8 +23,12 @@ func newHttpNavElement(db *sql.DB) httpNavElement {
 	}
 }
 
-// New creates a new record.
-func (handler httpNavElement) UpsertAll() httphandler.HandlerFunc {
+// UpsertOrDeleteAll processes the all the records with the Create, Update or Delete actions.
+//
+// Delete: the record is deleted if the field NavElement.Deleted is true.
+// Create: the record is created if doesn't exist.
+// Update: the record is updated if already exists.
+func (handler httpNavElement) UpsertOrDeleteAll() httphandler.HandlerFunc {
 	return func(c *httphandler.Context) {
 		req := fndmodel.Navigator{}
 		if c.BindJSON(&req) {
@@ -32,7 +36,7 @@ func (handler httpNavElement) UpsertAll() httphandler.HandlerFunc {
 		}
 		biz := fndbiz.NewBizNavElement()
 		tx := c.BeginTx(handler.DB)
-		err := biz.UpsertAll(c, tx.Tx, req)
+		err := biz.UpsertOrDeleteAll(c, tx.Tx, req)
 		if c.HandleError(err) {
 			tx.Rollback(c)
 			return

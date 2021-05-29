@@ -58,7 +58,7 @@ func (biz *BizUser) New(ctx context.Context, tx *sql.Tx, senderSvc baseservice.M
 	if err := bizAcc.NewAccessRestore(ctx, tx, senderSvc, *u, true); err != nil {
 		return err
 	}
-	u.SimpleActions(u.Status)
+	biz.setRecordActions(ctx, u)
 	return nil
 }
 
@@ -70,7 +70,7 @@ func (biz *BizUser) GetUserByMail(ctx context.Context, exe base.Executor,
 	if err != nil {
 		return nil, err
 	}
-	u.SimpleActions(u.Status)
+	biz.setRecordActions(ctx, u)
 	return u, nil
 }
 
@@ -82,7 +82,7 @@ func (biz *BizUser) GetUserByID(ctx context.Context, exe base.Executor,
 	if err != nil {
 		return nil, err
 	}
-	u.SimpleActions(u.Status)
+	biz.setRecordActions(ctx, u)
 	return u, nil
 }
 
@@ -136,4 +136,20 @@ func (biz *BizUser) RestoreAccount(ctx context.Context, tx *sql.Tx, senderSvc ba
 		return nil, err
 	}
 	return u, nil
+}
+
+// setRecordActionsUsers sets the record actiosn to every element in the Users slice.
+func (biz *BizUser) setRecordActionsUsers(ctx context.Context,
+	recs fndmodel.Users,
+) {
+	for i := range recs {
+		biz.setRecordActions(ctx, &recs[i])
+	}
+}
+
+// setRecordActions sets the record action sto User record.
+func (biz *BizUser) setRecordActions(ctx context.Context,
+	rec *fndmodel.User,
+) {
+	rec.RecordActions = base.NewRecordActionsCommon(rec.Status)
 }

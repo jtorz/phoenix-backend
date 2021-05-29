@@ -6,6 +6,9 @@ import (
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 )
 
+// Users slice.
+type Users []User
+
 // User struct.
 type User struct {
 	ID         string
@@ -15,12 +18,12 @@ type User struct {
 	Email      string
 	Username   string
 	//UserInformation *UserInformation
-	Password  *Password
-	Roles     Roles
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Status    base.Status
-	base.RecordActions
+	Password      *Password
+	Roles         Roles
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	Status        base.Status
+	RecordActions base.RecordActions
 }
 
 // UserID returns the id of the user.

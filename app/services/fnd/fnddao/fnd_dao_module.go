@@ -158,7 +158,6 @@ func (dao *DaoModule) Edit(ctx context.Context, tx *sql.Tx,
 		FndModule.ModName:        rec.Name,
 		FndModule.ModDescription: rec.Description,
 		FndModule.ModOrder:       rec.Order,
-		FndModule.ModCreatedAt:   rec.CreatedAt,
 		FndModule.ModUpdatedAt:   now,
 		FndModule.ModStatus:      rec.Status,
 	}

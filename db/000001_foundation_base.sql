@@ -150,7 +150,7 @@
     ALTER TABLE ONLY fnd_nav_element ADD CONSTRAINT
         fndtnav_element_pk PRIMARY KEY (nae_id);
 
-    CALL create_fk('fnd_nav_element', 'nae_parent_id', 'fnd_nav_element', 'nae_id', 'parent');
+    CALL create_fk('fnd_nav_element', 'nae_parent_id', 'fnd_nav_element', 'nae_id', 'parent', 'ON DELETE SET NULL');
 -- END fnd_nav_element
 
 

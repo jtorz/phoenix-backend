@@ -30,7 +30,7 @@ func (biz *BizRole) GetByID(ctx context.Context, exe base.Executor,
 	if err != nil {
 		return nil, err
 	}
-	rec.RecordActions.SimpleActions(rec.Status)
+	biz.setRecordActions(ctx, rec)
 	return rec, nil
 }
 
@@ -38,14 +38,12 @@ func (biz *BizRole) GetByID(ctx context.Context, exe base.Executor,
 func (biz *BizRole) List(ctx context.Context, exe base.Executor,
 	OnlyActive bool,
 ) (fndmodel.Roles, error) {
-	rows, err := biz.dao.List(ctx, exe, OnlyActive)
+	recs, err := biz.dao.List(ctx, exe, OnlyActive)
 	if err != nil {
 		return nil, err
 	}
-	for i := range rows {
-		rows[i].RecordActions.SimpleActions(rows[i].Status)
-	}
-	return rows, nil
+	biz.setRecordActionsRoles(ctx, recs)
+	return recs, nil
 }
 
 // New creates a new record.
@@ -56,7 +54,7 @@ func (biz *BizRole) New(ctx context.Context, tx *sql.Tx,
 	if err := biz.dao.New(ctx, tx, rec); err != nil {
 		return err
 	}
-	rec.RecordActions.SimpleActions(rec.Status)
+	biz.setRecordActions(ctx, rec)
 	return nil
 }
 
@@ -74,7 +72,7 @@ func (biz *BizRole) SetStatus(ctx context.Context, tx *sql.Tx,
 	if err := biz.dao.SetStatus(ctx, tx, rec); err != nil {
 		return err
 	}
-	rec.RecordActions.SimpleActions(rec.Status)
+	biz.setRecordActions(ctx, rec)
 	return nil
 }
 
@@ -86,4 +84,20 @@ func (biz *BizRole) Delete(ctx context.Context, tx *sql.Tx,
 		return err
 	}
 	return nil
+}
+
+// setRecordActionsRoles sets the record actiosn to every element in the Roles slice.
+func (biz *BizRole) setRecordActionsRoles(ctx context.Context,
+	recs fndmodel.Roles,
+) {
+	for i := range recs {
+		biz.setRecordActions(ctx, &recs[i])
+	}
+}
+
+// setRecordActions sets the record action sto Role record.
+func (biz *BizRole) setRecordActions(ctx context.Context,
+	rec *fndmodel.Role,
+) {
+	rec.RecordActions = base.NewRecordActionsCommon(rec.Status)
 }

@@ -30,7 +30,7 @@ func (biz *BizModule) GetByID(ctx context.Context, exe base.Executor,
 	if err != nil {
 		return nil, err
 	}
-	rec.RecordActions.SimpleActions(rec.Status)
+	biz.setRecordActions(ctx, rec)
 	return rec, nil
 }
 
@@ -38,14 +38,12 @@ func (biz *BizModule) GetByID(ctx context.Context, exe base.Executor,
 func (biz *BizModule) List(ctx context.Context, exe base.Executor,
 	qry base.ClientQuery,
 ) (fndmodel.Modules, error) {
-	rows, err := biz.dao.List(ctx, exe, qry)
+	recs, err := biz.dao.List(ctx, exe, qry)
 	if err != nil {
 		return nil, err
 	}
-	for i := range rows {
-		rows[i].RecordActions.SimpleActions(rows[i].Status)
-	}
-	return rows, nil
+	biz.setRecordActionsModules(ctx, recs)
+	return recs, nil
 }
 
 // New creates a new record.
@@ -56,7 +54,7 @@ func (biz *BizModule) New(ctx context.Context, tx *sql.Tx,
 	if err := biz.dao.New(ctx, tx, rec); err != nil {
 		return err
 	}
-	rec.RecordActions.SimpleActions(rec.Status)
+	biz.setRecordActions(ctx, rec)
 	return nil
 }
 
@@ -74,7 +72,7 @@ func (biz *BizModule) SetStatus(ctx context.Context, tx *sql.Tx,
 	if err := biz.dao.SetStatus(ctx, tx, rec); err != nil {
 		return err
 	}
-	rec.RecordActions.SimpleActions(rec.Status)
+	biz.setRecordActions(ctx, rec)
 	return nil
 }
 
@@ -86,4 +84,20 @@ func (biz *BizModule) Delete(ctx context.Context, tx *sql.Tx,
 		return err
 	}
 	return nil
+}
+
+// setRecordActionsModules sets the record actiosn to every element in the Modules slice.
+func (biz *BizModule) setRecordActionsModules(ctx context.Context,
+	recs fndmodel.Modules,
+) {
+	for i := range recs {
+		biz.setRecordActions(ctx, &recs[i])
+	}
+}
+
+// setRecordActions sets the record action sto Module record.
+func (biz *BizModule) setRecordActions(ctx context.Context,
+	rec *fndmodel.Module,
+) {
+	rec.RecordActions = base.NewRecordActionsCommon(rec.Status)
 }
