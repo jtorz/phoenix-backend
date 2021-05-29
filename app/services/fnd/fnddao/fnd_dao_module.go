@@ -3,13 +3,11 @@ package fnddao
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
-	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
 
 	//lint:ignore ST1001 dot import allowed only in dao packages for
 	. "github.com/jtorz/phoenix-backend/app/shared/lex"
@@ -53,9 +51,6 @@ func (dao *DaoModule) GetByID(ctx context.Context, exe base.Executor,
 		&rec.Status,
 	)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("%s %w", T.FndModule, baseerrors.ErrNotFound)
-		}
 		DebugErr(ctx, err)
 		return nil, err
 	}

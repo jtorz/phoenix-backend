@@ -14,76 +14,61 @@ Content-Type: application/json
 #############################################################
 
 ###
-# @name LIST_ALL_Modules
-GET {{app-host}}/api/foundation/modules
+# @name LIST_ALL_Roles
+GET {{app-host}}/api/foundation/roles
 Content-Type: application/json
 Authorization: {{Authorization}}
 
 ###
-# @name LIST_ACTIVE_Modules
-GET {{app-host}}/api/foundation/modules/active-records
+# @name LIST_ACTIVE_Roles
+GET {{app-host}}/api/foundation/roles/active-records
 Content-Type: application/json
 Authorization: {{Authorization}}
-
-###
-# @name LIST_FILTERED_Modules
-POST {{app-host}}/api/foundation/modules
-Content-Type: application/json
-Authorization: {{Authorization}}
-
-{
-    "limit": 0,
-    "offset": 0,
-    "sort": ["+ID","+Name","+Description","+Order","+Parent","+CreatedAt","+UpdatedAt"]
-}
 
 
 
 ###############################################################
 ###############################################################
-# @name GET_BY_ID_Module
-GET {{app-host}}/api/foundation/modules/module/{{ID}}
+# @name GET_BY_ID_Role
+GET {{app-host}}/api/foundation/roles/role/ADM_GRL
 Content-Type: application/json
 Authorization: {{Authorization}}
 
 ###
-@ID = FND.NAV
-@UpdatedAt = {{GET_BY_ID_Module.response.body.$.UpdatedAt}}
+@ID = {{GET_BY_ID_Role.response.body.$.ID}}
+@UpdatedAt = {{GET_BY_ID_Role.response.body.$.UpdatedAt}}
 
 ###
-# @name INSERT_Module
-POST {{app-host}}/api/foundation/modules/module
+# @name INSERT_Role
+POST {{app-host}}/api/foundation/roles/role
 Content-Type: application/json
 Authorization: {{Authorization}}
 
 {
-    "ID": "FND.NAV",
-    "Name": "Navigator elements",
-    "Description": "Navigator menu element.",
-    "Order": 0,
-    "ParentID": ""
+    "Name": "",
+    "Description": "",
+    "Icon": "",
 }
 
 
 ###
-# @name EDIT_Module
-PUT  {{app-host}}/api/foundation/modules/module
+# @name EDIT_Role
+PUT  {{app-host}}/api/foundation/roles/role
 Content-Type: application/json
 Authorization: {{Authorization}}
 
 {
     "ID": "{{ID}}",
-    "Name": "Foundation",
-    "Description": "Foundation service.",
-    "Order": 10,
-    "ParentID": "",
+    "Name": "Admin General",
+    "Description": "Admin General",
+    "Icon": "users",
     "UpdatedAt": "{{UpdatedAt}}"
 }
 
 
 ###
-# @name VALIDATE_Module
-PUT  {{app-host}}/api/foundation/modules/module/validate
+# @name VALIDATE_Role
+PUT  {{app-host}}/api/foundation/roles/role/validate
 Content-Type: application/json
 Authorization: {{Authorization}}
 
@@ -94,8 +79,8 @@ Authorization: {{Authorization}}
 
 
 ###
-# @name INVALIDATE_Module
-PUT  {{app-host}}/api/foundation/modules/module/invalidate
+# @name INVALIDATE_Role
+PUT  {{app-host}}/api/foundation/roles/role/invalidate
 Content-Type: application/json
 Authorization: {{Authorization}}
 
@@ -105,8 +90,8 @@ Authorization: {{Authorization}}
 }
 
 ###
-# @name SOFT-DELETE_Module
-PUT  {{app-host}}/api/foundation/modules/module/soft-delete
+# @name SOFT-DELETE_Role
+PUT  {{app-host}}/api/foundation/roles/role/soft-delete
 Content-Type: application/json
 Authorization: {{Authorization}}
 
@@ -116,8 +101,8 @@ Authorization: {{Authorization}}
 }
 
 ###
-# @name HARD-DELETE_Module
-PUT  {{app-host}}/api/foundation/modules/module/hard-delete
+# @name HARD-DELETE_Role
+PUT  {{app-host}}/api/foundation/roles/role/hard-delete
 Content-Type: application/json
 Authorization: {{Authorization}}
 

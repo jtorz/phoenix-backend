@@ -27,6 +27,8 @@ type NavElement struct {
 	base.RecordActions
 	// IsAssigned to a role.
 	IsAssigned bool
+	// flag in UpsertAll to delete all marked true.
+	Deleted bool
 }
 
 func (navs Navigator) print(lvl int) {

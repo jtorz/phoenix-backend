@@ -12,33 +12,49 @@ import (
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 )
 
-// httpModule http handler component.
-type httpModule struct {
+/* CUT & PASTE TO fnd_http.go
+httpRole := newHttpRole(s.DB)
+{
+	apiGroup.GET("/roles/role/:id/"remove_slash, httpRole.GetByID().Func())
+	apiGroup.GET("/roles", httpRole.ListAll().Func())
+	apiGroup.POST("/roles", httpRole.ListAll().Func())
+	apiGroup.GET("/roles/active-records", httpRole.ListActive().Func())
+	apiGroup.POST("/roles/active-records", httpRole.ListActive().Func())
+	apiGroup.POST("/roles/role", httpRole.New().Func())
+	apiGroup.PUT("/roles/role", httpRole.Edit().Func())
+	apiGroup.PUT("/roles/role/validate", httpRole.SetStatus(base.StatusActive).Func())
+	apiGroup.PUT("/roles/role/invalidate", httpRole.SetStatus(base.StatusInactive).Func())
+	apiGroup.PUT("/roles/role/soft-delete", httpRole.SetStatus(base.StatusDroppped).Func())
+	apiGroup.PUT("/roles/role/hard-delete", httpRole.Delete().Func())
+}
+*/
+
+// httpRole http handler component.
+type httpRole struct {
 	DB *sql.DB
 }
 
-func newHttpModule(db *sql.DB) httpModule {
-	return httpModule{
+func newHttpRole(db *sql.DB) httpRole {
+	return httpRole{
 		DB: db,
 	}
 }
 
 // GetByID retrives the record information using its ID.
-func (handler httpModule) GetByID() httphandler.HandlerFunc {
+func (handler httpRole) GetByID() httphandler.HandlerFunc {
 	resp := jsont.F{
 		"ID":            nil,
 		"Name":          nil,
 		"Description":   nil,
-		"Order":         nil,
-		"ParentID":      nil,
+		"Icon":          nil,
 		"CreatedAt":     nil,
 		"UpdatedAt":     nil,
 		"Status":        nil,
 		"RecordActions": nil,
 	}
 	return func(c *httphandler.Context) {
-		id := c.Param("moduleID")
-		biz := fndbiz.NewBizModule()
+		id := c.Param("id")
+		biz := fndbiz.NewBizRole()
 		rec, err := biz.GetByID(c, handler.DB, id)
 		if c.HandleError(err) {
 			return
@@ -48,28 +64,20 @@ func (handler httpModule) GetByID() httphandler.HandlerFunc {
 }
 
 // ListAll returns the list of records that can be filtered by the user.
-func (handler httpModule) ListAll() httphandler.HandlerFunc {
+func (handler httpRole) ListAll() httphandler.HandlerFunc {
 	resp := jsont.F{
 		"ID":            nil,
 		"Name":          nil,
 		"Description":   nil,
-		"Order":         nil,
-		"ParentID":      nil,
+		"Icon":          nil,
 		"CreatedAt":     nil,
 		"UpdatedAt":     nil,
 		"Status":        nil,
 		"RecordActions": nil,
 	}
 	return func(c *httphandler.Context) {
-		var err error
-		qry := base.ClientQuery{OnlyActive: false}
-		qry.RQL, err = c.GetRawData()
-		if c.HandleError(err) {
-			return
-		}
-
-		biz := fndbiz.NewBizModule()
-		recs, err := biz.List(c, handler.DB, qry)
+		biz := fndbiz.NewBizRole()
+		recs, err := biz.List(c, handler.DB, false)
 		if c.HandleError(err) {
 			return
 		}
@@ -78,24 +86,16 @@ func (handler httpModule) ListAll() httphandler.HandlerFunc {
 }
 
 // ListActive returns the list of records that can be filtered by the user.
-func (handler httpModule) ListActive() httphandler.HandlerFunc {
+func (handler httpRole) ListActive() httphandler.HandlerFunc {
 	resp := jsont.F{
 		"ID":          nil,
 		"Name":        nil,
 		"Description": nil,
-		"Order":       nil,
-		"ParentID":    nil,
+		"Icon":        nil,
 	}
 	return func(c *httphandler.Context) {
-		var err error
-		qry := base.ClientQuery{OnlyActive: true}
-		qry.RQL, err = c.GetRawData()
-		if c.HandleError(err) {
-			return
-		}
-
-		biz := fndbiz.NewBizModule()
-		recs, err := biz.List(c, handler.DB, qry)
+		biz := fndbiz.NewBizRole()
+		recs, err := biz.List(c, handler.DB, true)
 		if c.HandleError(err) {
 			return
 		}
@@ -104,13 +104,11 @@ func (handler httpModule) ListActive() httphandler.HandlerFunc {
 }
 
 // New creates a new record.
-func (handler httpModule) New() httphandler.HandlerFunc {
+func (handler httpRole) New() httphandler.HandlerFunc {
 	type Req struct {
-		ID          string `binding:"required"`
 		Name        string `binding:"required"`
 		Description string `binding:"required"`
-		Order       int
-		ParentID    string
+		Icon        string `binding:"required"`
 	}
 	resp := jsont.F{
 		"ID":            nil,
@@ -124,14 +122,12 @@ func (handler httpModule) New() httphandler.HandlerFunc {
 			return
 		}
 
-		rec := fndmodel.Module{
-			ID:          req.ID,
+		rec := fndmodel.Role{
 			Name:        req.Name,
 			Description: req.Description,
-			Order:       req.Order,
-			Parent:      &fndmodel.Module{ID: req.ParentID},
+			Icon:        req.Icon,
 		}
-		biz := fndbiz.NewBizModule()
+		biz := fndbiz.NewBizRole()
 		tx := c.BeginTx(handler.DB)
 		err := biz.New(c, tx.Tx, &rec)
 		if c.HandleError(err) {
@@ -144,13 +140,12 @@ func (handler httpModule) New() httphandler.HandlerFunc {
 }
 
 // Edit edits the record.
-func (handler httpModule) Edit() httphandler.HandlerFunc {
+func (handler httpRole) Edit() httphandler.HandlerFunc {
 	type Req struct {
-		ID          string `binding:"required"`
-		Name        string `binding:"required"`
-		Description string `binding:"required"`
-		Order       int
-		ParentID    string
+		ID          string    `binding:"required"`
+		Name        string    `binding:"required"`
+		Description string    `binding:"required"`
+		Icon        string    `binding:"required"`
 		UpdatedAt   time.Time `binding:"required"`
 	}
 	resp := jsont.F{
@@ -161,16 +156,15 @@ func (handler httpModule) Edit() httphandler.HandlerFunc {
 		if c.BindJSON(&req) {
 			return
 		}
-		rec := fndmodel.Module{
+		rec := fndmodel.Role{
 			ID:          req.ID,
 			Name:        req.Name,
 			Description: req.Description,
-			Order:       req.Order,
-			Parent:      &fndmodel.Module{ID: req.ParentID},
+			Icon:        req.Icon,
 			UpdatedAt:   req.UpdatedAt,
 		}
 
-		biz := fndbiz.NewBizModule()
+		biz := fndbiz.NewBizRole()
 		tx := c.BeginTx(handler.DB)
 		err := biz.Edit(c, tx.Tx, &rec)
 		if c.HandleError(err) {
@@ -183,7 +177,7 @@ func (handler httpModule) Edit() httphandler.HandlerFunc {
 }
 
 // SetStatus updates the logical status of the record.
-func (handler httpModule) SetStatus(status base.Status) httphandler.HandlerFunc {
+func (handler httpRole) SetStatus(status base.Status) httphandler.HandlerFunc {
 	type Req struct {
 		ID        string    `binding:"required"`
 		UpdatedAt time.Time `binding:"required"`
@@ -197,12 +191,12 @@ func (handler httpModule) SetStatus(status base.Status) httphandler.HandlerFunc 
 		if c.BindJSON(&req) {
 			return
 		}
-		rec := fndmodel.Module{
+		rec := fndmodel.Role{
 			ID:        req.ID,
 			UpdatedAt: req.UpdatedAt,
 			Status:    status,
 		}
-		biz := fndbiz.NewBizModule()
+		biz := fndbiz.NewBizRole()
 		tx := c.BeginTx(handler.DB)
 		err := biz.SetStatus(c, tx.Tx, &rec)
 		if c.HandleError(err) {
@@ -215,7 +209,7 @@ func (handler httpModule) SetStatus(status base.Status) httphandler.HandlerFunc 
 }
 
 // Delete performs a physical delete of the record.
-func (handler httpModule) Delete() httphandler.HandlerFunc {
+func (handler httpRole) Delete() httphandler.HandlerFunc {
 	type Req struct {
 		ID        string    `binding:"required"`
 		UpdatedAt time.Time `binding:"required"`
@@ -225,11 +219,11 @@ func (handler httpModule) Delete() httphandler.HandlerFunc {
 		if c.BindJSON(&req) {
 			return
 		}
-		rec := fndmodel.Module{
+		rec := fndmodel.Role{
 			ID:        req.ID,
 			UpdatedAt: req.UpdatedAt,
 		}
-		biz := fndbiz.NewBizModule()
+		biz := fndbiz.NewBizRole()
 		tx := c.BeginTx(handler.DB)
 		err := biz.Delete(c, tx.Tx, &rec)
 		if c.HandleError(err) {

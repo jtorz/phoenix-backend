@@ -11,15 +11,19 @@ type Actions []Action
 
 // Action that can be executed on a module.
 type Action struct {
-	Module        Module
-	ID            string
-	Name          string
-	Description   string
-	Order         int
-	Route         string
-	Method        string
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	Status        base.Status
-	RecordActions base.RecordActions
+	ModuleID    string
+	ActionID    string
+	Name        string
+	Description string
+	Order       int
+	Route       string
+	Method      string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	Status      base.Status
+	base.RecordActions
+}
+
+func (a Action) Key() string {
+	return a.ModuleID + "." + a.ActionID
 }

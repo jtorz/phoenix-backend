@@ -1,6 +1,6 @@
 {{define "Param"}}
 {{- if eq .GoDataType "string"}}
-	{{.GoVarName}} := c.Param("id")
+	{{.GoVarName}} := c.Param("{{.GoVarName}}")
 {{- else}}
 	{{.GoVarName}}, isErr := c.Param{{.GoDataType | upperfirst}}("{{.GoVarName}}")
 	if isErr{

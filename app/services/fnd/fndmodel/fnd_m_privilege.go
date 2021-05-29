@@ -10,7 +10,7 @@ type Privilege struct {
 }
 
 func (p Privilege) Code() string {
-	return p.Action.Module.ID + "." + p.Action.ID
+	return p.Action.Key()
 }
 
 // GetCodes returns a slice with all the codes of the privileges

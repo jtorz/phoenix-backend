@@ -3,13 +3,11 @@ package fnddao
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
-	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
 
 	//lint:ignore ST1001 dot import allowed only in dao packages for
 	. "github.com/jtorz/phoenix-backend/app/shared/lex"
@@ -58,9 +56,6 @@ func (dao *DaoNavElement) GetByID(ctx context.Context, exe base.Executor,
 		&rec.Status,
 	)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("%s %w", T.FndNavElement, baseerrors.ErrNotFound)
-		}
 		DebugErr(ctx, err)
 		return nil, err
 	}
@@ -94,7 +89,7 @@ func (dao *DaoNavElement) ListAll(ctx context.Context, exe base.Executor,
 		"navigators",
 		NewSelect(goqu.T(T.FndNavElement).All(), goqu.L("0").As("level")).
 			From(T.FndNavElement).
-			Where(goqu.C(FndNavElement.NaeParentID).IsNotNull()).
+			Where(goqu.C(FndNavElement.NaeParentID).IsNull()).
 			Union(
 				NewSelect(goqu.T(T.FndNavElement).As("child").All(), goqu.L("level+1")).
 					From(goqu.T(T.FndNavElement).As("child")).
@@ -102,10 +97,10 @@ func (dao *DaoNavElement) ListAll(ctx context.Context, exe base.Executor,
 						goqu.On(goqu.C(FndNavElement.NaeID).Table("navigators").Eq(goqu.I(FndNavElement.NaeParentID).Table("child")))),
 			),
 	).
-		From(T.FndNavElement).
+		From("navigators").
 		LeftJoin(goqu.T(T.FndNavElementRole), FndNavElementRoleFkFndNavElement(
 			goqu.C(FndNavElementRole.NerRoleID).Eq(rolID),
-		))
+		)).Order(goqu.C("level").Asc())
 
 	rows, err := QueryContext(ctx, exe, query)
 	if err != nil {
@@ -118,7 +113,7 @@ func (dao *DaoNavElement) ListAll(ctx context.Context, exe base.Executor,
 	defer rows.Close()
 	for rows.Next() {
 		var parentID ZeroString
-		rec := fndmodel.NavElement{}
+		rec := fndmodel.NavElement{Children: fndmodel.Navigator{}}
 		err := rows.Scan(
 			&rec.ID,
 			&rec.Name,
@@ -188,7 +183,6 @@ func (dao *DaoNavElement) Edit(ctx context.Context, tx *sql.Tx,
 		FndNavElement.NaeOrder:       rec.Order,
 		FndNavElement.NaeURL:         rec.URL,
 		FndNavElement.NaeParentID:    ZeroString(rec.ParentID),
-		FndNavElement.NaeCreatedAt:   rec.CreatedAt,
 		FndNavElement.NaeUpdatedAt:   now,
 		FndNavElement.NaeStatus:      rec.Status,
 	}

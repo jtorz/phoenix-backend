@@ -19,15 +19,17 @@ CREATE DOMAIN fnd_dm_record_status
 
 
 -- BEGIN create_fk
-    CREATE OR REPLACE PROCEDURE create_fk(
-        table_           REGCLASS,
-        columns_         TEXT,
-        foreign_table_   REGCLASS,
-        foreign_columns_ TEXT,
-        use_             TEXT
-    ) LANGUAGE plpgsql
-    AS $$
+    CREATE OR REPLACE PROCEDURE public.create_fk(
+    table_ regclass,
+    columns_ text,
+    foreign_table_ regclass,
+    foreign_columns_ text,
+    use_ text,
+    on_delete_ text default null)
+    LANGUAGE 'plpgsql'
+    AS $BODY$
     DECLARE
+        query_ TEXT;
         cols_ TEXT;
         fcols_ TEXT;
         safe_use_ TEXT;
@@ -46,17 +48,26 @@ CREATE DOMAIN fnd_dm_record_status
             safe_use_ := '_' || safe_use_;
         END IF;
 
-	    OPEN  clean_columns(columns_);
+        OPEN  clean_columns(columns_);
         FETCH clean_columns INTO cols_;
         CLOSE clean_columns;
 
         OPEN  clean_columns(foreign_columns_);
         FETCH clean_columns INTO fcols_;
         CLOSE clean_columns;
-
-        EXECUTE 'ALTER TABLE ONLY ' ||table_|| ' ADD CONSTRAINT ' ||
+        query_ := 'ALTER TABLE ONLY ' ||table_|| ' ADD CONSTRAINT ' ||
         table_ || '_fk_' || foreign_table_ || safe_use_ || '  FOREIGN KEY (' || cols_ || '  )' ||
-        'REFERENCES ' || foreign_table_ || '(' || fcols_ || ');';
-    END; $$
+        'REFERENCES ' || foreign_table_ || '(' || fcols_ || ')';
+
+        IF (on_delete_ = 'ON DELETE SET NULL' ) THEN
+            query_ := query_ || 'ON DELETE SET NULL';
+        ELSIF (on_delete_ = '' OR on_delete_ iS NULL) THEN
+            NULL;
+        ELSE
+            RAISE EXCEPTION 'UKNOWN ON DELETE %', on_delete_;
+        END IF;
+
+        EXECUTE query_;
+    END; $BODY$;
 -- END create_fk
 

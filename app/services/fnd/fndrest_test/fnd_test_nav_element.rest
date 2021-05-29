@@ -30,7 +30,7 @@ Content-Type: application/json
 Authorization: {{Authorization}}
 
 ###
-@ID = MAIL
+@ID = MAIL.X
 @UpdatedAt = {{GET_BY_ID_NavElements.response.body.$.UpdatedAt}}
 
 ###
@@ -138,3 +138,11 @@ Authorization: {{Authorization}}
     "NavElementID": "MAIL.X",
     "RoleID": "ADM_GRL"
 }
+
+###
+# @name UPSERT_navigator
+POST  {{app-host}}/api/foundation/navigator/upsert
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+[{"ID":"EXAMPLE1","Name":"Dashboard","Description":"example page","Icon":"dashboard","Order":0,"URL":"/dashboard","Children":[],"UpdatedAt":"2021-05-29T12:46:29.847921-05:00","Status":3,"RecordActions":["validate"],"Deleted":false},{"ID":"FND","Name":"Foundation Settings","Description":"Foundation Settings","Icon":"tune","Order":1,"URL":"","Children":[{"ID":"FND.NAV","Name":"Navigator","Description":"Navigator","Icon":"vertical_split","Order":0,"URL":"","Children":[],"UpdatedAt":"2021-05-29T12:46:29.849748-05:00","Status":1,"RecordActions":["validate"],"Deleted":false}],"UpdatedAt":"2021-05-29T12:46:29.84899-05:00","Status":3,"RecordActions":["validate"],"Deleted":false}]

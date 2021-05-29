@@ -24,9 +24,14 @@ func NewBiz{{$.Entity.GoStruct}}() Biz{{$.Entity.GoStruct}} {
 
 // GetByID retrives the record information using its ID.
 func (biz *Biz{{$.Entity.GoStruct}}) GetByID(ctx context.Context, exe base.Executor,
-	id string,
+	{{range $Col := $.Entity.Columns}}
+	{{- if $Col.IsPK}} {{$Col.GoVarName}} {{$Col.GoDataType}}, {{end}}
+	{{- end}}
 ) (*{{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoStruct}}, error) {
-	rec, err := biz.dao.GetByID(ctx, exe, id)
+	rec, err := biz.dao.GetByID(ctx, exe,
+	{{- range $Col := $.Entity.Columns}}
+	{{- if $Col.IsPK}} {{$Col.GoVarName}}, {{end}}
+	{{- end}})
 	if err != nil {
 		return nil, err
 	}

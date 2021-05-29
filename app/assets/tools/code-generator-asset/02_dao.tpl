@@ -64,9 +64,6 @@ func (dao *Dao{{$.Entity.GoStruct}}) GetByID(ctx context.Context, exe base.Execu
 		{{- end}}
 	)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("%s %w", T.{{$.Entity.DBGoCase}}, baseerrors.ErrNotFound)
-		}
 		DebugErr(ctx, err)
 		return nil, err
 	}
@@ -81,7 +78,7 @@ func (dao *Dao{{$.Entity.GoStruct}}) GetByID(ctx context.Context, exe base.Execu
 	{{range $Col := $.Entity.Columns}}
 	{{- if $Col.IsPK}}
 		rec.{{$Col.GoField}} = {{$Col.GoVarName}}
-	{{end}}
+	{{- end}}
 	{{- end}}
 	return &rec, nil
 }

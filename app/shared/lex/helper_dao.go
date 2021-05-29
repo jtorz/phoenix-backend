@@ -22,7 +22,6 @@ import (
 	"github.com/jtorz/phoenix-backend/app/config"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
 	"github.com/jtorz/phoenix-backend/app/shared/ctxinfo"
-	"github.com/jtorz/phoenix-backend/utils/pg"
 )
 
 // CheckOneRowUpdated checks that only one records was affected.
@@ -51,14 +50,6 @@ func CheckOneRowUpdated(ctx context.Context, name string, r sql.Result) error {
 	}
 	return fmt.Errorf("%s %w", name, err)
 
-}
-
-// WrapIfErrDuplicated wraps the error into baseerrors.ErrDuplicated er the underlying error is due to a unique key volation.
-func WrapIfErrDuplicated(err error) error {
-	if pg.IsCode(err, pg.UniqueViolation) {
-		return fmt.Errorf("%s %w", err.Error(), baseerrors.ErrDuplicated)
-	}
-	return err
 }
 
 // DebugErr logs the information of the error with extra information if ocurred.

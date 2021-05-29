@@ -21,7 +21,7 @@ func IsErrInvalidData(err error) bool {
 // status of a record.
 var ErrActionNotAllowedStatus = errors.New("action not allowed in current state")
 
-// IsErrStatus checks if the error is ErrActionNotAllowedStatus.
+// IsErrStatus checks if the error is ErrStatus.
 func IsErrStatus(err error) bool {
 	return errors.Is(err, ErrActionNotAllowedStatus)
 }
@@ -38,7 +38,7 @@ func IsErrPrivilege(err error) bool {
 // Can be that the user was not found, or that the password didn't match.
 var ErrAuth = errors.New("auth error")
 
-// IsErrAuth check if the error is IsErrNotUpdated.
+// IsErrAuth checks if the error is ErrAuth.
 func IsErrAuth(err error) bool {
 	return errors.Is(err, ErrAuth)
 }
@@ -49,7 +49,7 @@ var ErrDuplicated = errors.New("record duplicated")
 // ErrNotUpdated the record was not updated.
 var ErrNotUpdated = errors.New("record not updated")
 
-// IsErrNotUpdated check if the error is IsErrNotUpdated.
+// IsErrNotUpdated checks if the error is ErrNotUpdated.
 func IsErrNotUpdated(err error) bool {
 	return errors.Is(err, ErrNotUpdated)
 }
@@ -57,12 +57,12 @@ func IsErrNotUpdated(err error) bool {
 // ErrMultiUpdated multiple records were updated.
 var ErrMultiUpdated = errors.New("multiple records updated")
 
-// IsErrMultiUpdated check if the error is ErrMultiUpdated.
+// IsErrMultiUpdated checks if the error is ErrMultiUpdated.
 func IsErrMultiUpdated(err error) bool {
 	return errors.Is(err, ErrMultiUpdated)
 }
 
-// IsErrDuplicated check if the error is ErrDuplicated.
+// IsErrDuplicated checks if the error is ErrDuplicated.
 func IsErrDuplicated(err error) bool {
 	if errors.Is(err, ErrDuplicated) {
 		return true
@@ -73,7 +73,7 @@ func IsErrDuplicated(err error) bool {
 // ErrNotFound the requested information was not found.
 var ErrNotFound = errors.New("not found")
 
-// IsErrNotFound check if the error is ErrNotFound.
+// IsErrNotFound checks if the error is ErrNotFound.
 func IsErrNotFound(err error) bool {
 	return errors.Is(err, sql.ErrNoRows) || errors.Is(err, ErrNotFound) || pg.IsCode(err, pg.NoDataFound)
 }

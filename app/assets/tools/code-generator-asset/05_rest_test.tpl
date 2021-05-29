@@ -1,31 +1,31 @@
 {{- define "rest_varname"}}
     {{- if eq .GoDataType "float32"}}
-        {{- `{{`}}{{.GoField}}{{`}}`}}
+        {{- `{{`}}{{.GoVarName}}{{`}}`}}
     {{- else if eq .GoDataType "float64"}}
-        {{- `{{`}}{{.GoField}}{{`}}`}}
+        {{- `{{`}}{{.GoVarName}}{{`}}`}}
     {{- else if eq .GoDataType "int"}}
-        {{- `{{`}}{{.GoField}}{{`}}`}}
+        {{- `{{`}}{{.GoVarName}}{{`}}`}}
     {{- else if eq .GoDataType "int8"}}
-        {{- `{{`}}{{.GoField}}{{`}}`}}
+        {{- `{{`}}{{.GoVarName}}{{`}}`}}
     {{- else if eq .GoDataType "int16"}}
-        {{- `{{`}}{{.GoField}}{{`}}`}}
+        {{- `{{`}}{{.GoVarName}}{{`}}`}}
     {{- else if eq .GoDataType "int32"}}
-        {{- `{{`}}{{.GoField}}{{`}}`}}
+        {{- `{{`}}{{.GoVarName}}{{`}}`}}
     {{- else if eq .GoDataType "int64"}}
-        {{- `{{`}}{{.GoField}}{{`}}`}}
+        {{- `{{`}}{{.GoVarName}}{{`}}`}}
     {{- else if eq .GoDataType "uint"}}
-        {{- `{{`}}{{.GoField}}{{`}}`}}
+        {{- `{{`}}{{.GoVarName}}{{`}}`}}
     {{- else if eq .GoDataType "uint8"}}
-        {{- `{{`}}{{.GoField}}{{`}}`}}
+        {{- `{{`}}{{.GoVarName}}{{`}}`}}
     {{- else if eq .GoDataType "uint16"}}
-        {{- `{{`}}{{.GoField}}{{`}}`}}
+        {{- `{{`}}{{.GoVarName}}{{`}}`}}
     {{- else if eq .GoDataType "uint32"}}
-        {{- `{{`}}{{.GoField}}{{`}}`}}
+        {{- `{{`}}{{.GoVarName}}{{`}}`}}
     {{- else if eq .GoDataType "uint64"}}
-        {{- `{{`}}{{.GoField}}{{`}}`}}
+        {{- `{{`}}{{.GoVarName}}{{`}}`}}
     {{- else if eq .GoDataType "bool"}}
-        {{- `{{`}}{{.GoField}}{{`}}`}}
-    {{- else}}"{{`{{`}}{{.GoField}}{{`}}`}}"
+        {{- `{{`}}{{.GoVarName}}{{`}}`}}
+    {{- else}}"{{`{{`}}{{.GoVarName}}{{`}}`}}"
     {{- end}}
 {{- end}}
 {{- define "datafield"}}
@@ -94,15 +94,17 @@ Authorization: {{`{{Authorization}}`}}
 ###############################################################
 # @name GET_BY_ID_{{$.Entity.GoStruct}}
 GET {{`{{app-host}}`}}/api/{{$.ServiceName | lowercase}}/{{$.Entity.GoSlice | lowercase}}/{{$.Entity.GoStruct | lowercase}}/{{range $Col := $.Entity.Columns}}
-{{- if $Col.IsPK}}:{{$Col.GoVarName}}/{{end}}
+{{- if $Col.IsPK}}{{`{{`}}{{$Col.GoVarName}}{{`}}`}}/{{end}}
 {{- end}}
 Content-Type: application/json
 Authorization: {{`{{Authorization}}`}}
 
 ###
 {{- range $Col := $.Entity.Columns}}
-{{- if or ($Col.IsPK) (eq $Col.GoField "UpdatedAt")}}
-@{{$Col.GoField}} = {{`{{GET_BY_ID_`}}{{$.Entity.GoStruct}}{{`.response.body.$.`}}{{$Col.GoField}}{{`}}`}}
+{{- if or ($Col.IsPK) }}
+@{{$Col.GoVarName}} = {{$Col.GoVarName}}
+{{- else if (eq $Col.GoField "UpdatedAt")}}
+@{{$Col.GoVarName}} = {{`{{GET_BY_ID_`}}{{$.Entity.GoStruct}}{{`.response.body.$.`}}{{$Col.GoField}}{{`}}`}}
 {{- end}}
 {{- end}}
 

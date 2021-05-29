@@ -58,9 +58,10 @@ func (s Service) API(apiGroup *gin.RouterGroup) {
 
 	httpNavElement := newHttpNavElement(s.DB)
 	{
+		apiGroup.POST("/navigator/upsert", httpNavElement.UpsertAll().Func())
 		apiGroup.GET("/navigator/elements/element/:id", httpNavElement.GetByID().Func())
-		apiGroup.GET("/navigator/elements/active-records", httpNavElement.ListActive().Func())
-		apiGroup.GET("/navigator/elements/active-records/role/:roleID", httpNavElement.ListActive().Func())
+		apiGroup.GET("/navigator/elements", httpNavElement.ListAll().Func())
+		apiGroup.GET("/navigator/elements/role/:roleID", httpNavElement.ListAll().Func())
 		apiGroup.POST("/navigator/elements/element", httpNavElement.New().Func())
 		apiGroup.PUT("/navigator/elements/element", httpNavElement.Edit().Func())
 		apiGroup.PUT("/navigator/elements/element/validate", httpNavElement.SetStatus(base.StatusActive).Func())
@@ -73,7 +74,7 @@ func (s Service) API(apiGroup *gin.RouterGroup) {
 
 	httpModule := newHttpModule(s.DB)
 	{
-		apiGroup.GET("/modules/module/:id", httpModule.GetByID().Func())
+		apiGroup.GET("/modules/module/:moduleID", httpModule.GetByID().Func())
 		apiGroup.GET("/modules", httpModule.ListAll().Func())
 		apiGroup.POST("/modules", httpModule.ListAll().Func())
 		apiGroup.GET("/modules/active-records", httpModule.ListActive().Func())
@@ -84,5 +85,33 @@ func (s Service) API(apiGroup *gin.RouterGroup) {
 		apiGroup.PUT("/modules/module/invalidate", httpModule.SetStatus(base.StatusInactive).Func())
 		apiGroup.PUT("/modules/module/soft-delete", httpModule.SetStatus(base.StatusDroppped).Func())
 		apiGroup.PUT("/modules/module/hard-delete", httpModule.Delete().Func())
+
+		httpAction := newHttpAction(s.DB)
+		{
+			apiGroup.GET("/modules/module/:moduleID/actions/action/:actionID", httpAction.GetByID().Func())
+			apiGroup.GET("/modules/module/:moduleID/actions", httpAction.ListAll().Func())
+			apiGroup.POST("/modules/module/:moduleID/actions", httpAction.ListAll().Func())
+			apiGroup.GET("/modules/module/:moduleID/actions/active-records", httpAction.ListActive().Func())
+			apiGroup.POST("/modules/module/:moduleID/actions/active-records", httpAction.ListActive().Func())
+			apiGroup.POST("/modules/actions/action", httpAction.New().Func())
+			apiGroup.PUT("/modules/actions/action", httpAction.Edit().Func())
+			apiGroup.PUT("/modules/actions/action/validate", httpAction.SetStatus(base.StatusActive).Func())
+			apiGroup.PUT("/modules/actions/action/invalidate", httpAction.SetStatus(base.StatusInactive).Func())
+			apiGroup.PUT("/modules/actions/action/soft-delete", httpAction.SetStatus(base.StatusDroppped).Func())
+			apiGroup.PUT("/modules/actions/action/hard-delete", httpAction.Delete().Func())
+		}
+	}
+
+	httpRole := newHttpRole(s.DB)
+	{
+		apiGroup.GET("/roles/role/:id", httpRole.GetByID().Func())
+		apiGroup.GET("/roles", httpRole.ListAll().Func())
+		apiGroup.GET("/roles/active-records", httpRole.ListActive().Func())
+		apiGroup.POST("/roles/role", httpRole.New().Func())
+		apiGroup.PUT("/roles/role", httpRole.Edit().Func())
+		apiGroup.PUT("/roles/role/validate", httpRole.SetStatus(base.StatusActive).Func())
+		apiGroup.PUT("/roles/role/invalidate", httpRole.SetStatus(base.StatusInactive).Func())
+		apiGroup.PUT("/roles/role/soft-delete", httpRole.SetStatus(base.StatusDroppped).Func())
+		apiGroup.PUT("/roles/role/hard-delete", httpRole.Delete().Func())
 	}
 }

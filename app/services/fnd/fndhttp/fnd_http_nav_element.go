@@ -23,6 +23,25 @@ func newHttpNavElement(db *sql.DB) httpNavElement {
 	}
 }
 
+// New creates a new record.
+func (handler httpNavElement) UpsertAll() httphandler.HandlerFunc {
+	return func(c *httphandler.Context) {
+		req := fndmodel.Navigator{}
+		if c.BindJSON(&req) {
+			return
+		}
+		biz := fndbiz.NewBizNavElement()
+		tx := c.BeginTx(handler.DB)
+		err := biz.UpsertAll(c, tx.Tx, req)
+		if c.HandleError(err) {
+			tx.Rollback(c)
+			return
+		}
+		tx.Commit(c)
+		c.Status(http.StatusOK)
+	}
+}
+
 // GetByID retrives the record information using its ID.
 func (handler httpNavElement) GetByID() httphandler.HandlerFunc {
 	resp := jsont.F{
@@ -49,24 +68,25 @@ func (handler httpNavElement) GetByID() httphandler.HandlerFunc {
 	}
 }
 
-// ListActive returns the list of records that can be filtered by the user.
-func (handler httpNavElement) ListActive() httphandler.HandlerFunc {
+// ListAll returns the list of records that can be filtered by the user.
+func (handler httpNavElement) ListAll() httphandler.HandlerFunc {
 	resp := jsont.F{
-		"ID":          nil,
-		"Name":        nil,
-		"Description": nil,
-		"Icon":        nil,
-		"Order":       nil,
-		"URL":         nil,
-		"Children":    jsont.Recursive,
-		"UpdatedAt":   nil,
-		"Status":      nil,
-		"IsAssigned":  nil,
+		"ID":            nil,
+		"Name":          nil,
+		"Description":   nil,
+		"Icon":          nil,
+		"Order":         nil,
+		"URL":           nil,
+		"Children":      jsont.Recursive,
+		"UpdatedAt":     nil,
+		"Status":        nil,
+		"RecordActions": nil,
+		"IsAssigned":    nil,
 	}
 	return func(c *httphandler.Context) {
 		var err error
 		biz := fndbiz.NewBizNavElement()
-		recs, err := biz.ListActive(c, handler.DB, c.Param("roleID"))
+		recs, err := biz.ListAll(c, handler.DB, c.Param("roleID"))
 		if c.HandleError(err) {
 			return
 		}
