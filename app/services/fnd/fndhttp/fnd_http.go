@@ -15,7 +15,7 @@ type Service struct {
 	MailSvc baseservice.MailSenderSvc
 }
 
-func NewService(db *sql.DB, jwtSvc baseservice.JWTGeneratorSvc, mailSvc baseservice.MailSenderSvc) Service {
+func NewHttpService(db *sql.DB, jwtSvc baseservice.JWTGeneratorSvc, mailSvc baseservice.MailSenderSvc) Service {
 	return Service{
 		DB:      db,
 		JwtSvc:  jwtSvc,

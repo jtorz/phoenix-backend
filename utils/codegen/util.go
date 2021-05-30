@@ -27,3 +27,12 @@ func QueryContext(ctx context.Context, exe base.Executor, s *goqu.SelectDataset)
 func goCase(s string) string {
 	return stringset.SnakeToGoCase(strings.TrimSpace(s))
 }
+
+func dbTableNameToGoName(s string) string {
+	i := strings.IndexRune(s, '_')
+	if i < 0 {
+		panic("table format must be prefix_table_name")
+	}
+	s = goCase(s[i+1:])
+	return s
+}

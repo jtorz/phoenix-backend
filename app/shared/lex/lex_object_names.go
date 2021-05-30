@@ -20,6 +20,12 @@ var T = struct {
 	FndRole           string
 	FndUser           string
 	FndUserRole       string
+	MailBRecord       string
+	MailFooter        string
+	MailHeader        string
+	MailSender        string
+	MailTemplate      string
+	MailTemplateType  string
 }{
 	FndAccountAccess:  "fnd_account_access",
 	FndAction:         "fnd_action",
@@ -31,6 +37,12 @@ var T = struct {
 	FndRole:           "fnd_role",
 	FndUser:           "fnd_user",
 	FndUserRole:       "fnd_user_role",
+	MailBRecord:       "mail_b_record",
+	MailFooter:        "mail_footer",
+	MailHeader:        "mail_header",
+	MailSender:        "mail_sender",
+	MailTemplate:      "mail_template",
+	MailTemplateType:  "mail_template_type",
 }
 
 // V database view names.
@@ -125,6 +137,54 @@ func FndUserRoleFkFndRole(exps ...exp.Expression) exp.JoinCondition {
 func FndUserRoleFkFndUser(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
 		FndUserRole.UsrUserID: goqu.I(FndUser.UseID),
+	})
+	return goqu.On(exps...)
+}
+
+// MailBRecordFkFndUser returns the join expression for the foreign key from MailBRecord to FndUser.
+func MailBRecordFkFndUser(exps ...exp.Expression) exp.JoinCondition {
+	exps = append(exps, goqu.Ex{
+		MailBRecord.RecSenderUserID: goqu.I(FndUser.UseID),
+	})
+	return goqu.On(exps...)
+}
+
+// MailBRecordFkMailTemplateType returns the join expression for the foreign key from MailBRecord to MailTemplateType.
+func MailBRecordFkMailTemplateType(exps ...exp.Expression) exp.JoinCondition {
+	exps = append(exps, goqu.Ex{
+		MailBRecord.RecTypeID: goqu.I(MailTemplateType.TetID),
+	})
+	return goqu.On(exps...)
+}
+
+// MailTemplateFkMailFooter returns the join expression for the foreign key from MailTemplate to MailFooter.
+func MailTemplateFkMailFooter(exps ...exp.Expression) exp.JoinCondition {
+	exps = append(exps, goqu.Ex{
+		MailTemplate.TemFooterID: goqu.I(MailFooter.FooID),
+	})
+	return goqu.On(exps...)
+}
+
+// MailTemplateFkMailHeader returns the join expression for the foreign key from MailTemplate to MailHeader.
+func MailTemplateFkMailHeader(exps ...exp.Expression) exp.JoinCondition {
+	exps = append(exps, goqu.Ex{
+		MailTemplate.TemHeaderID: goqu.I(MailHeader.HeaID),
+	})
+	return goqu.On(exps...)
+}
+
+// MailTemplateFkMailSender returns the join expression for the foreign key from MailTemplate to MailSender.
+func MailTemplateFkMailSender(exps ...exp.Expression) exp.JoinCondition {
+	exps = append(exps, goqu.Ex{
+		MailTemplate.TemSenderID: goqu.I(MailSender.SenID),
+	})
+	return goqu.On(exps...)
+}
+
+// MailTemplateFkMailTemplateType returns the join expression for the foreign key from MailTemplate to MailTemplateType.
+func MailTemplateFkMailTemplateType(exps ...exp.Expression) exp.JoinCondition {
+	exps = append(exps, goqu.Ex{
+		MailTemplate.TemTypeID: goqu.I(MailTemplateType.TetID),
 	})
 	return goqu.On(exps...)
 }

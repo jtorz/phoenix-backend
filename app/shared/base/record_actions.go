@@ -16,3 +16,13 @@ func NewRecordActionsCommon(s Status) RecordActions {
 		return []string{}
 	}
 }
+
+// NewValidateInvalidate simple actions for a recor validate and invalidate.
+func NewValidateInvalidate(s Status) RecordActions {
+	switch s {
+	case StatusActive:
+		return RecordActions{"invalidate"}
+	default:
+		return RecordActions{"validate"}
+	}
+}

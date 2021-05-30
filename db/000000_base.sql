@@ -24,7 +24,7 @@ CREATE DOMAIN fnd_dm_record_status
     columns_ text,
     foreign_table_ regclass,
     foreign_columns_ text,
-    use_ text,
+    use_ text default null,
     on_delete_ text default null)
     LANGUAGE 'plpgsql'
     AS $BODY$
@@ -44,8 +44,10 @@ CREATE DOMAIN fnd_dm_record_status
             ) v;
     BEGIN
         safe_use_ := regexp_replace(use_, '[^a-zA-Z]', '', 'g');
-        IF(safe_use_ IS NOT NULL OR safe_use_ != '') THEN
+        IF(safe_use_ IS NOT NULL AND safe_use_ != '') THEN
             safe_use_ := '_' || safe_use_;
+        ELSE
+            safe_use_ := '';
         END IF;
 
         OPEN  clean_columns(columns_);

@@ -60,7 +60,7 @@ func NewEntity(ctx context.Context, db *sql.DB, schema, tableName string) (*Enti
 		DBGoCase: goCase(tableName),
 		DBName:   tableName,
 	}
-	e.GoStruct = e.DBGoCase[3:]
+	e.GoStruct = dbTableNameToGoName(tableName)
 	e.GoSlice = strmangle.Plural(e.GoStruct)
 	return &e, nil
 }
@@ -116,7 +116,8 @@ func GetEntitiesFromType(ctx context.Context, db *sql.DB, entType EntityType, sc
 			return nil, err
 		}
 		obj.DBGoCase = goCase(obj.DBName)
-		obj.GoStruct = obj.DBGoCase[3:]
+		obj.GoStruct = dbTableNameToGoName(obj.DBName)
+		obj.GoSlice = strmangle.Plural(obj.GoStruct)
 		obj.Columns, err = GetAttributes(ctx, db, schema, obj.DBName)
 		if err != nil {
 			return nil, err

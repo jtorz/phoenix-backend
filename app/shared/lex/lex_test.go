@@ -63,6 +63,12 @@ func TestColumns(t *testing.T) {
 		{T.FndRole, FndRole},
 		{T.FndUser, FndUser},
 		{T.FndUserRole, FndUserRole},
+		{T.MailBRecord, MailBRecord},
+		{T.MailFooter, MailFooter},
+		{T.MailHeader, MailHeader},
+		{T.MailSender, MailSender},
+		{T.MailTemplate, MailTemplate},
+		{T.MailTemplateType, MailTemplateType},
 
 		{V.FndVPrivilegeRole, FndVPrivilegeRole},
 	}

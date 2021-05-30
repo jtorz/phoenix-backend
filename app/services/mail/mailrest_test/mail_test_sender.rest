@@ -1,0 +1,121 @@
+
+### GoDataType
+# @name authenticate
+POST {{app-host}}/api/public/foundation/account/login
+Content-Type: application/json
+
+{
+    "Password": "{{env-password}}",
+    "User": "{{env-user}}"
+}
+
+@Authorization = Bearer {{authenticate.response.body.$.JWT}}
+
+#############################################################
+
+###
+# @name LIST_ALL_Senders
+GET {{app-host}}/api/mail/senders
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+###
+# @name LIST_ACTIVE_Senders
+GET {{app-host}}/api/mail/senders/active-records
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+
+
+###############################################################
+###############################################################
+# @name GET_BY_ID_Sender
+GET {{app-host}}/api/mail/senders/sender/{{id}}/
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+###
+@id = MAIN
+@updatedAt = {{GET_BY_ID_Sender.response.body.$.UpdatedAt}}
+
+###
+# @name INSERT_Sender
+POST {{app-host}}/api/mail/senders/sender
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "ID": "MAIN",
+    "Name": "a",
+    "Description": "a",
+    "Host": "a",
+    "Port": 1,
+    "User": "a",
+    "Password": "a",
+    "From": "a"
+}
+
+
+###
+# @name EDIT_Sender
+PUT  {{app-host}}/api/mail/senders/sender
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "ID": "{{id}}",
+    "Name": "a2",
+    "Description": "a2",
+    "Host": "a2",
+    "Port": 12,
+    "User": "a2",
+    "Password": "a2",
+    "From": "a2",
+    "UpdatedAt": "{{updatedAt}}"
+}
+
+
+###
+# @name VALIDATE_Sender
+PUT  {{app-host}}/api/mail/senders/sender/validate
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "ID": "{{id}}",
+    "UpdatedAt": "{{updatedAt}}"
+}
+
+
+###
+# @name INVALIDATE_Sender
+PUT  {{app-host}}/api/mail/senders/sender/invalidate
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "ID": "{{id}}",
+    "UpdatedAt": "{{updatedAt}}"
+}
+
+###
+# @name SOFT-DELETE_Sender
+PUT  {{app-host}}/api/mail/senders/sender/soft-delete
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "ID": "{{id}}",
+    "UpdatedAt": "{{updatedAt}}"
+}
+
+###
+# @name HARD-DELETE_Sender
+PUT  {{app-host}}/api/mail/senders/sender/hard-delete
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "ID": "{{id}}",
+    "UpdatedAt": "{{updatedAt}}"
+}

@@ -10,11 +10,13 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
 	"strings"
 	"text/template"
 
 	codegenasset "github.com/jtorz/phoenix-backend/app/assets/tools/code-generator-asset"
 	"github.com/jtorz/phoenix-backend/utils/codegen"
+	"github.com/jtorz/phoenix-backend/utils/files"
 	"github.com/jtorz/phoenix-backend/utils/stringset"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -230,7 +232,14 @@ func appendFile(filename string, data []byte) error {
 
 func formatOut(out, serviceAbbr string, entity codegen.Entity) string {
 	serviceAbbr = strings.ToLower(serviceAbbr)
-	return fmt.Sprintf(out, serviceAbbr, serviceAbbr, serviceAbbr, strings.ToLower(entity.DBName[4:]))
+	i := strings.IndexRune(entity.DBName, '_')
+	if i < 0 {
+		panic("table format must be prefix_table_name")
+	}
+	outFile := fmt.Sprintf(out, serviceAbbr, serviceAbbr, serviceAbbr, strings.ToLower(entity.DBName[i+1:]))
+	dir := path.Dir(outFile)
+	files.CreateDirPanic(dir)
+	return outFile
 }
 
 func loadDB() *sql.DB {

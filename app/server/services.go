@@ -9,6 +9,7 @@ import (
 	"github.com/jtorz/phoenix-backend/app/services/authorization"
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndhttp"
 	"github.com/jtorz/phoenix-backend/app/services/mail"
+	"github.com/jtorz/phoenix-backend/app/services/mail/mailhttp"
 	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
 )
 
@@ -29,19 +30,18 @@ func (server *Server) configureServices() {
 	{
 		mailSenderSvc = mail.NewService(server.MainDB, server.Config.Domain)
 
-		/* route := "/email"
+		route := "/mail"
+		mailSvc := mailhttp.NewHttpService(server.MainDB)
 		adminGroup := apiGroup.Group("/admin")
 		publicGroup := apiGroup.Group("/public")
-		fndSVC := fndhttp.NewService(server.MainDB, jwtSvc)
-		fndSVC.API(apiGroup.Group(route))
-		fndSVC.APIAdmin(adminGroup.Group(route))
-		fndSVC.APIPublic(publicGroup.Group(route)) */
+		mailSvc.API(apiGroup.Group(route))
+		mailSvc.APIAdmin(adminGroup.Group(route))
+		mailSvc.APIPublic(publicGroup.Group(route))
 	}
 
 	{
 		route := "/foundation"
-		fndSVC := fndhttp.NewService(server.MainDB, jwtSvc, mailSenderSvc)
-
+		fndSVC := fndhttp.NewHttpService(server.MainDB, jwtSvc, mailSenderSvc)
 		adminGroup := apiGroup.Group("/admin")
 		publicGroup := apiGroup.Group("/public")
 		fndSVC.API(apiGroup.Group(route))

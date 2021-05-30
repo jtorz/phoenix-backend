@@ -205,6 +205,156 @@ var FndUserRole = TableFndUserRole{
 	UsrRoleID: "usr_role_id",
 }
 
+// TableMailBRecord column names for table mail_b_record.
+type TableMailBRecord struct {
+	RecID           string `database:"-,datatype=bigint"`
+	RecTypeID       string `database:"N,datatype=text"`
+	RecEmail        string `database:"-,datatype=text"`
+	RecSenderUserID string `database:"N,datatype=uuid"`
+	RecError        string `database:"N,datatype=text"`
+	RecTo           string `database:"-,datatype=text"`
+	RecCc           string `database:"N,datatype=text"`
+	RecBcc          string `database:"N,datatype=text"`
+	RecSubject      string `database:"-,datatype=text"`
+	RecMime         string `database:"N,datatype=text"`
+	RecFrom         string `database:"-,datatype=text"`
+	RecCreatedAt    string `database:"-,datatype=timestamp with time zone"`
+	RecUpdatedAt    string `database:"-,datatype=timestamp with time zone"`
+	RecStatus       string `database:"-,datatype=smallint"`
+}
+
+var MailBRecord = TableMailBRecord{
+	RecID:           "rec_id",
+	RecTypeID:       "rec_type_id",
+	RecEmail:        "rec_email",
+	RecSenderUserID: "rec_sender_user_id",
+	RecError:        "rec_error",
+	RecTo:           "rec_to",
+	RecCc:           "rec_cc",
+	RecBcc:          "rec_bcc",
+	RecSubject:      "rec_subject",
+	RecMime:         "rec_mime",
+	RecFrom:         "rec_from",
+	RecCreatedAt:    "rec_created_at",
+	RecUpdatedAt:    "rec_updated_at",
+	RecStatus:       "rec_status",
+}
+
+// TableMailFooter column names for table mail_footer.
+type TableMailFooter struct {
+	FooID        string `database:"-,datatype=integer"`
+	FooName      string `database:"-,datatype=text"`
+	FooFooter    string `database:"-,datatype=text"`
+	FooCreatedAt string `database:"-,datatype=timestamp with time zone"`
+	FooUpdatedAt string `database:"-,datatype=timestamp with time zone"`
+	FooStatus    string `database:"-,datatype=smallint"`
+}
+
+var MailFooter = TableMailFooter{
+	FooID:        "foo_id",
+	FooName:      "foo_name",
+	FooFooter:    "foo_footer",
+	FooCreatedAt: "foo_created_at",
+	FooUpdatedAt: "foo_updated_at",
+	FooStatus:    "foo_status",
+}
+
+// TableMailHeader column names for table mail_header.
+type TableMailHeader struct {
+	HeaID        string `database:"-,datatype=integer"`
+	HeaName      string `database:"-,datatype=text"`
+	HeaHeader    string `database:"-,datatype=text"`
+	HeaCreatedAt string `database:"-,datatype=timestamp with time zone"`
+	HeaUpdatedAt string `database:"-,datatype=timestamp with time zone"`
+	HeaStatus    string `database:"-,datatype=smallint"`
+}
+
+var MailHeader = TableMailHeader{
+	HeaID:        "hea_id",
+	HeaName:      "hea_name",
+	HeaHeader:    "hea_header",
+	HeaCreatedAt: "hea_created_at",
+	HeaUpdatedAt: "hea_updated_at",
+	HeaStatus:    "hea_status",
+}
+
+// TableMailSender column names for table mail_sender.
+type TableMailSender struct {
+	SenID          string `database:"-,datatype=text"`
+	SenName        string `database:"-,datatype=text"`
+	SenDescription string `database:"-,datatype=text"`
+	SenHost        string `database:"-,datatype=text"`
+	SenPort        string `database:"-,datatype=integer"`
+	SenUser        string `database:"-,datatype=text"`
+	SenPassword    string `database:"-,datatype=text"`
+	SenFrom        string `database:"-,datatype=text"`
+	SenCreatedAt   string `database:"-,datatype=timestamp with time zone"`
+	SenUpdatedAt   string `database:"-,datatype=timestamp with time zone"`
+	SenStatus      string `database:"-,datatype=smallint"`
+}
+
+var MailSender = TableMailSender{
+	SenID:          "sen_id",
+	SenName:        "sen_name",
+	SenDescription: "sen_description",
+	SenHost:        "sen_host",
+	SenPort:        "sen_port",
+	SenUser:        "sen_user",
+	SenPassword:    "sen_password",
+	SenFrom:        "sen_from",
+	SenCreatedAt:   "sen_created_at",
+	SenUpdatedAt:   "sen_updated_at",
+	SenStatus:      "sen_status",
+}
+
+// TableMailTemplate column names for table mail_template.
+type TableMailTemplate struct {
+	TemTypeID     string `database:"-,datatype=text"`
+	TemTemplateID string `database:"-,datatype=integer"`
+	TemFrom       string `database:"-,datatype=text"`
+	TemSubject    string `database:"-,datatype=text"`
+	TemTemplate   string `database:"-,datatype=text"`
+	TemHeaderID   string `database:"-,datatype=integer"`
+	TemFooterID   string `database:"-,datatype=integer"`
+	TemSenderID   string `database:"-,datatype=text"`
+	TemCreatedAt  string `database:"-,datatype=timestamp with time zone"`
+	TemUpdatedAt  string `database:"-,datatype=timestamp with time zone"`
+	TemStatus     string `database:"-,datatype=smallint"`
+}
+
+var MailTemplate = TableMailTemplate{
+	TemTypeID:     "tem_type_id",
+	TemTemplateID: "tem_template_id",
+	TemFrom:       "tem_from",
+	TemSubject:    "tem_subject",
+	TemTemplate:   "tem_template",
+	TemHeaderID:   "tem_header_id",
+	TemFooterID:   "tem_footer_id",
+	TemSenderID:   "tem_sender_id",
+	TemCreatedAt:  "tem_created_at",
+	TemUpdatedAt:  "tem_updated_at",
+	TemStatus:     "tem_status",
+}
+
+// TableMailTemplateType column names for table mail_template_type.
+type TableMailTemplateType struct {
+	TetID        string `database:"-,datatype=text"`
+	TetName      string `database:"-,datatype=text"`
+	TetTags      string `database:"-,datatype=json"`
+	TetCreatedAt string `database:"-,datatype=timestamp with time zone"`
+	TetUpdatedAt string `database:"-,datatype=timestamp with time zone"`
+	TetStatus    string `database:"-,datatype=smallint"`
+}
+
+var MailTemplateType = TableMailTemplateType{
+	TetID:        "tet_id",
+	TetName:      "tet_name",
+	TetTags:      "tet_tags",
+	TetCreatedAt: "tet_created_at",
+	TetUpdatedAt: "tet_updated_at",
+	TetStatus:    "tet_status",
+}
+
 // ViewFndVPrivilegeRole column names for view fnd_v_privilege_role.
 type ViewFndVPrivilegeRole struct {
 	PrrRoleID   string `database:"N,datatype=text"`

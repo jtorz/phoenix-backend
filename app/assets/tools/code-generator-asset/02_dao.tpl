@@ -3,13 +3,11 @@ package {{$.ServiceAbbr | lowercase}}dao
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/jtorz/phoenix-backend/app/services/{{$.ServiceAbbr | lowercase}}/{{$.ServiceAbbr | lowercase}}model"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
-	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
 
 	//lint:ignore ST1001 dot import allowed only in dao packages for
 	. "github.com/jtorz/phoenix-backend/app/shared/lex"
