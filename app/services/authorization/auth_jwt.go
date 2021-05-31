@@ -2,11 +2,11 @@ package authorization
 
 import (
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/jtorz/phoenix-backend/app/httphandler"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
 	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
 )
@@ -31,12 +31,16 @@ func (jwtSvc JWTSvc) NewJWT(authUser baseservice.JWTData) (string, error) {
 }
 
 // AuthJWT checks the jwt information.
-func (jwtSvc JWTSvc) AuthJWT(c *httphandler.Context) (*baseservice.JWTData, error) {
-	tokenString, err := jwtSvc.getBearerToken(c)
+func (jwtSvc JWTSvc) AuthJWT(req *http.Request) (*baseservice.JWTData, error) {
+	token, err := jwtSvc.getBearerToken(req)
 	if err != nil {
 		return nil, err
 	}
-	_, claims, err := jwtSvc.parseJWT(tokenString)
+	return jwtSvc.authJWT(token)
+}
+
+func (jwtSvc JWTSvc) authJWT(token string) (*baseservice.JWTData, error) {
+	_, claims, err := jwtSvc.parseJWT(token)
 	if err != nil {
 		return nil, err
 	}
@@ -46,8 +50,8 @@ func (jwtSvc JWTSvc) AuthJWT(c *httphandler.Context) (*baseservice.JWTData, erro
 }
 
 // GetBearerToken returns the bearer jwt from the Authorization header.
-func (srv JWTSvc) getBearerToken(c *httphandler.Context) (string, error) {
-	tok := c.Request.Header.Get("Authorization")
+func (srv JWTSvc) getBearerToken(req *http.Request) (string, error) {
+	tok := req.Header.Get("Authorization")
 	if tok == "" {
 		return "", fmt.Errorf("empty JWT token: %w", baseerrors.ErrAuth)
 	}

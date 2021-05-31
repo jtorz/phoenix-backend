@@ -1,7 +1,5 @@
 package authorization
 
-import "github.com/jtorz/phoenix-backend/utils/stringset"
-
 type privilege struct {
 	Method string
 	Route  string
@@ -10,20 +8,26 @@ type privilege struct {
 
 type privileges []privilege
 
-func (privs privileges) getPrivilegeByPriority(privileges ...string) string {
-	pos := -1
+func (privs privileges) getPrivilegeByPriority(keyPriority ...string) string {
+	if len(keyPriority) == 0 {
+		return ""
+	}
+
+	found := make([]bool, len(keyPriority))
 	for i := range privs {
-		if pos2, found := stringset.FindInSlice(privileges, privs[i].Key); found {
-			if pos2 == 0 {
-				return privileges[pos2]
-			}
-			if pos2 > pos {
-				pos = pos2
+		for j := range keyPriority {
+			if privs[i].Key == keyPriority[j] {
+				if j == 0 { // highest priority
+					return keyPriority[j]
+				}
+				found[j] = true
 			}
 		}
 	}
-	if pos == -1 {
-		return ""
+	for i := range found {
+		if found[i] {
+			return keyPriority[i]
+		}
 	}
-	return privileges[pos]
+	return ""
 }

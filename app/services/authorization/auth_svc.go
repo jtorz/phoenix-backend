@@ -27,7 +27,7 @@ type Service struct {
 
 // NewAuthService creates a new Service.
 func NewAuthService(c *httphandler.Context, jwtSvc JWTSvc, db *sql.DB, redis *redis.Pool) (*Service, error) {
-	jwtData, err := jwtSvc.AuthJWT(c)
+	jwtData, err := jwtSvc.AuthJWT(c.Request)
 	if err != nil {
 		return nil, err
 	}
