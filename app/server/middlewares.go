@@ -9,6 +9,7 @@ import (
 
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/gomodule/redigo/redis"
 	"github.com/jtorz/phoenix-backend/app/config"
 	"github.com/jtorz/phoenix-backend/app/httphandler"
 	"github.com/jtorz/phoenix-backend/app/services/agentinfo"
@@ -19,7 +20,7 @@ import (
 )
 
 // configureMiddlewares configures the http middlewares.
-func (server *Server) configureMiddlewares(r *gin.Engine, jwtSvc authorization.JWTSvc) {
+func (server *Server) configureMiddlewares(r *gin.Engine, jwtSvc authorization.JWTSvc, redis *redis.Pool) {
 	// Default gin recovery middleware
 	r.Use(gin.Recovery())
 
@@ -51,11 +52,11 @@ func (server *Server) configureMiddlewares(r *gin.Engine, jwtSvc authorization.J
 	// Auhtentication and Authorization middleware.
 	r.Use(func(ginCtx *gin.Context) {
 		c := httphandler.New(ginCtx)
-		authSvc, err := authorization.NewAuthService(c, jwtSvc, server.MainDB) // check if has jwt
+		authSvc, errNewAuth := authorization.NewAuthService(c, jwtSvc, server.MainDB, redis)
 
 		if isAPIPublicRoute(ginCtx) {
 			var agent *baseservice.Agent
-			if err != nil {
+			if errNewAuth != nil {
 				agent = baseservice.NewAgentAnonym()
 			} else {
 				agentinfoSvc := agentinfo.NewService(server.MainDB, authSvc.ID)
@@ -66,19 +67,22 @@ func (server *Server) configureMiddlewares(r *gin.Engine, jwtSvc authorization.J
 			return
 		}
 
-		if err != nil {
-			defer c.Abort()
-			if err == baseerrors.ErrAuth {
-				c.JSON(http.StatusUnauthorized, "unauthorized")
-				return
-			}
+		if errNewAuth != nil {
+			c.Abort()
+			c.Status(http.StatusUnauthorized)
+			log.Printf("uknown error: %s", errNewAuth)
+			return
+		}
 
+		err := authSvc.CheckAuthorization(c)
+		if err != nil {
+			c.Abort()
 			if err == baseerrors.ErrPrivilege {
 				c.JSON(http.StatusForbidden, "fobidden: "+c.Request.RequestURI)
 				return
 			}
 
-			c.Status(http.StatusUnauthorized)
+			c.Status(http.StatusForbidden)
 			log.Printf("uknown error: %s", err)
 			return
 		}

@@ -98,93 +98,6 @@ func (handler httpNavElement) ListAll() httphandler.HandlerFunc {
 	}
 }
 
-// New creates a new record.
-func (handler httpNavElement) New() httphandler.HandlerFunc {
-	type Req struct {
-		ID          string `binding:"required"`
-		Name        string `binding:"required"`
-		Description string `binding:"required"`
-		Icon        string `binding:"required"`
-		Order       int
-		URL         string `binding:"required"`
-		ParentID    string
-	}
-	resp := jsont.F{
-		"ID":            nil,
-		"UpdatedAt":     nil,
-		"Status":        nil,
-		"RecordActions": nil,
-	}
-	return func(c *httphandler.Context) {
-		req := Req{}
-		if c.BindJSON(&req) {
-			return
-		}
-
-		rec := fndmodel.NavElement{
-			ID:          req.ID,
-			Name:        req.Name,
-			Description: req.Description,
-			Icon:        req.Icon,
-			Order:       req.Order,
-			URL:         req.URL,
-			ParentID:    req.ParentID,
-		}
-		biz := fndbiz.NewBizNavElement()
-		tx := c.BeginTx(handler.DB)
-		err := biz.New(c, tx.Tx, &rec)
-		if c.HandleError(err) {
-			tx.Rollback(c)
-			return
-		}
-		tx.Commit(c)
-		c.JSONWithFields(rec, resp)
-	}
-}
-
-// Edit edits the record.
-func (handler httpNavElement) Edit() httphandler.HandlerFunc {
-	type Req struct {
-		ID          string `binding:"required"`
-		Name        string `binding:"required"`
-		Description string `binding:"required"`
-		Icon        string `binding:"required"`
-		Order       int
-		URL         string `binding:"required"`
-		ParentID    string
-		UpdatedAt   time.Time `binding:"required"`
-	}
-	resp := jsont.F{
-		"UpdatedAt": nil,
-	}
-	return func(c *httphandler.Context) {
-		req := Req{}
-		if c.BindJSON(&req) {
-			return
-		}
-		rec := fndmodel.NavElement{
-			ID:          req.ID,
-			Name:        req.Name,
-			Description: req.Description,
-			Icon:        req.Icon,
-			Order:       req.Order,
-			URL:         req.URL,
-			ParentID:    req.ParentID,
-			UpdatedAt:   req.UpdatedAt,
-		}
-
-		biz := fndbiz.NewBizNavElement()
-		tx := c.BeginTx(handler.DB)
-		err := biz.Edit(c, tx.Tx, &rec)
-		if c.HandleError(err) {
-			tx.Rollback(c)
-			return
-		}
-		tx.Commit(c)
-		c.JSONWithFields(rec, resp)
-	}
-}
-
 // SetStatus updates the logical status of the record.
 func (handler httpNavElement) SetStatus(status base.Status) httphandler.HandlerFunc {
 	type Req struct {
@@ -214,33 +127,6 @@ func (handler httpNavElement) SetStatus(status base.Status) httphandler.HandlerF
 		}
 		tx.Commit(c)
 		c.JSONWithFields(rec, resp)
-	}
-}
-
-// Delete performs a physical delete of the record.
-func (handler httpNavElement) Delete() httphandler.HandlerFunc {
-	type Req struct {
-		ID        string    `binding:"required"`
-		UpdatedAt time.Time `binding:"required"`
-	}
-	return func(c *httphandler.Context) {
-		req := Req{}
-		if c.BindJSON(&req) {
-			return
-		}
-		rec := fndmodel.NavElement{
-			ID:        req.ID,
-			UpdatedAt: req.UpdatedAt,
-		}
-		biz := fndbiz.NewBizNavElement()
-		tx := c.BeginTx(handler.DB)
-		err := biz.Delete(c, tx.Tx, &rec)
-		if c.HandleError(err) {
-			tx.Rollback(c)
-			return
-		}
-		tx.Commit(c)
-		c.Status(http.StatusOK)
 	}
 }
 

@@ -3,10 +3,13 @@ package fndbiz
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fnddao"
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
+	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
+	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
 )
 
 // BizRole business component.
@@ -69,6 +72,9 @@ func (biz *BizRole) Edit(ctx context.Context, tx *sql.Tx,
 func (biz *BizRole) SetStatus(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Role,
 ) error {
+	if rec.ID == baseservice.RoleAdmin {
+		return fmt.Errorf("can't change admin role status: %w", baseerrors.ErrPrivilege)
+	}
 	if err := biz.dao.SetStatus(ctx, tx, rec); err != nil {
 		return err
 	}
@@ -80,6 +86,9 @@ func (biz *BizRole) SetStatus(ctx context.Context, tx *sql.Tx,
 func (biz *BizRole) Delete(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Role,
 ) error {
+	if rec.ID == baseservice.RoleAdmin {
+		return fmt.Errorf("can't delete admin role: %w", baseerrors.ErrPrivilege)
+	}
 	if err := biz.dao.Delete(ctx, tx, rec); err != nil {
 		return err
 	}

@@ -31,8 +31,6 @@ type TableFndAction struct {
 	ActName        string `database:"-,datatype=text"`
 	ActDescription string `database:"-,datatype=text"`
 	ActOrder       string `database:"-,datatype=integer"`
-	ActRoute       string `database:"-,datatype=text"`
-	ActMethod      string `database:"-,datatype=text"`
 	ActCreatedAt   string `database:"-,datatype=timestamp with time zone"`
 	ActUpdatedAt   string `database:"-,datatype=timestamp with time zone"`
 	ActStatus      string `database:"-,datatype=smallint"`
@@ -44,11 +42,24 @@ var FndAction = TableFndAction{
 	ActName:        "act_name",
 	ActDescription: "act_description",
 	ActOrder:       "act_order",
-	ActRoute:       "act_route",
-	ActMethod:      "act_method",
 	ActCreatedAt:   "act_created_at",
 	ActUpdatedAt:   "act_updated_at",
 	ActStatus:      "act_status",
+}
+
+// TableFndActionRoute column names for table fnd_action_route.
+type TableFndActionRoute struct {
+	AcrModuleID string `database:"-,datatype=text"`
+	AcrActionID string `database:"-,datatype=text"`
+	AcrMethod   string `database:"-,datatype=text"`
+	AcrRoute    string `database:"-,datatype=text"`
+}
+
+var FndActionRoute = TableFndActionRoute{
+	AcrModuleID: "acr_module_id",
+	AcrActionID: "acr_action_id",
+	AcrMethod:   "acr_method",
+	AcrRoute:    "acr_route",
 }
 
 // TableFndModule column names for table fnd_module.
@@ -360,14 +371,14 @@ type ViewFndVPrivilegeRole struct {
 	PrrRoleID   string `database:"N,datatype=text"`
 	PrrModuleID string `database:"N,datatype=text"`
 	PrrActionID string `database:"N,datatype=text"`
-	PrrRoute    string `database:"N,datatype=text"`
 	PrrMethod   string `database:"N,datatype=text"`
+	PrrRoute    string `database:"N,datatype=text"`
 }
 
 var FndVPrivilegeRole = ViewFndVPrivilegeRole{
 	PrrRoleID:   "prr_role_id",
 	PrrModuleID: "prr_module_id",
 	PrrActionID: "prr_action_id",
-	PrrRoute:    "prr_route",
 	PrrMethod:   "prr_method",
+	PrrRoute:    "prr_route",
 }

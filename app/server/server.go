@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gomodule/redigo/redis"
 	"github.com/kardianos/service"
 	"github.com/spf13/viper"
 
@@ -24,6 +25,7 @@ type Server struct {
 	Config     Config
 	MainDB     *sql.DB
 	HTTPServer *http.Server
+	Redis      *redis.Pool
 }
 
 type Config struct {
@@ -40,12 +42,17 @@ type Config struct {
 	AppPathEnv     string           `mapstructure:"PATH"`
 	LoggingLevel   config.LogginLvl `mapstructure:"LOGGING_LEVEL"`
 	// Database
-
 	DBMainConnection      string `mapstructure:"DB_MAIN_CONNECTION"`
 	DBMainMaxIdleConns    int    `mapstructure:"DB_MAIN_MAX_IDLE_CONNS"`
 	DBMainMaxOpenConns    int    `mapstructure:"DB_MAIN_MAX_OPEN_CONNS"`
 	DBMainConnMaxIdleTime int    `mapstructure:"DB_MAIN_CONN_MAX_IDLE_TIME"`
 	DBMainConnMaxLifetime int    `mapstructure:"DB_MAIN_CONN_MAX_LIFETIME"`
+
+	// Redis
+	RedisMaxIdleConns int    `mapstructure:"REDIS_MAX_IDLE_CONNS"`
+	RedisMaxOpenConns int    `mapstructure:"REDIS_MAX_OPEN_CONNS"`
+	RedisAddress      string `mapstructure:"REDIS_ADDRESS"`
+	RedisPassword     string `mapstructure:"REDIS_PASSWORD"`
 }
 
 func (c Config) AppModeDebug() bool {
@@ -103,12 +110,13 @@ func (server Server) Stop(s service.Service) error {
 
 func (server *Server) load() error {
 	if err := server.loadConfig(); err != nil {
-		return err
+		return fmt.Errorf("loading configuration: %w", err)
 	}
-	/* fmt.Printf("%#v\n", server.Config)
-	os.Exit(1) */
 	if err := server.connectDB(); err != nil {
-		return err
+		return fmt.Errorf("connecting database: %w", err)
+	}
+	if err := server.loadRedis(); err != nil {
+		return fmt.Errorf("connecting redis: %w", err)
 	}
 	server.configureServices()
 	return nil
@@ -159,6 +167,40 @@ func (server *Server) connectDB() (err error) {
 	server.MainDB.SetMaxOpenConns(server.Config.DBMainMaxOpenConns)
 	server.MainDB.SetConnMaxIdleTime(time.Second * time.Duration(server.Config.DBMainConnMaxIdleTime))
 	server.MainDB.SetConnMaxLifetime(time.Second * time.Duration(server.Config.DBMainConnMaxLifetime))
+	return nil
+}
+
+func (server *Server) loadRedis() error {
+	redis := redis.Pool{
+		MaxIdle:     server.Config.RedisMaxIdleConns,
+		MaxActive:   server.Config.RedisMaxOpenConns,
+		IdleTimeout: 240 * time.Second,
+		TestOnBorrow: func(c redis.Conn, _ time.Time) error {
+			_, err := c.Do("PING")
+			return err
+		},
+		Dial: func() (redis.Conn, error) {
+			c, err := redis.Dial("tcp", server.Config.RedisAddress)
+			if err != nil {
+				return nil, err
+			}
+			if server.Config.RedisPassword != "" {
+				if _, err := c.Do("AUTH", server.Config.RedisPassword); err != nil {
+					c.Close()
+					return nil, err
+				}
+			}
+			return c, err
+		},
+	}
+
+	conn := redis.Get()
+	defer conn.Close()
+	_, err := conn.Do("PING")
+	if err != nil {
+		return err
+	}
+	server.Redis = &redis
 	return nil
 }
 

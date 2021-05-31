@@ -24,18 +24,31 @@
         act_name                TEXT NOT NULL,
         act_description         TEXT NOT NULL,
         act_order               INTEGER NOT NULL,
-        act_route               TEXT NOT NULL,
-        act_method              TEXT NOT NULL,
         act_created_at          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
         act_updated_at          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
         act_status              fnd_dm_record_status
     );
 
     ALTER TABLE ONLY fnd_action ADD CONSTRAINT
-        fndtaction_pk PRIMARY KEY (act_module_id, act_action_id);
+        fnd_action_pk PRIMARY KEY (act_module_id, act_action_id);
 
-    CALL create_fk('fnd_action', 'act_module_id', 'fnd_module', 'mod_id', '');
+    CALL create_fk('fnd_action', 'act_module_id', 'fnd_module', 'mod_id');
 -- END fnd_action
+
+
+-- BEGIN fnd_action_route
+    CREATE TABLE fnd_action_route (
+        acr_module_id           TEXT NOT NULL,
+        acr_action_id           TEXT NOT NULL,
+        acr_method              TEXT NOT NULL,
+        acr_route               TEXT NOT NULL
+    );
+
+    ALTER TABLE ONLY fnd_action_route ADD CONSTRAINT
+        fnd_action_route_pk PRIMARY KEY (acr_module_id, acr_action_id, acr_method, acr_route);
+
+    CALL create_fk('fnd_action_route', 'acr_module_id,acr_action_id', 'fnd_action', 'act_module_id,act_action_id');
+-- END fnd_action_route
 
 
 -- BEGIN fnd_role
@@ -50,7 +63,7 @@
     );
 
     ALTER TABLE ONLY fnd_role ADD CONSTRAINT
-        fndtrole_pk PRIMARY KEY (rol_id);
+        fnd_role_pk PRIMARY KEY (rol_id);
 -- END fnd_role
 
 
@@ -62,11 +75,11 @@
     );
 
     ALTER TABLE ONLY fnd_privilege ADD CONSTRAINT
-        fndtprivilege_pk PRIMARY KEY (pri_role_id, pri_module_id, pri_action_id);
+        fnd_privilege_pk PRIMARY KEY (pri_role_id, pri_module_id, pri_action_id);
 
-    CALL create_fk('fnd_privilege', 'pri_role_id', 'fnd_role', 'rol_id', '');
+    CALL create_fk('fnd_privilege', 'pri_role_id', 'fnd_role', 'rol_id');
 
-    CALL create_fk('fnd_privilege', 'pri_module_id,pri_action_id', 'fnd_action', 'act_module_id,act_action_id', '');
+    CALL create_fk('fnd_privilege', 'pri_module_id,pri_action_id', 'fnd_action', 'act_module_id,act_action_id');
 -- END fnd_privilege
 
 -- BEGIN fnd_user
@@ -83,13 +96,13 @@
     );
 
     ALTER TABLE ONLY fnd_user ADD CONSTRAINT
-        fndtuser_pk PRIMARY KEY (use_id);
+        fnd_user_pk PRIMARY KEY (use_id);
 
     ALTER TABLE ONLY fnd_user ADD CONSTRAINT
-        fndtuser_uq_use_email UNIQUE (use_email);
+        fnd_user_uq_use_email UNIQUE (use_email);
 
     ALTER TABLE ONLY fnd_user ADD CONSTRAINT
-        fndtuser_uq_use_username UNIQUE (use_username);
+        fnd_user_uq_use_username UNIQUE (use_username);
 -- END fnd_user
 
 
@@ -110,11 +123,11 @@
     );
 
     ALTER TABLE ONLY fnd_password ADD CONSTRAINT
-        fndtpassword_pk PRIMARY KEY (pas_id);
+        fnd_password_pk PRIMARY KEY (pas_id);
 
-    CALL create_fk('fnd_password', 'pas_user_id', 'fnd_user', 'use_id', '');
+    CALL create_fk('fnd_password', 'pas_user_id', 'fnd_user', 'use_id');
 
-    CREATE INDEX fndtpassword_idx_pas_user_id ON fnd_password USING HASH (pas_user_id);
+    CREATE INDEX fnd_password_idx_pas_user_id ON fnd_password USING HASH (pas_user_id);
 -- END fnd_password
 
 
@@ -125,11 +138,11 @@
     );
 
     ALTER TABLE ONLY fnd_user_role ADD CONSTRAINT
-        fndtuser_role_pk PRIMARY KEY (usr_user_id, usr_role_id);
+        fnd_user_role_pk PRIMARY KEY (usr_user_id, usr_role_id);
 
-    CALL create_fk('fnd_user_role', 'usr_user_id', 'fnd_user', 'use_id', '');
+    CALL create_fk('fnd_user_role', 'usr_user_id', 'fnd_user', 'use_id');
 
-    CALL create_fk('fnd_user_role', 'usr_role_id', 'fnd_role', 'rol_id', '');
+    CALL create_fk('fnd_user_role', 'usr_role_id', 'fnd_role', 'rol_id');
 -- END fnd_user_role
 
 
@@ -148,7 +161,7 @@
     );
 
     ALTER TABLE ONLY fnd_nav_element ADD CONSTRAINT
-        fndtnav_element_pk PRIMARY KEY (nae_id);
+        fnd_nav_element_pk PRIMARY KEY (nae_id);
 
     CALL create_fk('fnd_nav_element', 'nae_parent_id', 'fnd_nav_element', 'nae_id', 'parent', 'ON DELETE SET NULL');
 -- END fnd_nav_element
@@ -161,11 +174,11 @@
     );
 
     ALTER TABLE ONLY fnd_nav_element_role ADD CONSTRAINT
-        fndtrole_nav_element_pk PRIMARY KEY (ner_role_id, ner_nav_element_id);
+        fnd_role_nav_element_pk PRIMARY KEY (ner_role_id, ner_nav_element_id);
 
-    CALL create_fk('fnd_nav_element_role', 'ner_nav_element_id', 'fnd_nav_element', 'nae_id', '');
+    CALL create_fk('fnd_nav_element_role', 'ner_nav_element_id', 'fnd_nav_element', 'nae_id');
 
-    CALL create_fk('fnd_nav_element_role', 'ner_role_id', 'fnd_role', 'rol_id', '');
+    CALL create_fk('fnd_nav_element_role', 'ner_role_id', 'fnd_role', 'rol_id');
 -- END fnd_nav_element_role
 
 
@@ -185,9 +198,9 @@
     );
 
     ALTER TABLE ONLY fnd_account_access ADD CONSTRAINT
-        fndtaccess_account_pk PRIMARY KEY (aca_id);
+        fnd_access_account_pk PRIMARY KEY (aca_id);
 
-    CALL create_fk('fnd_account_access', 'aca_user_id', 'fnd_user', 'use_id', '');
+    CALL create_fk('fnd_account_access', 'aca_user_id', 'fnd_user', 'use_id');
 -- END fnd_account_access
 
 
@@ -197,14 +210,17 @@
             pri_role_id   prr_role_id,
             pri_module_id prr_module_id,
             pri_action_id prr_action_id,
-            act_route     prr_route,
-            act_method    prr_method
+            acr_method    prr_method,
+            acr_route     prr_route
         FROM fnd_role
         INNER JOIN fnd_privilege
             ON pri_role_id = rol_id
         INNER JOIN fnd_action
             ON act_module_id  = pri_module_id
             AND act_action_id = pri_action_id
+        LEFT JOIN fnd_action_route
+            ON acr_module_id  = act_module_id
+            AND acr_action_id = act_action_id
         WHERE rol_status = 2
         AND act_status = 2;
 -- END fnd_v_privilege_role

@@ -85,7 +85,7 @@ func (dao *Dao{{$.Entity.GoStruct}}) GetByID(ctx context.Context, exe base.Execu
 func (dao *Dao{{$.Entity.GoStruct}}) List(ctx context.Context, exe base.Executor,
 	qry base.ClientQuery,
 ) ({{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoSlice}}, error) {
-	res := make({{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoSlice}}, 0)
+	recs := make({{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoSlice}}, 0)
 	params, err := ParseClientFilter(qry, {{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoStruct}}{})
 	if err != nil {
 		return nil, err
@@ -110,7 +110,7 @@ func (dao *Dao{{$.Entity.GoStruct}}) List(ctx context.Context, exe base.Executor
 	rows, err := QueryContext(ctx, exe, query)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return res, nil
+			return recs, nil
 		}
 		DebugErr(ctx, err)
 		return nil, err
@@ -143,9 +143,9 @@ func (dao *Dao{{$.Entity.GoStruct}}) List(ctx context.Context, exe base.Executor
 			}
 		{{- end}}
 		{{- end}}
-		res = append(res, rec)
+		recs = append(recs, rec)
 	}
-	return res, nil
+	return recs, nil
 }
 
 // New creates a new record.

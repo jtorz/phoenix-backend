@@ -31,8 +31,6 @@ func (handler httpAction) GetByID() httphandler.HandlerFunc {
 		"Name":          nil,
 		"Description":   nil,
 		"Order":         nil,
-		"Route":         nil,
-		"Method":        nil,
 		"CreatedAt":     nil,
 		"UpdatedAt":     nil,
 		"Status":        nil,
@@ -58,8 +56,6 @@ func (handler httpAction) ListAll() httphandler.HandlerFunc {
 		"Name":          nil,
 		"Description":   nil,
 		"Order":         nil,
-		"Route":         nil,
-		"Method":        nil,
 		"CreatedAt":     nil,
 		"UpdatedAt":     nil,
 		"Status":        nil,
@@ -91,8 +87,6 @@ func (handler httpAction) ListActive() httphandler.HandlerFunc {
 		"Name":        nil,
 		"Description": nil,
 		"Order":       nil,
-		"Route":       nil,
-		"Method":      nil,
 	}
 	return func(c *httphandler.Context) {
 		moduleID := c.Param("moduleID")
@@ -120,8 +114,6 @@ func (handler httpAction) New() httphandler.HandlerFunc {
 		Name        string `binding:"required"`
 		Description string `binding:"required"`
 		Order       int
-		Route       string `binding:"required"`
-		Method      string `binding:"required"`
 	}
 	resp := jsont.F{
 		"UpdatedAt":     nil,
@@ -140,8 +132,6 @@ func (handler httpAction) New() httphandler.HandlerFunc {
 			Name:        req.Name,
 			Description: req.Description,
 			Order:       req.Order,
-			Route:       req.Route,
-			Method:      req.Method,
 		}
 		biz := fndbiz.NewBizAction()
 		tx := c.BeginTx(handler.DB)
@@ -163,8 +153,6 @@ func (handler httpAction) Edit() httphandler.HandlerFunc {
 		Name        string `binding:"required"`
 		Description string `binding:"required"`
 		Order       int
-		Route       string    `binding:"required"`
-		Method      string    `binding:"required"`
 		UpdatedAt   time.Time `binding:"required"`
 	}
 	resp := jsont.F{
@@ -181,8 +169,6 @@ func (handler httpAction) Edit() httphandler.HandlerFunc {
 			Name:        req.Name,
 			Description: req.Description,
 			Order:       req.Order,
-			Route:       req.Route,
-			Method:      req.Method,
 			UpdatedAt:   req.UpdatedAt,
 		}
 

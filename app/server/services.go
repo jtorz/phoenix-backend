@@ -22,7 +22,7 @@ func (server *Server) configureServices() {
 	gin.SetMode(server.Config.AppMode)
 
 	r := gin.New()
-	server.configureMiddlewares(r, jwtSvc)
+	server.configureMiddlewares(r, jwtSvc, server.Redis)
 
 	apiGroup := r.Group("/api")
 	var mailSenderSvc baseservice.MailSenderSvc
@@ -34,6 +34,7 @@ func (server *Server) configureServices() {
 		mailSvc := mailhttp.NewHttpService(server.MainDB)
 		adminGroup := apiGroup.Group("/admin")
 		publicGroup := apiGroup.Group("/public")
+		//authAllGroup := apiGroup.Group("/auth-all")
 		mailSvc.API(apiGroup.Group(route))
 		mailSvc.APIAdmin(adminGroup.Group(route))
 		mailSvc.APIPublic(publicGroup.Group(route))
@@ -41,12 +42,14 @@ func (server *Server) configureServices() {
 
 	{
 		route := "/foundation"
-		fndSVC := fndhttp.NewHttpService(server.MainDB, jwtSvc, mailSenderSvc)
+		fndSVC := fndhttp.NewHttpService(server.MainDB, jwtSvc, mailSenderSvc, server.Redis)
 		adminGroup := apiGroup.Group("/admin")
 		publicGroup := apiGroup.Group("/public")
+		authAllGroup := apiGroup.Group("/auth-all")
 		fndSVC.API(apiGroup.Group(route))
 		fndSVC.APIAdmin(adminGroup.Group(route))
 		fndSVC.APIPublic(publicGroup.Group(route))
+		fndSVC.APIAuthAll(authAllGroup.Group(route))
 	}
 
 	h := http.TimeoutHandler(r, time.Duration(server.Config.RequestTimeout)*time.Second, `"request timeout"`)

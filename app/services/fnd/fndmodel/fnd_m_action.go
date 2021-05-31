@@ -16,8 +16,6 @@ type Action struct {
 	Name          string
 	Description   string
 	Order         int
-	Route         string
-	Method        string
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	Status        base.Status

@@ -55,6 +55,7 @@ func TestColumns(t *testing.T) {
 	}{
 		{T.FndAccountAccess, FndAccountAccess},
 		{T.FndAction, FndAction},
+		{T.FndActionRoute, FndActionRoute},
 		{T.FndModule, FndModule},
 		{T.FndNavElement, FndNavElement},
 		{T.FndNavElementRole, FndNavElementRole},

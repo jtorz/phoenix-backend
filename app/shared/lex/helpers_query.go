@@ -12,7 +12,13 @@ import (
 
 	// goqudialect
 	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
+	"github.com/doug-martin/goqu/v9/exp"
 )
+
+// CoalesceStr coalesce empty string.
+func CoalesceStr(col string) exp.SQLFunctionExpression {
+	return goqu.COALESCE(goqu.C(col), goqu.L("''"))
+}
 
 // NewSelect initiates the sql query.
 func NewSelect(columns ...interface{}) *goqu.SelectDataset {

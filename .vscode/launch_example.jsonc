@@ -29,6 +29,11 @@
                 "PHOENIX_DB_MAIN_MAX_OPEN_CONNS": "1",
                 "PHOENIX_DB_MAIN_CONN_MAX_IDLE_TIME": "10",
                 "PHOENIX_DB_MAIN_CONN_MAX_LIFETIME": "1",
+                //REDIS
+                "PHOENIX_REDIS_MAX_IDLE_CONNS": "10",
+                "PHOENIX_REDIS_MAX_OPEN_CONNS": "10",
+                "PHOENIX_REDIS_ADDRESS": "127.0.0.1:6379",
+                "PHOENIX_REDIS_PASSWORD": ""
             }
         }
     ]

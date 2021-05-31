@@ -139,8 +139,8 @@ Authorization: {{`{{Authorization}}`}}
 
 
 ###
-# @name VALIDATE_{{$.Entity.GoStruct}}
-PUT  {{`{{app-host}}`}}/api/{{$.ServiceName | lowercase}}/{{$.Entity.GoSlice | lowercase}}/{{$.Entity.GoStruct | lowercase}}/validate
+# @name ACTIVATE_{{$.Entity.GoStruct}}
+PUT  {{`{{app-host}}`}}/api/{{$.ServiceName | lowercase}}/{{$.Entity.GoSlice | lowercase}}/{{$.Entity.GoStruct | lowercase}}/activate
 Content-Type: application/json
 Authorization: {{`{{Authorization}}`}}
 
@@ -154,8 +154,8 @@ Authorization: {{`{{Authorization}}`}}
 
 
 ###
-# @name INVALIDATE_{{$.Entity.GoStruct}}
-PUT  {{`{{app-host}}`}}/api/{{$.ServiceName | lowercase}}/{{$.Entity.GoSlice | lowercase}}/{{$.Entity.GoStruct | lowercase}}/invalidate
+# @name INACTIVATE_{{$.Entity.GoStruct}}
+PUT  {{`{{app-host}}`}}/api/{{$.ServiceName | lowercase}}/{{$.Entity.GoSlice | lowercase}}/{{$.Entity.GoStruct | lowercase}}/inactivate
 Content-Type: application/json
 Authorization: {{`{{Authorization}}`}}
 

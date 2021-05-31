@@ -12,6 +12,7 @@ import (
 var T = struct {
 	FndAccountAccess  string
 	FndAction         string
+	FndActionRoute    string
 	FndModule         string
 	FndNavElement     string
 	FndNavElementRole string
@@ -29,6 +30,7 @@ var T = struct {
 }{
 	FndAccountAccess:  "fnd_account_access",
 	FndAction:         "fnd_action",
+	FndActionRoute:    "fnd_action_route",
 	FndModule:         "fnd_module",
 	FndNavElement:     "fnd_nav_element",
 	FndNavElementRole: "fnd_nav_element_role",
@@ -64,6 +66,15 @@ func FndAccountAccessFkFndUser(exps ...exp.Expression) exp.JoinCondition {
 func FndActionFkFndModule(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
 		FndAction.ActModuleID: goqu.I(FndModule.ModID),
+	})
+	return goqu.On(exps...)
+}
+
+// FndActionRouteFkFndAction returns the join expression for the foreign key from FndActionRoute to FndAction.
+func FndActionRouteFkFndAction(exps ...exp.Expression) exp.JoinCondition {
+	exps = append(exps, goqu.Ex{
+		FndActionRoute.AcrActionID: goqu.I(FndAction.ActActionID),
+		FndActionRoute.AcrModuleID: goqu.I(FndAction.ActModuleID),
 	})
 	return goqu.On(exps...)
 }

@@ -34,7 +34,7 @@ Authorization: {{Authorization}}
 {
     "limit": 0,
     "offset": 0,
-    "sort": ["+ModuleID","+ActionID","+Name","+Description","+Order","+Route","+Method","+CreatedAt","+UpdatedAt"
+    "sort": ["+ModuleID","+ActionID","+Name","+Description","+Order","+CreatedAt","+UpdatedAt"
     ]
 }
 
@@ -63,9 +63,7 @@ Authorization: {{Authorization}}
     "ActionID": "NEW",
     "Name": "New",
     "Description": "Create new navigator element.",
-    "Order": 0,
-    "Route": "/navigator/elements/element",
-    "Method": "POST"
+    "Order": 0
 }
 
 
@@ -78,11 +76,9 @@ Authorization: {{Authorization}}
 {
     "ModuleID": "{{moduleID}}",
     "ActionID": "{{actionID}}",
-    "Name": "",
-    "Description": "",
+    "Name": "New",
+    "Description": "Create a new navigator element.",
     "Order": 0,
-    "Route": "",
-    "Method": "",
     "UpdatedAt": "{{updatedAt}}"
 }
 
