@@ -3,6 +3,7 @@ module github.com/jtorz/phoenix-backend
 go 1.16
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/allegro/bigcache/v2 v2.2.5
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/doug-martin/goqu/v9 v9.13.0

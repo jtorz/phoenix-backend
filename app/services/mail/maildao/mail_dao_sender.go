@@ -58,7 +58,7 @@ func (dao *DaoSender) GetByID(ctx context.Context, exe base.Executor,
 	)
 	if err != nil {
 		DebugErr(ctx, err)
-		return nil, err
+		return nil, WrapNotFound(ctx, T.MailSender, err)
 	}
 
 	rec.ID = id

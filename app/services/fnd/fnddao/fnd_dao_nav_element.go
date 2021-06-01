@@ -57,7 +57,7 @@ func (dao *DaoNavElement) GetByID(ctx context.Context, exe base.Executor,
 	)
 	if err != nil {
 		DebugErr(ctx, err)
-		return nil, err
+		return nil, WrapNotFound(ctx, T.FndNavElement, err)
 	}
 	rec.ParentID = string(parentID)
 

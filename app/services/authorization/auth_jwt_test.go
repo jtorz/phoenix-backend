@@ -22,12 +22,14 @@ func TestNewJWT(t *testing.T) {
 			ID: "591e58a6-e04e-5239-a0e9-7ee3c4ca2423",
 		}
 		s, err := svc.NewJWT(*original)
-		if !assert.Nil(t, err) {
+		assert.Nil(t, err)
+		if err != nil {
 			return
 		}
 
 		decoded, err := svc.authJWT(s)
-		if !assert.Nil(t, err) {
+		assert.Nil(t, err)
+		if err != nil {
 			return
 		}
 		assert.Equal(t, original, decoded)
@@ -39,9 +41,7 @@ func TestExpiredToken(t *testing.T) {
 	s := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjI0MzAzMDIsInVzZXJJRCI6IjU5MWU1OGE2LWUwNGUtNTIzOS1hMGU5LTdlZTNjNGNhMjQyMyJ9.eHoVa9dD_tIvsyJ_yHG-4JJGX73bqkLanR17OliI5Ho"
 	decoded, err := svc.authJWT(s)
 	assert.Nil(t, decoded)
-	if !assert.NotNil(t, err) {
-		return
-	}
+	assert.NotNil(t, err)
 }
 
 func TestParseBadJWT(t *testing.T) {
@@ -50,21 +50,18 @@ func TestParseBadJWT(t *testing.T) {
 		ID: "591e58a6-e04e-5239-a0e9-7ee3c4ca2423",
 	}
 	s, err := svc.NewJWT(*original)
-	if !assert.Nil(t, err) {
+	assert.Nil(t, err)
+	if err != nil {
 		return
 	}
 
 	decoded, err := svc.authJWT(s + "a")
 	assert.Nil(t, decoded)
-	if !assert.NotNil(t, err) {
-		return
-	}
+	assert.NotNil(t, err)
 
 	decoded, err = svc.authJWT("")
 	assert.Nil(t, decoded)
-	if !assert.NotNil(t, err) {
-		return
-	}
+	assert.NotNil(t, err)
 }
 
 func TestPanicOnEmpty(t *testing.T) {
@@ -79,13 +76,15 @@ func TestBearerToken(t *testing.T) {
 		ID: "591e58a6-e04e-5239-a0e9-7ee3c4ca2423",
 	}
 	s, err := svc.NewJWT(*original)
-	if !assert.Nil(t, err) {
+	assert.Nil(t, err)
+	if err != nil {
 		return
 	}
 
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		decoded, err := svc.AuthJWT(r)
-		if !assert.Nil(t, err) {
+		assert.Nil(t, err)
+		if err != nil {
 			return
 		}
 		assert.Equal(t, original, decoded)
@@ -107,16 +106,9 @@ func TestNotBearerToken(t *testing.T) {
 		ID: "591e58a6-e04e-5239-a0e9-7ee3c4ca2423",
 	}
 	s, err := svc.NewJWT(*original)
-	if !assert.Nil(t, err) {
+	assert.Nil(t, err)
+	if err != nil {
 		return
-	}
-
-	handler := func(w http.ResponseWriter, r *http.Request) {
-		decoded, err := svc.AuthJWT(r)
-		assert.Nil(t, decoded)
-		if !assert.NotNil(t, err) {
-			return
-		}
 	}
 
 	req, err := http.NewRequest(http.MethodGet, "/", nil)
@@ -124,26 +116,22 @@ func TestNotBearerToken(t *testing.T) {
 		t.Fatalf("Could not create a request %v", err)
 	}
 	req.Header.Set("Authorization", s)
-	rec := httptest.NewRecorder()
 
-	handler(rec, req)
+	decoded, err := svc.AuthJWT(req)
+
+	assert.Nil(t, decoded)
+	assert.NotNil(t, err)
 }
 
 func TestEmptyToken(t *testing.T) {
 	svc := JWTSvc([]byte(":bu}V?8UAbc/x,rZ;+pTpZB:R+HEX(9&rTXj8?2h:9UU/;a;{3p,QB6?E&MQ"))
 
-	handler := func(w http.ResponseWriter, r *http.Request) {
-		decoded, err := svc.AuthJWT(r)
-		assert.Nil(t, decoded)
-		if !assert.NotNil(t, err) {
-			return
-		}
-	}
-
 	req, err := http.NewRequest(http.MethodGet, "/", nil)
 	if err != nil {
 		t.Fatalf("Could not create a request %v", err)
 	}
-	rec := httptest.NewRecorder()
-	handler(rec, req)
+
+	decoded, err := svc.AuthJWT(req)
+	assert.Nil(t, decoded)
+	assert.NotNil(t, err)
 }

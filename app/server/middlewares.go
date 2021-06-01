@@ -52,7 +52,7 @@ func (server *Server) configureMiddlewares(r *gin.Engine, jwtSvc authorization.J
 	// Auhtentication and Authorization middleware.
 	r.Use(func(ginCtx *gin.Context) {
 		c := httphandler.New(ginCtx)
-		authSvc, errNewAuth := authorization.NewAuthService(c, jwtSvc, server.MainDB, redis)
+		authSvc, errNewAuth := authorization.NewAuthService(c.Request, jwtSvc, server.MainDB, redis)
 
 		if isAPIPublicRoute(ginCtx) {
 			var agent *baseservice.Agent
@@ -73,8 +73,7 @@ func (server *Server) configureMiddlewares(r *gin.Engine, jwtSvc authorization.J
 			log.Printf("uknown error: %s", errNewAuth)
 			return
 		}
-
-		err := authSvc.CheckAuthorization(c)
+		err := authSvc.CheckAuthorization(c, c.Request.Method, c.FullPath())
 		if err != nil {
 			c.Abort()
 			if err == baseerrors.ErrPrivilege {

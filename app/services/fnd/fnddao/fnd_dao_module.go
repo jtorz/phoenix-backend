@@ -52,7 +52,7 @@ func (dao *DaoModule) GetByID(ctx context.Context, exe base.Executor,
 	)
 	if err != nil {
 		DebugErr(ctx, err)
-		return nil, err
+		return nil, WrapNotFound(ctx, T.FndModule, err)
 	}
 	if parentID != "" {
 		rec.Parent = &fndmodel.Module{ID: string(parentID)}

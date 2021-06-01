@@ -1,0 +1,8 @@
+$env:TEST_PHOENIX_PORT="3002"
+$env:TEST_PHOENIX_PROTOCOL="http"
+$env:TEST_PHOENIX_JWT_KEY="123456789"
+$env:TEST_PHOENIX_PATH="c:/go/github.com/jtorz/phoenix-backend"
+$env:TEST_PHOENIX_LOGGING_LEVEL="debug"
+$env:TEST_PHOENIX_DB_MAIN_CONNECTION="host=localhost port=5432 user=postgres dbname=postgres password=postgres sslmode=disable"
+$env:TEST_PHOENIX_REDIS_ADDRESS="127.0.0.1:6379"
+$env:TEST_PHOENIX_REDIS_PASSWORD=""

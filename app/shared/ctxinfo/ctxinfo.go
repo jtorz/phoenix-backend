@@ -8,7 +8,9 @@ import (
 	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
 )
 
-const modeKey = config.EnvPrefix + "_mode_"
+type modeKeyType string
+
+const modeKey modeKeyType = modeKeyType(config.EnvPrefix) + "_mode_"
 
 // LoggingLevel returns the level of logging int he context.
 func LoggingLevel(ctx context.Context) config.LogginLvl {
@@ -25,7 +27,12 @@ func LogginAllowed(ctx context.Context, lvl config.LogginLvl) bool {
 
 // SetLoggingLevel sets level of logging to the gin.Context.
 func SetLoggingLevel(c *gin.Context, lvl config.LogginLvl) {
-	c.Set(modeKey, lvl)
+	c.Set(string(modeKey), lvl)
+}
+
+// SetLoggingLevel sets level of logging to the gin.Context.
+func SetLoggingLevelC(parent context.Context, lvl config.LogginLvl) context.Context {
+	return context.WithValue(parent, modeKey, lvl)
 }
 
 const agentKey = config.EnvPrefix + "_agent_"

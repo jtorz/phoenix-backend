@@ -31,6 +31,7 @@ app/assets/certs/*
 
 scripts/generate-lex.ps1
 scripts/generate-code.ps1
+test_env.ps1
 
 codegen.gotpl
 

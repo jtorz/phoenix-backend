@@ -63,7 +63,7 @@ func (dao *Dao{{$.Entity.GoStruct}}) GetByID(ctx context.Context, exe base.Execu
 	)
 	if err != nil {
 		DebugErr(ctx, err)
-		return nil, err
+		return nil, WrapNotFound(ctx, T.{{$.Entity.DBGoCase}}, err)
 	}
 
 	{{- range $Col := $.Entity.Columns}}

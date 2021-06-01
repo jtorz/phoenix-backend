@@ -32,7 +32,10 @@ type Error struct {
 }
 
 func (err Error) Error() string {
-	return "pq: " + err.Message
+	if err.Code == NoDataFound {
+		return err.Table + " not found"
+	}
+	return "pq: " + err.Message + err.Table
 }
 
 // IsCode checks if the error is caused by the postgres code.
@@ -46,6 +49,11 @@ func IsCode(err error, code ErrorCode) bool {
 
 // GetPgErr returns the postgres underlying error if posible.
 func GetPgErr(err error) *Error {
+	if pgerr, ok := err.(*Error); ok {
+		return pgerr
+	}
+
+	// try unwrap
 	err2 := errors.Unwrap(err)
 	if err2 != nil {
 		err = err2

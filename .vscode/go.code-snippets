@@ -80,7 +80,7 @@
 			")",
 			"if err != nil {",
 			"    DebugErr(ctx, err)",
-			"    return nil, err",
+			"    return nil, WrapNotFound(ctx, T.$2, err)",
 			"}",
 			"return rec, nil",
 			""

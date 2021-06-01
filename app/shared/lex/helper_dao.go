@@ -22,6 +22,7 @@ import (
 	"github.com/jtorz/phoenix-backend/app/config"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
 	"github.com/jtorz/phoenix-backend/app/shared/ctxinfo"
+	"github.com/jtorz/phoenix-backend/utils/pg"
 )
 
 // CheckOneRowUpdated checks that only one records was affected.
@@ -66,4 +67,19 @@ func DebugErr(ctx context.Context, err error) {
 		file, line := f.FileLine(pc[0])
 		log.Printf("%s:%d %s/n", file, line, f.Name())
 	}
+}
+
+// WrapNotFound wrpas the error only if its a sql.ErrNoRows.
+func WrapNotFound(ctx context.Context, table string, err error) error {
+	if err == nil {
+		return nil
+	}
+	if err == sql.ErrNoRows {
+		return &pg.Error{
+			Code:    pg.NoDataFound,
+			Message: "no data found",
+			Table:   table,
+		}
+	}
+	return err
 }

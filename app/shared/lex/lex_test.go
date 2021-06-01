@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	configtest "github.com/jtorz/phoenix-backend/app/config/configtest"
+	configtest "github.com/jtorz/phoenix-backend/app/config/testconfig"
 )
 
 var mainDB *sql.DB

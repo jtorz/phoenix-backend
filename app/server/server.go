@@ -3,18 +3,13 @@ package server
 import (
 	"database/sql"
 	"fmt"
-	"go/build"
 	"net/http"
 	"os"
-	"reflect"
-	"strings"
-	"time"
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/kardianos/service"
-	"github.com/spf13/viper"
 
-	"github.com/jtorz/phoenix-backend/app/config"
+	"github.com/jtorz/phoenix-backend/app/config/serverconfig"
 	"github.com/jtorz/phoenix-backend/utils/syslog"
 
 	// postgres driver
@@ -22,41 +17,10 @@ import (
 )
 
 type Server struct {
-	Config     Config
+	Config     *serverconfig.Config
 	MainDB     *sql.DB
 	HTTPServer *http.Server
 	Redis      *redis.Pool
-}
-
-type Config struct {
-	Port           int              `mapstructure:"PORT"`
-	PortRedirect   int              `mapstructure:"PORT_REDIRECT"`
-	Domain         string           `mapstructure:"DOMAIN"`
-	Protocol       string           `mapstructure:"PROTOCOL"`
-	RequestTimeout int              `mapstructure:"REQUEST_TIMEOUT"`
-	Cert           string           `mapstructure:"SERVER_CERT"`
-	Key            string           `mapstructure:"SERVER_KEY"`
-	AppMode        string           `mapstructure:"MODE"`
-	JWTKey         string           `mapstructure:"JWT_KEY"`
-	CryptKey       string           `mapstructure:"CRYPT_KEY"`
-	AppPathEnv     string           `mapstructure:"PATH"`
-	LoggingLevel   config.LogginLvl `mapstructure:"LOGGING_LEVEL"`
-	// Database
-	DBMainConnection      string `mapstructure:"DB_MAIN_CONNECTION"`
-	DBMainMaxIdleConns    int    `mapstructure:"DB_MAIN_MAX_IDLE_CONNS"`
-	DBMainMaxOpenConns    int    `mapstructure:"DB_MAIN_MAX_OPEN_CONNS"`
-	DBMainConnMaxIdleTime int    `mapstructure:"DB_MAIN_CONN_MAX_IDLE_TIME"`
-	DBMainConnMaxLifetime int    `mapstructure:"DB_MAIN_CONN_MAX_LIFETIME"`
-
-	// Redis
-	RedisMaxIdleConns int    `mapstructure:"REDIS_MAX_IDLE_CONNS"`
-	RedisMaxOpenConns int    `mapstructure:"REDIS_MAX_OPEN_CONNS"`
-	RedisAddress      string `mapstructure:"REDIS_ADDRESS"`
-	RedisPassword     string `mapstructure:"REDIS_PASSWORD"`
-}
-
-func (c Config) AppModeDebug() bool {
-	return c.AppMode == "" || c.AppMode == "debug" || c.AppMode == "qa"
 }
 
 func NewServer() Server {
@@ -69,7 +33,7 @@ func (server Server) Start(s service.Service) error {
 	if err != nil {
 		return err
 	}
-	err = server.load()
+	err = server.configure()
 	if err != nil {
 		log.Errorf("can't load server config: %s", err)
 		return err
@@ -108,105 +72,32 @@ func (server Server) Stop(s service.Service) error {
 	return nil
 }
 
-func (server *Server) load() error {
-	if err := server.loadConfig(); err != nil {
-		return fmt.Errorf("loading configuration: %w", err)
+func (server *Server) configure() (err error) {
+	server.Config, err = serverconfig.LoadConfig()
+	if err != nil {
+		return fmt.Errorf("error loading test config: %s", err)
 	}
-	if err := server.connectDB(); err != nil {
+
+	server.MainDB, err = serverconfig.OpenPostgres(
+		server.Config.DBMainConnection,
+		server.Config.DBMainMaxOpenConns,
+		server.Config.DBMainMaxIdleConns,
+		server.Config.DBMainConnMaxLifetime,
+		server.Config.DBMainConnMaxIdleTime,
+	)
+	if err != nil {
 		return fmt.Errorf("connecting database: %w", err)
 	}
-	if err := server.loadRedis(); err != nil {
+
+	server.Redis, err = serverconfig.OpenRedis(
+		server.Config.RedisAddress,
+		server.Config.RedisPassword,
+		server.Config.RedisMaxOpenConns,
+		server.Config.RedisMaxIdleConns,
+	)
+	if err != nil {
 		return fmt.Errorf("connecting redis: %w", err)
 	}
 	server.configureServices()
 	return nil
-}
-
-func (server *Server) loadConfig() error {
-	viper.SetEnvPrefix(config.EnvPrefix)
-	viper.SetTypeByDefaultValue(true)
-	server.registerEnvs(Config{})
-
-	viper.SetDefault("REQUEST_TIMEOUT", 10)
-	viper.SetDefault("DB_MAIN_MAX_IDLE_CONNS", 10)
-	viper.SetDefault("DB_MAIN_MAX_OPEN_CONNS", 5)
-	viper.SetDefault("DB_MAIN_CONN_MAX_IDLE_TIME", 300)
-	viper.SetDefault("DB_MAIN_CONN_MAX_LIFETIME", 600)
-	viper.SetDefault("LOGGING_LEVEL", "debug")
-	{ //PATH
-
-		p := os.Getenv("GOPATH")
-		if p == "" {
-			p = build.Default.GOPATH
-		}
-		p = addSlash(p) + "src/" + config.SysPkgName + "/"
-		viper.SetDefault("PATH", p)
-	}
-
-	err := viper.Unmarshal(&server.Config)
-	if err != nil {
-		return nil
-	}
-	return err
-}
-func (server *Server) registerEnvs(iv interface{}) {
-	v := reflect.ValueOf(iv)
-	for i := 0; i < v.NumField(); i++ {
-		tag := v.Type().Field(i).Tag.Get("mapstructure")
-		tagValues := strings.Split(tag, ",")
-		viper.BindEnv(tagValues[0])
-	}
-}
-
-func (server *Server) connectDB() (err error) {
-	fmt.Println("connecting to main db")
-	if server.MainDB, err = sql.Open("postgres", string(server.Config.DBMainConnection)); err != nil {
-		return err
-	}
-	server.MainDB.SetMaxIdleConns(server.Config.DBMainMaxIdleConns)
-	server.MainDB.SetMaxOpenConns(server.Config.DBMainMaxOpenConns)
-	server.MainDB.SetConnMaxIdleTime(time.Second * time.Duration(server.Config.DBMainConnMaxIdleTime))
-	server.MainDB.SetConnMaxLifetime(time.Second * time.Duration(server.Config.DBMainConnMaxLifetime))
-	return nil
-}
-
-func (server *Server) loadRedis() error {
-	redis := redis.Pool{
-		MaxIdle:     server.Config.RedisMaxIdleConns,
-		MaxActive:   server.Config.RedisMaxOpenConns,
-		IdleTimeout: 240 * time.Second,
-		TestOnBorrow: func(c redis.Conn, _ time.Time) error {
-			_, err := c.Do("PING")
-			return err
-		},
-		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", server.Config.RedisAddress)
-			if err != nil {
-				return nil, err
-			}
-			if server.Config.RedisPassword != "" {
-				if _, err := c.Do("AUTH", server.Config.RedisPassword); err != nil {
-					c.Close()
-					return nil, err
-				}
-			}
-			return c, err
-		},
-	}
-
-	conn := redis.Get()
-	defer conn.Close()
-	_, err := conn.Do("PING")
-	if err != nil {
-		return err
-	}
-	server.Redis = &redis
-	return nil
-}
-
-func addSlash(s string) string {
-	if s[len(s)-1] != '/' {
-		return s + "/"
-	}
-	return s
 }

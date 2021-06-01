@@ -2,11 +2,11 @@ package authorization
 
 import (
 	"context"
-	"database/sql"
+	"net/http"
 	"sync"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/jtorz/phoenix-backend/app/httphandler"
+	"github.com/jtorz/phoenix-backend/app/shared/base"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
 	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
 )
@@ -14,46 +14,52 @@ import (
 // Service authorization module service.
 //
 // Implements ctxinfo.Service interface.
+//
+// Roles and Privileges are loaded once and only the firts time they are nedded.
 type Service struct {
 	baseservice.JWTData
 
-	db    *sql.DB
+	exe   base.Executor
 	redis *redis.Pool
-	mux   *sync.Mutex
+
+	// mutex to protect the writing of Roles and privileges form concurrent calls.
+	mux *sync.Mutex
 
 	roles      []string
 	privileges privileges
 }
 
 // NewAuthService creates a new Service.
-func NewAuthService(c *httphandler.Context, jwtSvc JWTSvc, db *sql.DB, redis *redis.Pool) (*Service, error) {
-	jwtData, err := jwtSvc.AuthJWT(c.Request)
+func NewAuthService(req *http.Request, jwtSvc JWTSvc, exe base.Executor, redis *redis.Pool) (*Service, error) {
+	jwtData, err := jwtSvc.AuthJWT(req)
 	if err != nil {
 		return nil, err
 	}
 	return &Service{
 		JWTData:    *jwtData,
-		db:         db,
+		exe:        exe,
 		redis:      redis,
 		mux:        &sync.Mutex{},
-		roles:      nil,
-		privileges: nil,
+		roles:      nil, // loaded only when neeeded with function: IsAdmin
+		privileges: nil, // loaded only when neeeded with functions: CheckAuthorization, GetPrivilegeByPriority
 	}, nil
 }
 
-// CheckAuthorization check if the user
-func (svc *Service) CheckAuthorization(c *httphandler.Context) error {
-	if ok, err := svc.IsAdmin(c); err != nil {
+// CheckAuthorization checks if the user is authorized to execute the handler.
+//
+// Admin users are allowed to execute all the handlers.
+func (svc *Service) CheckAuthorization(ctx context.Context, httMethod, httpRoute string) error {
+	if ok, err := svc.IsAdmin(ctx); err != nil {
 		return err
 	} else if ok {
 		return nil
 	}
-	privs, err := svc.getPrivileges(c)
+	privs, err := svc.getPrivileges(ctx)
 	if err != nil {
 		return err
 	}
 	for i := range privs {
-		if privs[i].Method == c.Request.Method && privs[i].Route == c.FullPath() {
+		if privs[i].Method == httMethod && privs[i].Route == httpRoute {
 			return nil
 		}
 	}

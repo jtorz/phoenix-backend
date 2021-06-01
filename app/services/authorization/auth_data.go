@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/gob"
 	"log"
+	"strings"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/gomodule/redigo/redis"
@@ -169,7 +170,7 @@ func (svc *Service) getRolesDB(ctx context.Context) ([]string, error) {
 		From(T.FndUserRole).
 		Where(goqu.C(FndUserRole.UsrUserID).Eq(svc.ID))
 
-	rows, err := QueryContext(ctx, svc.db, query)
+	rows, err := QueryContext(ctx, svc.exe, query)
 	if err != nil {
 		DebugErr(ctx, err)
 		return nil, err
@@ -201,7 +202,7 @@ func (svc *Service) getPrivilegesDB(ctx context.Context) ([]privilege, error) {
 		InnerJoin(goqu.T(T.FndUserRole), goqu.On(goqu.C(FndUserRole.UsrRoleID).Eq(goqu.C(FndVPrivilegeRole.PrrRoleID)))).
 		Where(goqu.C(FndUserRole.UsrUserID).Eq(svc.ID)).GroupBy()
 
-	rows, err := QueryContext(ctx, svc.db, query)
+	rows, err := QueryContext(ctx, svc.exe, query)
 	if err != nil {
 		DebugErr(ctx, err)
 		return nil, err
@@ -220,5 +221,7 @@ func (svc *Service) getPrivilegesDB(ctx context.Context) ([]privilege, error) {
 		}
 		recs = append(recs, rec)
 	}
+	log.Println(strings.Repeat("*", 100))
+	log.Println(recs)
 	return recs, nil
 }
