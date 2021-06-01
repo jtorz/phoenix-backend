@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"net/url"
 
-	"github.com/jtorz/phoenix-backend/app/services/fnd/fnddao"
+	"github.com/jtorz/phoenix-backend/app/services/fnd/fnddal"
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
 	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
@@ -14,13 +14,13 @@ import (
 
 // BizAccountAccess business component.
 type BizAccountAccess struct {
-	dao *fnddao.DaoAccountAccess
+	dal *fnddal.DalAccountAccess
 }
 
 // NewBizAccountAccess creates business component.
 func NewBizAccountAccess() BizAccountAccess {
 	return BizAccountAccess{
-		dao: &fnddao.DaoAccountAccess{},
+		dal: &fnddal.DalAccountAccess{},
 	}
 }
 
@@ -66,7 +66,7 @@ func (biz *BizAccountAccess) restoreAccountURLResource(key string, isActivation 
 func (biz *BizAccountAccess) GetOrCreate(ctx context.Context, exe *sql.Tx,
 	u fndmodel.User, accType fndmodel.AccountAccessType,
 ) (*fndmodel.AccountAccess, error) {
-	ac, err := biz.dao.GetAccessByUserID(ctx, exe, u.ID, accType)
+	ac, err := biz.dal.GetAccessByUserID(ctx, exe, u.ID, accType)
 	if err == nil {
 		return ac, nil
 	}
@@ -84,7 +84,7 @@ func (biz *BizAccountAccess) newAccountAccess(ctx context.Context, tx *sql.Tx,
 	if err != nil {
 		return nil, err
 	}
-	if err = biz.dao.Insert(ctx, tx, ac); err != nil {
+	if err = biz.dal.Insert(ctx, tx, ac); err != nil {
 		return nil, err
 	}
 	return ac, nil
@@ -94,5 +94,5 @@ func (biz *BizAccountAccess) newAccountAccess(ctx context.Context, tx *sql.Tx,
 func (biz *BizAccountAccess) UseAccountAccess(ctx context.Context, tx *sql.Tx,
 	key string, accType fndmodel.AccountAccessType,
 ) (string, error) {
-	return biz.dao.UseAccountAccess(ctx, tx, key, accType)
+	return biz.dal.UseAccountAccess(ctx, tx, key, accType)
 }

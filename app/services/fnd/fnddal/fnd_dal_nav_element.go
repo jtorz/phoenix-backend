@@ -1,4 +1,4 @@
-package fnddao
+package fnddal
 
 import (
 	"context"
@@ -9,15 +9,15 @@ import (
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 
-	//lint:ignore ST1001 dot import allowed only in dao packages for
+	//lint:ignore ST1001 dot import allowed only in dal packages for
 	. "github.com/jtorz/phoenix-backend/app/shared/lex"
 )
 
-// DaoNavElement Data Access structure.
-type DaoNavElement struct{}
+// DalNavElement Data Access structure.
+type DalNavElement struct{}
 
 // GetByID retrives the record information of the nav element using its ID.
-func (dao *DaoNavElement) GetByID(ctx context.Context, exe base.Executor,
+func (dal *DalNavElement) GetByID(ctx context.Context, exe base.Executor,
 	id string,
 ) (*fndmodel.NavElement, error) {
 	rec := fndmodel.NavElement{}
@@ -68,7 +68,7 @@ func (dao *DaoNavElement) GetByID(ctx context.Context, exe base.Executor,
 
 // ListAll returns the all the navigator records with the flag IsAssigned
 // if the navigator element is assigned to the role.
-func (dao *DaoNavElement) ListAll(ctx context.Context, exe base.Executor,
+func (dal *DalNavElement) ListAll(ctx context.Context, exe base.Executor,
 	rolID string,
 ) (fndmodel.Navigator, error) {
 	res := make(fndmodel.Navigator, 0)
@@ -138,7 +138,7 @@ func (dao *DaoNavElement) ListAll(ctx context.Context, exe base.Executor,
 }
 
 // New creates a new record.
-func (dao *DaoNavElement) New(ctx context.Context, tx *sql.Tx,
+func (dal *DalNavElement) New(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.NavElement,
 ) error {
 	now := time.Now()
@@ -172,7 +172,7 @@ func (dao *DaoNavElement) New(ctx context.Context, tx *sql.Tx,
 }
 
 // Edit edits the record.
-func (dao *DaoNavElement) Edit(ctx context.Context, tx *sql.Tx,
+func (dal *DalNavElement) Edit(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.NavElement,
 ) error {
 	now := time.Now()
@@ -204,7 +204,7 @@ func (dao *DaoNavElement) Edit(ctx context.Context, tx *sql.Tx,
 }
 
 // SetStatus updates the logical status of the record.
-func (dao *DaoNavElement) SetStatus(ctx context.Context, tx *sql.Tx,
+func (dal *DalNavElement) SetStatus(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.NavElement,
 ) error {
 	now := time.Now()
@@ -227,7 +227,7 @@ func (dao *DaoNavElement) SetStatus(ctx context.Context, tx *sql.Tx,
 }
 
 // Delete performs a physical delete of the record.
-func (dao *DaoNavElement) Delete(ctx context.Context, tx *sql.Tx,
+func (dal *DalNavElement) Delete(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.NavElement,
 ) error {
 	query := NewDelete(T.FndNavElement).
@@ -244,7 +244,7 @@ func (dao *DaoNavElement) Delete(ctx context.Context, tx *sql.Tx,
 }
 
 // AssignToRole assigns the nav element to the role.
-func (dao *DaoNavElement) AssignToRole(ctx context.Context, tx *sql.Tx,
+func (dal *DalNavElement) AssignToRole(ctx context.Context, tx *sql.Tx,
 	elementID, roleId string,
 ) error {
 	record := goqu.Record{
@@ -261,7 +261,7 @@ func (dao *DaoNavElement) AssignToRole(ctx context.Context, tx *sql.Tx,
 }
 
 // AssociateRole associates the nav element to the role.
-func (dao *DaoNavElement) AssociateRole(ctx context.Context, tx *sql.Tx,
+func (dal *DalNavElement) AssociateRole(ctx context.Context, tx *sql.Tx,
 	elementID, roleID string,
 ) error {
 	record := goqu.Record{
@@ -278,7 +278,7 @@ func (dao *DaoNavElement) AssociateRole(ctx context.Context, tx *sql.Tx,
 }
 
 // DissociateRole dissociates the nav element from the role.
-func (dao *DaoNavElement) DissociateRole(ctx context.Context, tx *sql.Tx,
+func (dal *DalNavElement) DissociateRole(ctx context.Context, tx *sql.Tx,
 	elementID, roleID string,
 ) error {
 	query := NewDelete(T.FndNavElementRole).

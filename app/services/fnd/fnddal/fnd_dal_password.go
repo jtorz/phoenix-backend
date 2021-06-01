@@ -1,4 +1,4 @@
-package fnddao
+package fnddal
 
 import (
 	"context"
@@ -10,15 +10,15 @@ import (
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 
-	//lint:ignore ST1001 dot import allowed only in dao packages for
+	//lint:ignore ST1001 dot import allowed only in dal packages for
 	. "github.com/jtorz/phoenix-backend/app/shared/lex"
 )
 
-// DaoPassword Data Access structure.
-type DaoPassword struct{}
+// DalPassword Data Access structure.
+type DalPassword struct{}
 
 /// New saves the password record in the database.
-func (dao *DaoPassword) New(ctx context.Context, tx *sql.Tx,
+func (dal *DalPassword) New(ctx context.Context, tx *sql.Tx,
 	usuarioID string, p *fndmodel.Password,
 ) error {
 	jsonData, err := json.Marshal(p.Data)
@@ -46,7 +46,7 @@ func (dao *DaoPassword) New(ctx context.Context, tx *sql.Tx,
 }
 
 // InvalidateForUser invalidates all the passwords of a user.
-func (dao DaoPassword) InvalidateForUser(ctx context.Context, tx *sql.Tx,
+func (dal DalPassword) InvalidateForUser(ctx context.Context, tx *sql.Tx,
 	userID string,
 ) error {
 	query := NewUpdate(T.FndPassword).

@@ -4,19 +4,19 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/jtorz/phoenix-backend/app/services/fnd/fnddao"
+	"github.com/jtorz/phoenix-backend/app/services/fnd/fnddal"
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
 )
 
 // BizPassword business component.
 type BizPassword struct {
-	dao *fnddao.DaoPassword
+	dal *fnddal.DalPassword
 }
 
 func NewBizPassword() BizPassword {
 	return BizPassword{
-		dao: &fnddao.DaoPassword{},
+		dal: &fnddal.DalPassword{},
 	}
 }
 
@@ -28,10 +28,10 @@ func (biz BizPassword) ChangeUserPassword(ctx context.Context, tx *sql.Tx, sende
 	if err != nil {
 		return err
 	}
-	if err := biz.dao.InvalidateForUser(ctx, tx, u.ID); err != nil {
+	if err := biz.dal.InvalidateForUser(ctx, tx, u.ID); err != nil {
 		return err
 	}
-	if err := biz.dao.New(ctx, tx, u.ID, p); err != nil {
+	if err := biz.dal.New(ctx, tx, u.ID, p); err != nil {
 		return err
 	}
 

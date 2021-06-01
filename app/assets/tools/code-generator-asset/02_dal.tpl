@@ -1,4 +1,4 @@
-package {{$.ServiceAbbr | lowercase}}dao
+package {{$.ServiceAbbr | lowercase}}dal
 
 import (
 	"context"
@@ -9,15 +9,15 @@ import (
 	"github.com/jtorz/phoenix-backend/app/services/{{$.ServiceAbbr | lowercase}}/{{$.ServiceAbbr | lowercase}}model"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 
-	//lint:ignore ST1001 dot import allowed only in dao packages for
+	//lint:ignore ST1001 dot import allowed only in dal packages for
 	. "github.com/jtorz/phoenix-backend/app/shared/lex"
 )
 
-// Dao{{$.Entity.GoStruct}} Data Access structure.
-type Dao{{$.Entity.GoStruct}} struct{}
+// Dal{{$.Entity.GoStruct}} Data Access structure.
+type Dal{{$.Entity.GoStruct}} struct{}
 
 // GetByID retrives the record information using its ID.
-func (dao *Dao{{$.Entity.GoStruct}}) GetByID(ctx context.Context, exe base.Executor,
+func (dal *Dal{{$.Entity.GoStruct}}) GetByID(ctx context.Context, exe base.Executor,
 	{{range $Col := $.Entity.Columns}}
 	{{- if $Col.IsPK}} {{$Col.GoVarName}} {{$Col.GoDataType}}, {{end}}
 	{{- end}}
@@ -82,7 +82,7 @@ func (dao *Dao{{$.Entity.GoStruct}}) GetByID(ctx context.Context, exe base.Execu
 }
 
 // List returns the list of records that can be filtered by the user.
-func (dao *Dao{{$.Entity.GoStruct}}) List(ctx context.Context, exe base.Executor,
+func (dal *Dal{{$.Entity.GoStruct}}) List(ctx context.Context, exe base.Executor,
 	qry base.ClientQuery,
 ) ({{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoSlice}}, error) {
 	recs := make({{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoSlice}}, 0)
@@ -149,7 +149,7 @@ func (dao *Dao{{$.Entity.GoStruct}}) List(ctx context.Context, exe base.Executor
 }
 
 // New creates a new record.
-func (dao *Dao{{$.Entity.GoStruct}}) New(ctx context.Context, tx *sql.Tx,
+func (dal *Dal{{$.Entity.GoStruct}}) New(ctx context.Context, tx *sql.Tx,
 	rec *{{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoStruct}},
 ) error {
 	now := time.Now()
@@ -188,7 +188,7 @@ func (dao *Dao{{$.Entity.GoStruct}}) New(ctx context.Context, tx *sql.Tx,
 }
 
 // Edit edits the record.
-func (dao *Dao{{$.Entity.GoStruct}}) Edit(ctx context.Context, tx *sql.Tx,
+func (dal *Dal{{$.Entity.GoStruct}}) Edit(ctx context.Context, tx *sql.Tx,
 	rec *{{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoStruct}},
 ) error {
 	now := time.Now()
@@ -227,7 +227,7 @@ func (dao *Dao{{$.Entity.GoStruct}}) Edit(ctx context.Context, tx *sql.Tx,
 }
 
 // SetStatus updates the logical status of the record.
-func (dao *Dao{{$.Entity.GoStruct}}) SetStatus(ctx context.Context, tx *sql.Tx,
+func (dal *Dal{{$.Entity.GoStruct}}) SetStatus(ctx context.Context, tx *sql.Tx,
 	rec *{{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoStruct}},
 ) error {
 	now := time.Now()
@@ -259,7 +259,7 @@ func (dao *Dao{{$.Entity.GoStruct}}) SetStatus(ctx context.Context, tx *sql.Tx,
 }
 
 // Delete performs a physical delete of the record.
-func (dao *Dao{{$.Entity.GoStruct}}) Delete(ctx context.Context, tx *sql.Tx,
+func (dal *Dal{{$.Entity.GoStruct}}) Delete(ctx context.Context, tx *sql.Tx,
 	rec *{{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoStruct}},
 ) error {
 	query := NewDelete(T.{{$.Entity.DBGoCase}}).

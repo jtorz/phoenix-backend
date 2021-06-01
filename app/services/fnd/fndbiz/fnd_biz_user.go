@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/jtorz/phoenix-backend/app/services/fnd/fnddao"
+	"github.com/jtorz/phoenix-backend/app/services/fnd/fnddal"
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
@@ -15,12 +15,12 @@ import (
 
 // BizUser business component.
 type BizUser struct {
-	dao *fnddao.DaoUser
+	dal *fnddal.DalUser
 }
 
 func NewBizUser() BizUser {
 	return BizUser{
-		dao: &fnddao.DaoUser{},
+		dal: &fnddal.DalUser{},
 	}
 }
 
@@ -28,7 +28,7 @@ func NewBizUser() BizUser {
 func (biz *BizUser) Login(ctx context.Context, exe base.Executor,
 	user, pass string,
 ) (*fndmodel.User, error) {
-	u, err := biz.dao.Login(ctx, exe, user)
+	u, err := biz.dal.Login(ctx, exe, user)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (biz *BizUser) New(ctx context.Context, tx *sql.Tx, senderSvc baseservice.M
 		return fmt.Errorf("%w: username must start with a letter and contain only letter, numbers, dots or underscores", baseerrors.ErrInvalidData)
 	}
 	u.Status = base.StatusCaptured
-	if err := biz.dao.New(ctx, tx, u); err != nil {
+	if err := biz.dal.New(ctx, tx, u); err != nil {
 		return err
 	}
 	bizAcc := NewBizAccountAccess()
@@ -66,7 +66,7 @@ func (biz *BizUser) New(ctx context.Context, tx *sql.Tx, senderSvc baseservice.M
 func (biz *BizUser) GetUserByMail(ctx context.Context, exe base.Executor,
 	email string,
 ) (*fndmodel.User, error) {
-	u, err := biz.dao.GetUserByMail(ctx, exe, email)
+	u, err := biz.dal.GetUserByMail(ctx, exe, email)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (biz *BizUser) GetUserByMail(ctx context.Context, exe base.Executor,
 func (biz *BizUser) GetUserByID(ctx context.Context, exe base.Executor,
 	userID string,
 ) (*fndmodel.User, error) {
-	u, err := biz.dao.GetUserByID(ctx, exe, userID)
+	u, err := biz.dal.GetUserByID(ctx, exe, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +128,7 @@ func (biz *BizUser) RestoreAccount(ctx context.Context, tx *sql.Tx, senderSvc ba
 	}
 
 	u.Status = base.StatusActive
-	if err = biz.dao.SetStatus(ctx, tx, u); err != nil {
+	if err = biz.dal.SetStatus(ctx, tx, u); err != nil {
 		return nil, err
 	}
 	bizPass := NewBizPassword()

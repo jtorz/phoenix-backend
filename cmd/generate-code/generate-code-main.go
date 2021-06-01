@@ -26,7 +26,7 @@ type ComponentType string
 
 const (
 	Model       ComponentType = "M"
-	Dao         ComponentType = "D"
+	Dal         ComponentType = "D"
 	Business    ComponentType = "B"
 	HttpHandler ComponentType = "H"
 	RestTest    ComponentType = "R"
@@ -37,8 +37,8 @@ func (c ComponentType) String() string {
 	switch c {
 	case Model:
 		return "Model"
-	case Dao:
-		return "Dao"
+	case Dal:
+		return "Dal"
 	case Business:
 		return "Business"
 	case HttpHandler:
@@ -64,7 +64,7 @@ func init() {
 	flag.String("table", "", "REQUIRED - Database table (Example: fnduser)")
 	flag.String("svc", "", "REQUIRED - Service name (Example: foundation)")
 	flag.String("svcAbbr", "", "REQUIRED - Service abbreviation (Example: fnd)")
-	flag.String("component", "A", "REQUIRED - Type of component to generate ('M:Model' 'D:Dao' 'B:Business' 'H:HttpHandler' 'R:RestTest' 'A:All')")
+	flag.String("component", "A", "REQUIRED - Type of component to generate ('M:Model' 'D:Dal' 'B:Business' 'H:HttpHandler' 'R:RestTest' 'A:All')")
 	flag.Bool("write", true, "Should write to output files in the service directory.")
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	pflag.Parse()
@@ -85,7 +85,7 @@ func getSelectedComponent() ComponentType {
 		v = "A"
 	}
 	switch c := ComponentType(v); c {
-	case Model, Dao, Business, HttpHandler, RestTest, All:
+	case Model, Dal, Business, HttpHandler, RestTest, All:
 		return c
 	default:
 		log.Fatalf("uknown component generation (%s)", v)
@@ -121,9 +121,9 @@ func main() {
 			Template: codegenasset.ModelTPL,
 		},
 		Component{
-			Type:     Dao,
-			Out:      "app/services/%s/%sdao/%s_dao_%s.go",
-			Template: codegenasset.DaoTPL,
+			Type:     Dal,
+			Out:      "app/services/%s/%sdal/%s_dal_%s.go",
+			Template: codegenasset.DalTPL,
 		},
 		Component{
 			Type:     Business,

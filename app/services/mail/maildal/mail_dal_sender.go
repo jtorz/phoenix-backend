@@ -1,4 +1,4 @@
-package maildao
+package maildal
 
 import (
 	"context"
@@ -10,15 +10,15 @@ import (
 	"github.com/jtorz/phoenix-backend/app/services/mail/mailmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 
-	//lint:ignore ST1001 dot import allowed only in dao packages for
+	//lint:ignore ST1001 dot import allowed only in dal packages for
 	. "github.com/jtorz/phoenix-backend/app/shared/lex"
 )
 
-// DaoSender Data Access structure.
-type DaoSender struct{}
+// DalSender Data Access structure.
+type DalSender struct{}
 
 // GetByID retrives the record information using its ID.
-func (dao *DaoSender) GetByID(ctx context.Context, exe base.Executor,
+func (dal *DalSender) GetByID(ctx context.Context, exe base.Executor,
 	id string,
 ) (*mailmodel.Sender, error) {
 	rec := mailmodel.Sender{}
@@ -66,7 +66,7 @@ func (dao *DaoSender) GetByID(ctx context.Context, exe base.Executor,
 }
 
 // List returns the list of records.
-func (dao *DaoSender) List(ctx context.Context, exe base.Executor,
+func (dal *DalSender) List(ctx context.Context, exe base.Executor,
 	onlyActive bool,
 ) (mailmodel.Senders, error) {
 	res := make(mailmodel.Senders, 0)
@@ -123,7 +123,7 @@ func (dao *DaoSender) List(ctx context.Context, exe base.Executor,
 }
 
 // New creates a new record.
-func (dao *DaoSender) New(ctx context.Context, tx *sql.Tx,
+func (dal *DalSender) New(ctx context.Context, tx *sql.Tx,
 	rec *mailmodel.Sender,
 ) error {
 	now := time.Now()
@@ -151,7 +151,7 @@ func (dao *DaoSender) New(ctx context.Context, tx *sql.Tx,
 }
 
 // Edit edits the record.
-func (dao *DaoSender) Edit(ctx context.Context, tx *sql.Tx,
+func (dal *DalSender) Edit(ctx context.Context, tx *sql.Tx,
 	rec *mailmodel.Sender,
 ) error {
 	now := time.Now()
@@ -184,7 +184,7 @@ func (dao *DaoSender) Edit(ctx context.Context, tx *sql.Tx,
 }
 
 // SetStatus updates the logical status of the record.
-func (dao *DaoSender) SetStatus(ctx context.Context, tx *sql.Tx,
+func (dal *DalSender) SetStatus(ctx context.Context, tx *sql.Tx,
 	rec *mailmodel.Sender,
 ) error {
 	now := time.Now()
@@ -207,7 +207,7 @@ func (dao *DaoSender) SetStatus(ctx context.Context, tx *sql.Tx,
 }
 
 // Delete performs a physical delete of the record.
-func (dao *DaoSender) Delete(ctx context.Context, tx *sql.Tx,
+func (dal *DalSender) Delete(ctx context.Context, tx *sql.Tx,
 	rec *mailmodel.Sender,
 ) error {
 	query := NewDelete(T.MailSender).

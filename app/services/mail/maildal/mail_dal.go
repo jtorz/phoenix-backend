@@ -1,10 +1,10 @@
-package maildao
+package maildal
 
 import (
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 )
 
-// DaoMail Data Access structure.
-type DaoMail struct {
+// DalMail Data Access structure.
+type DalMail struct {
 	Exe base.Executor
 }

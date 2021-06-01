@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/jtorz/phoenix-backend/app/services/fnd/fnddao"
+	"github.com/jtorz/phoenix-backend/app/services/fnd/fnddal"
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
@@ -14,13 +14,13 @@ import (
 // BizNavElement business component.
 type BizNavElement struct {
 	Exe base.Executor
-	dao *fnddao.DaoNavElement
+	dal *fnddal.DalNavElement
 }
 
 // NewBizNavElement creates the business component.
 func NewBizNavElement() BizNavElement {
 	return BizNavElement{
-		dao: &fnddao.DaoNavElement{},
+		dal: &fnddal.DalNavElement{},
 	}
 }
 
@@ -103,7 +103,7 @@ func (biz *BizNavElement) upsertOrDelete(ctx context.Context, tx *sql.Tx,
 func (biz *BizNavElement) GetByID(ctx context.Context, exe base.Executor,
 	id string,
 ) (*fndmodel.NavElement, error) {
-	rec, err := biz.dao.GetByID(ctx, exe, id)
+	rec, err := biz.dal.GetByID(ctx, exe, id)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +116,7 @@ func (biz *BizNavElement) GetByID(ctx context.Context, exe base.Executor,
 func (biz *BizNavElement) ListAll(ctx context.Context, exe base.Executor,
 	rolID string,
 ) (fndmodel.Navigator, error) {
-	rows, err := biz.dao.ListAll(ctx, exe, rolID)
+	rows, err := biz.dal.ListAll(ctx, exe, rolID)
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +133,7 @@ func (biz *BizNavElement) New(ctx context.Context, tx *sql.Tx,
 		return fmt.Errorf("%w (nav element id)", baseerrors.ErrInvalidData)
 	}
 	rec.Status = base.StatusCaptured
-	if err := biz.dao.New(ctx, tx, rec); err != nil {
+	if err := biz.dal.New(ctx, tx, rec); err != nil {
 		return err
 	}
 	biz.setRecordActions(ctx, rec)
@@ -144,14 +144,14 @@ func (biz *BizNavElement) New(ctx context.Context, tx *sql.Tx,
 func (biz *BizNavElement) Edit(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.NavElement,
 ) error {
-	return biz.dao.Edit(ctx, tx, rec)
+	return biz.dal.Edit(ctx, tx, rec)
 }
 
 // SetStatus updates the logical status of the record.
 func (biz *BizNavElement) SetStatus(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.NavElement,
 ) error {
-	if err := biz.dao.SetStatus(ctx, tx, rec); err != nil {
+	if err := biz.dal.SetStatus(ctx, tx, rec); err != nil {
 		return err
 	}
 	biz.setRecordActions(ctx, rec)
@@ -162,7 +162,7 @@ func (biz *BizNavElement) SetStatus(ctx context.Context, tx *sql.Tx,
 func (biz *BizNavElement) Delete(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.NavElement,
 ) error {
-	if err := biz.dao.Delete(ctx, tx, rec); err != nil {
+	if err := biz.dal.Delete(ctx, tx, rec); err != nil {
 		return err
 	}
 	return nil
@@ -172,14 +172,14 @@ func (biz *BizNavElement) Delete(ctx context.Context, tx *sql.Tx,
 func (biz *BizNavElement) AssociateRole(ctx context.Context, tx *sql.Tx,
 	elementID, roleID string,
 ) error {
-	return biz.dao.AssociateRole(ctx, tx, elementID, roleID)
+	return biz.dal.AssociateRole(ctx, tx, elementID, roleID)
 }
 
 // DissociateRole dissociates the nav element from the role.
 func (biz *BizNavElement) DissociateRole(ctx context.Context, tx *sql.Tx,
 	elementID, roleID string,
 ) error {
-	return biz.dao.DissociateRole(ctx, tx, elementID, roleID)
+	return biz.dal.DissociateRole(ctx, tx, elementID, roleID)
 }
 
 // setRecordActionsNavElements sets the records action to every element in the Navigator slice.

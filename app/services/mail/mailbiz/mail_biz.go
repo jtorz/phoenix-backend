@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/jtorz/phoenix-backend/app/services/mail/maildao"
+	"github.com/jtorz/phoenix-backend/app/services/mail/maildal"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
 )
@@ -15,18 +15,18 @@ import (
 type BizMail struct {
 	Exe    base.Executor
 	AppURL string
-	dao    DaoMail
+	dal    DalMail
 }
 
 func NewBizMail(exe base.Executor, appURL string) BizMail {
 	return BizMail{
 		Exe:    exe,
 		AppURL: appURL,
-		dao:    &maildao.DaoMail{Exe: exe},
+		dal:    &maildal.DalMail{Exe: exe},
 	}
 }
 
-type DaoMail interface {
+type DalMail interface {
 }
 
 // SendMail sends an email using a specific template registered in the database

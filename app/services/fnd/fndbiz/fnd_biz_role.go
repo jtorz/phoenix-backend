@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/jtorz/phoenix-backend/app/services/fnd/fnddao"
+	"github.com/jtorz/phoenix-backend/app/services/fnd/fnddal"
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
@@ -15,13 +15,13 @@ import (
 // BizRole business component.
 type BizRole struct {
 	Exe base.Executor
-	dao *fnddao.DaoRole
+	dal *fnddal.DalRole
 }
 
 // NewBizRole creates the business component.
 func NewBizRole() BizRole {
 	return BizRole{
-		dao: &fnddao.DaoRole{},
+		dal: &fnddal.DalRole{},
 	}
 }
 
@@ -29,7 +29,7 @@ func NewBizRole() BizRole {
 func (biz *BizRole) GetByID(ctx context.Context, exe base.Executor,
 	id string,
 ) (*fndmodel.Role, error) {
-	rec, err := biz.dao.GetByID(ctx, exe, id)
+	rec, err := biz.dal.GetByID(ctx, exe, id)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (biz *BizRole) GetByID(ctx context.Context, exe base.Executor,
 func (biz *BizRole) List(ctx context.Context, exe base.Executor,
 	OnlyActive bool,
 ) (fndmodel.Roles, error) {
-	recs, err := biz.dao.List(ctx, exe, OnlyActive)
+	recs, err := biz.dal.List(ctx, exe, OnlyActive)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (biz *BizRole) New(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Role,
 ) error {
 	rec.Status = base.StatusCaptured
-	if err := biz.dao.New(ctx, tx, rec); err != nil {
+	if err := biz.dal.New(ctx, tx, rec); err != nil {
 		return err
 	}
 	biz.setRecordActions(ctx, rec)
@@ -65,7 +65,7 @@ func (biz *BizRole) New(ctx context.Context, tx *sql.Tx,
 func (biz *BizRole) Edit(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Role,
 ) error {
-	return biz.dao.Edit(ctx, tx, rec)
+	return biz.dal.Edit(ctx, tx, rec)
 }
 
 // SetStatus updates the logical status of the record.
@@ -75,7 +75,7 @@ func (biz *BizRole) SetStatus(ctx context.Context, tx *sql.Tx,
 	if rec.ID == baseservice.RoleAdmin {
 		return fmt.Errorf("can't change admin role status: %w", baseerrors.ErrPrivilege)
 	}
-	if err := biz.dao.SetStatus(ctx, tx, rec); err != nil {
+	if err := biz.dal.SetStatus(ctx, tx, rec); err != nil {
 		return err
 	}
 	biz.setRecordActions(ctx, rec)
@@ -89,7 +89,7 @@ func (biz *BizRole) Delete(ctx context.Context, tx *sql.Tx,
 	if rec.ID == baseservice.RoleAdmin {
 		return fmt.Errorf("can't delete admin role: %w", baseerrors.ErrPrivilege)
 	}
-	if err := biz.dao.Delete(ctx, tx, rec); err != nil {
+	if err := biz.dal.Delete(ctx, tx, rec); err != nil {
 		return err
 	}
 	return nil

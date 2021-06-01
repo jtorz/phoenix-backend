@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/jtorz/phoenix-backend/app/services/fnd/fnddao"
+	"github.com/jtorz/phoenix-backend/app/services/fnd/fnddal"
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 )
@@ -12,13 +12,13 @@ import (
 // BizModule business component.
 type BizModule struct {
 	Exe base.Executor
-	dao *fnddao.DaoModule
+	dal *fnddal.DalModule
 }
 
 // NewBizModule creates the business component.
 func NewBizModule() BizModule {
 	return BizModule{
-		dao: &fnddao.DaoModule{},
+		dal: &fnddal.DalModule{},
 	}
 }
 
@@ -26,7 +26,7 @@ func NewBizModule() BizModule {
 func (biz *BizModule) GetByID(ctx context.Context, exe base.Executor,
 	id string,
 ) (*fndmodel.Module, error) {
-	rec, err := biz.dao.GetByID(ctx, exe, id)
+	rec, err := biz.dal.GetByID(ctx, exe, id)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func (biz *BizModule) GetByID(ctx context.Context, exe base.Executor,
 func (biz *BizModule) List(ctx context.Context, exe base.Executor,
 	qry base.ClientQuery,
 ) (fndmodel.Modules, error) {
-	recs, err := biz.dao.List(ctx, exe, qry)
+	recs, err := biz.dal.List(ctx, exe, qry)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (biz *BizModule) New(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Module,
 ) error {
 	rec.Status = base.StatusCaptured
-	if err := biz.dao.New(ctx, tx, rec); err != nil {
+	if err := biz.dal.New(ctx, tx, rec); err != nil {
 		return err
 	}
 	biz.setRecordActions(ctx, rec)
@@ -62,14 +62,14 @@ func (biz *BizModule) New(ctx context.Context, tx *sql.Tx,
 func (biz *BizModule) Edit(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Module,
 ) error {
-	return biz.dao.Edit(ctx, tx, rec)
+	return biz.dal.Edit(ctx, tx, rec)
 }
 
 // SetStatus updates the logical status of the record.
 func (biz *BizModule) SetStatus(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Module,
 ) error {
-	if err := biz.dao.SetStatus(ctx, tx, rec); err != nil {
+	if err := biz.dal.SetStatus(ctx, tx, rec); err != nil {
 		return err
 	}
 	biz.setRecordActions(ctx, rec)
@@ -80,7 +80,7 @@ func (biz *BizModule) SetStatus(ctx context.Context, tx *sql.Tx,
 func (biz *BizModule) Delete(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Module,
 ) error {
-	if err := biz.dao.Delete(ctx, tx, rec); err != nil {
+	if err := biz.dal.Delete(ctx, tx, rec); err != nil {
 		return err
 	}
 	return nil

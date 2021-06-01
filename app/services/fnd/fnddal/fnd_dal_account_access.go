@@ -1,4 +1,4 @@
-package fnddao
+package fnddal
 
 import (
 	"context"
@@ -10,14 +10,14 @@ import (
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
 
-	//lint:ignore ST1001 dot import allowed only in dao packages for lex.
+	//lint:ignore ST1001 dot import allowed only in dal packages for lex.
 	. "github.com/jtorz/phoenix-backend/app/shared/lex"
 )
 
-// DaoAccountAccess Data Access structure.
-type DaoAccountAccess struct{}
+// DalAccountAccess Data Access structure.
+type DalAccountAccess struct{}
 
-func (dao *DaoAccountAccess) Insert(ctx context.Context, exe *sql.Tx,
+func (dal *DalAccountAccess) Insert(ctx context.Context, exe *sql.Tx,
 	ac *fndmodel.AccountAccess,
 ) error {
 	ins := NewInsert(T.FndAccountAccess).Rows(goqu.Record{
@@ -31,7 +31,7 @@ func (dao *DaoAccountAccess) Insert(ctx context.Context, exe *sql.Tx,
 	return err
 }
 
-func (dao *DaoAccountAccess) UseAccountAccess(ctx context.Context, exe *sql.Tx,
+func (dal *DalAccountAccess) UseAccountAccess(ctx context.Context, exe *sql.Tx,
 	key string, accType fndmodel.AccountAccessType,
 ) (string, error) {
 	query := NewUpdate(T.FndAccountAccess).
@@ -62,7 +62,7 @@ func (dao *DaoAccountAccess) UseAccountAccess(ctx context.Context, exe *sql.Tx,
 	return userID, err
 }
 
-func (dao *DaoAccountAccess) GetAccessByUserID(ctx context.Context, exe base.Executor,
+func (dal *DalAccountAccess) GetAccessByUserID(ctx context.Context, exe base.Executor,
 	userID string, accType fndmodel.AccountAccessType,
 ) (*fndmodel.AccountAccess, error) {
 	res := fndmodel.AccountAccess{}

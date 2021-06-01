@@ -1,4 +1,4 @@
-// Package lex contains the dictionary (lexicon) of the database and auxiliar functions to the daos.
+// Package lex contains the dictionary (lexicon) of the database and auxiliar functions to the dals.
 //
 // The elements in the package are:
 //

@@ -1,17 +1,17 @@
-package fnddao_test
+package fnddal_test
 
 import (
 	"context"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/jtorz/phoenix-backend/app/services/fnd/fnddao"
+	"github.com/jtorz/phoenix-backend/app/services/fnd/fnddal"
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 	"github.com/stretchr/testify/assert"
 )
 
-var daoPassword = fnddao.DaoPassword{}
+var dalPassword = fnddal.DalPassword{}
 
 func TestPasswordNew(t *testing.T) {
 	db, mock, err := sqlmock.New()
@@ -34,7 +34,7 @@ func TestPasswordNew(t *testing.T) {
 		Data:   base.JSONObject{},
 		Status: 2,
 	}
-	if err = daoPassword.New(context.Background(), tx, "848577e0-9ec9-5d25-bcb8-8ed913100609", &pass); err != nil {
+	if err = dalPassword.New(context.Background(), tx, "848577e0-9ec9-5d25-bcb8-8ed913100609", &pass); err != nil {
 		t.Errorf("error was not expected while inserting password: %s", err)
 	}
 
@@ -62,7 +62,7 @@ func TestPasswordInvalidateForUser(t *testing.T) {
 		WithArgs(base.StatusInactive, "848577e0-9ec9-5d25-bcb8-8ed913100609", base.StatusActive).
 		WillReturnResult(sqlmock.NewResult(0, 10))
 
-	if err = daoPassword.InvalidateForUser(context.Background(), tx, "848577e0-9ec9-5d25-bcb8-8ed913100609"); err != nil {
+	if err = dalPassword.InvalidateForUser(context.Background(), tx, "848577e0-9ec9-5d25-bcb8-8ed913100609"); err != nil {
 		t.Errorf("error was not expected while inserting password: %s", err)
 	}
 

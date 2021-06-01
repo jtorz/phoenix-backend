@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/jtorz/phoenix-backend/app/services/fnd/fnddao"
+	"github.com/jtorz/phoenix-backend/app/services/fnd/fnddal"
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 )
@@ -12,13 +12,13 @@ import (
 // BizAction business component.
 type BizAction struct {
 	Exe base.Executor
-	dao *fnddao.DaoAction
+	dal *fnddal.DalAction
 }
 
 // NewBizAction creates the business component.
 func NewBizAction() BizAction {
 	return BizAction{
-		dao: &fnddao.DaoAction{},
+		dal: &fnddal.DalAction{},
 	}
 }
 
@@ -26,7 +26,7 @@ func NewBizAction() BizAction {
 func (biz *BizAction) GetByID(ctx context.Context, exe base.Executor,
 	moduleID string, actionID string,
 ) (*fndmodel.Action, error) {
-	rec, err := biz.dao.GetByID(ctx, exe, moduleID, actionID)
+	rec, err := biz.dal.GetByID(ctx, exe, moduleID, actionID)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func (biz *BizAction) GetByID(ctx context.Context, exe base.Executor,
 func (biz *BizAction) List(ctx context.Context, exe base.Executor,
 	qry base.ClientQuery, moduleID string,
 ) (fndmodel.Actions, error) {
-	recs, err := biz.dao.List(ctx, exe, qry, moduleID)
+	recs, err := biz.dal.List(ctx, exe, qry, moduleID)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (biz *BizAction) New(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Action,
 ) error {
 	rec.Status = base.StatusCaptured
-	if err := biz.dao.New(ctx, tx, rec); err != nil {
+	if err := biz.dal.New(ctx, tx, rec); err != nil {
 		return err
 	}
 	biz.setRecordActions(ctx, rec)
@@ -62,14 +62,14 @@ func (biz *BizAction) New(ctx context.Context, tx *sql.Tx,
 func (biz *BizAction) Edit(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Action,
 ) error {
-	return biz.dao.Edit(ctx, tx, rec)
+	return biz.dal.Edit(ctx, tx, rec)
 }
 
 // SetStatus updates the logical status of the record.
 func (biz *BizAction) SetStatus(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Action,
 ) error {
-	if err := biz.dao.SetStatus(ctx, tx, rec); err != nil {
+	if err := biz.dal.SetStatus(ctx, tx, rec); err != nil {
 		return err
 	}
 	biz.setRecordActions(ctx, rec)
@@ -80,7 +80,7 @@ func (biz *BizAction) SetStatus(ctx context.Context, tx *sql.Tx,
 func (biz *BizAction) Delete(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Action,
 ) error {
-	if err := biz.dao.Delete(ctx, tx, rec); err != nil {
+	if err := biz.dal.Delete(ctx, tx, rec); err != nil {
 		return err
 	}
 	return nil

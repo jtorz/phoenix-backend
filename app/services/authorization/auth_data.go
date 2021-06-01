@@ -14,7 +14,7 @@ import (
 	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
 	"github.com/jtorz/phoenix-backend/app/shared/ctxinfo"
 
-	//lint:ignore ST1001 dot import allowed only in dao packages for lex.
+	//lint:ignore ST1001 dot import allowed only in dal packages for lex.
 	. "github.com/jtorz/phoenix-backend/app/shared/lex"
 )
 

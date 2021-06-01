@@ -1,4 +1,4 @@
-package fnddao
+package fnddal
 
 import (
 	"context"
@@ -9,15 +9,15 @@ import (
 	"github.com/jtorz/phoenix-backend/app/services/fnd/fndmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 
-	//lint:ignore ST1001 dot import allowed only in dao packages for
+	//lint:ignore ST1001 dot import allowed only in dal packages for
 	. "github.com/jtorz/phoenix-backend/app/shared/lex"
 )
 
-// DaoAction Data Access structure.
-type DaoAction struct{}
+// DalAction Data Access structure.
+type DalAction struct{}
 
 // GetByID retrives the record information using its ID.
-func (dao *DaoAction) GetByID(ctx context.Context, exe base.Executor,
+func (dal *DalAction) GetByID(ctx context.Context, exe base.Executor,
 	moduleID string, actionID string,
 ) (*fndmodel.Action, error) {
 	rec := fndmodel.Action{}
@@ -60,7 +60,7 @@ func (dao *DaoAction) GetByID(ctx context.Context, exe base.Executor,
 }
 
 // List returns the list of records that can be filtered by the user.
-func (dao *DaoAction) List(ctx context.Context, exe base.Executor,
+func (dal *DalAction) List(ctx context.Context, exe base.Executor,
 	qry base.ClientQuery, moduleID string,
 ) (fndmodel.Actions, error) {
 	res := make(fndmodel.Actions, 0)
@@ -117,7 +117,7 @@ func (dao *DaoAction) List(ctx context.Context, exe base.Executor,
 }
 
 // New creates a new record.
-func (dao *DaoAction) New(ctx context.Context, tx *sql.Tx,
+func (dal *DalAction) New(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Action,
 ) error {
 	now := time.Now()
@@ -142,7 +142,7 @@ func (dao *DaoAction) New(ctx context.Context, tx *sql.Tx,
 }
 
 // Edit edits the record.
-func (dao *DaoAction) Edit(ctx context.Context, tx *sql.Tx,
+func (dal *DalAction) Edit(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Action,
 ) error {
 	now := time.Now()
@@ -173,7 +173,7 @@ func (dao *DaoAction) Edit(ctx context.Context, tx *sql.Tx,
 }
 
 // SetStatus updates the logical status of the record.
-func (dao *DaoAction) SetStatus(ctx context.Context, tx *sql.Tx,
+func (dal *DalAction) SetStatus(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Action,
 ) error {
 	now := time.Now()
@@ -197,7 +197,7 @@ func (dao *DaoAction) SetStatus(ctx context.Context, tx *sql.Tx,
 }
 
 // Delete performs a physical delete of the record.
-func (dao *DaoAction) Delete(ctx context.Context, tx *sql.Tx,
+func (dal *DalAction) Delete(ctx context.Context, tx *sql.Tx,
 	rec *fndmodel.Action,
 ) error {
 	query := NewDelete(T.FndAction).

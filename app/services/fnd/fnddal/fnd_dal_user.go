@@ -1,4 +1,4 @@
-package fnddao
+package fnddal
 
 import (
 	"context"
@@ -11,14 +11,14 @@ import (
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
 
-	//lint:ignore ST1001 dot import allowed only in dao packages for lex.
+	//lint:ignore ST1001 dot import allowed only in dal packages for lex.
 	. "github.com/jtorz/phoenix-backend/app/shared/lex"
 )
 
-// DaoUser Data Access structure.
-type DaoUser struct{}
+// DalUser Data Access structure.
+type DalUser struct{}
 
-func (dao *DaoUser) New(ctx context.Context, tx *sql.Tx,
+func (dal *DalUser) New(ctx context.Context, tx *sql.Tx,
 	u *fndmodel.User,
 ) error {
 	ins := NewInsert(T.FndUser).Rows(goqu.Record{
@@ -39,7 +39,7 @@ func (dao *DaoUser) New(ctx context.Context, tx *sql.Tx,
 }
 
 // Login retrieves the necessary data to login a user given its email/username.
-func (dao *DaoUser) Login(ctx context.Context, exe base.Executor,
+func (dal *DalUser) Login(ctx context.Context, exe base.Executor,
 	user string,
 ) (*fndmodel.User, error) {
 	res := &fndmodel.User{Password: &fndmodel.Password{}}
@@ -91,21 +91,21 @@ func (dao *DaoUser) Login(ctx context.Context, exe base.Executor,
 }
 
 // GetUserByMail returns a user given its email.
-func (dao *DaoUser) GetUserByMail(ctx context.Context, exe base.Executor,
+func (dal *DalUser) GetUserByMail(ctx context.Context, exe base.Executor,
 	email string,
 ) (*fndmodel.User, error) {
-	return dao.getUser(ctx, exe, goqu.C(FndUser.UseEmail).Eq(email))
+	return dal.getUser(ctx, exe, goqu.C(FndUser.UseEmail).Eq(email))
 }
 
 // GetUserByID retrives the record information using its ID.
-func (dao *DaoUser) GetUserByID(ctx context.Context, exe base.Executor,
+func (dal *DalUser) GetUserByID(ctx context.Context, exe base.Executor,
 	userID string,
 ) (*fndmodel.User, error) {
-	return dao.getUser(ctx, exe, goqu.C(FndUser.UseID).Eq(userID))
+	return dal.getUser(ctx, exe, goqu.C(FndUser.UseID).Eq(userID))
 }
 
 // getUser searchs the user with the given filters.
-func (dao *DaoUser) getUser(ctx context.Context, exe base.Executor,
+func (dal *DalUser) getUser(ctx context.Context, exe base.Executor,
 	filter ...exp.Expression,
 ) (*fndmodel.User, error) {
 	query := NewSelect(
@@ -145,7 +145,7 @@ func (dao *DaoUser) getUser(ctx context.Context, exe base.Executor,
 }
 
 // SetStatus changes the logical status of the user.
-func (dao *DaoUser) SetStatus(ctx context.Context, tx *sql.Tx,
+func (dal *DalUser) SetStatus(ctx context.Context, tx *sql.Tx,
 	u *fndmodel.User,
 ) error {
 	now := time.Now()

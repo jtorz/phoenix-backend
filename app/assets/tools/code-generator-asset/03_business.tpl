@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/jtorz/phoenix-backend/app/services/{{$.ServiceAbbr | lowercase}}/{{$.ServiceAbbr | lowercase}}dao"
+	"github.com/jtorz/phoenix-backend/app/services/{{$.ServiceAbbr | lowercase}}/{{$.ServiceAbbr | lowercase}}dal"
 	"github.com/jtorz/phoenix-backend/app/services/{{$.ServiceAbbr | lowercase}}/{{$.ServiceAbbr | lowercase}}model"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 )
@@ -12,13 +12,13 @@ import (
 // Biz{{$.Entity.GoStruct}} business component.
 type Biz{{$.Entity.GoStruct}} struct {
 	Exe base.Executor
-	dao *{{$.ServiceAbbr | lowercase}}dao.Dao{{$.Entity.GoStruct}}
+	dal *{{$.ServiceAbbr | lowercase}}dal.Dal{{$.Entity.GoStruct}}
 }
 
 // NewBiz{{$.Entity.GoStruct}} creates the business component.
 func NewBiz{{$.Entity.GoStruct}}() Biz{{$.Entity.GoStruct}} {
 	return Biz{{$.Entity.GoStruct}}{
-		dao: &{{$.ServiceAbbr | lowercase}}dao.Dao{{$.Entity.GoStruct}}{},
+		dal: &{{$.ServiceAbbr | lowercase}}dal.Dal{{$.Entity.GoStruct}}{},
 	}
 }
 
@@ -28,7 +28,7 @@ func (biz *Biz{{$.Entity.GoStruct}}) GetByID(ctx context.Context, exe base.Execu
 	{{- if $Col.IsPK}} {{$Col.GoVarName}} {{$Col.GoDataType}}, {{end}}
 	{{- end}}
 ) (*{{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoStruct}}, error) {
-	rec, err := biz.dao.GetByID(ctx, exe,
+	rec, err := biz.dal.GetByID(ctx, exe,
 	{{- range $Col := $.Entity.Columns}}
 	{{- if $Col.IsPK}} {{$Col.GoVarName}}, {{end}}
 	{{- end}})
@@ -43,7 +43,7 @@ func (biz *Biz{{$.Entity.GoStruct}}) GetByID(ctx context.Context, exe base.Execu
 func (biz *Biz{{$.Entity.GoStruct}}) List(ctx context.Context, exe base.Executor,
 	qry base.ClientQuery,
 ) ({{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoSlice}}, error) {
-	recs, err := biz.dao.List(ctx, exe, qry)
+	recs, err := biz.dal.List(ctx, exe, qry)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (biz *Biz{{$.Entity.GoStruct}}) New(ctx context.Context, tx *sql.Tx,
 	rec *{{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoStruct}},
 ) error {
 	rec.Status = base.StatusCaptured
-	if err := biz.dao.New(ctx, tx, rec); err != nil {
+	if err := biz.dal.New(ctx, tx, rec); err != nil {
 		return err
 	}
 	biz.setRecordActions(ctx, rec)
@@ -67,14 +67,14 @@ func (biz *Biz{{$.Entity.GoStruct}}) New(ctx context.Context, tx *sql.Tx,
 func (biz *Biz{{$.Entity.GoStruct}}) Edit(ctx context.Context, tx *sql.Tx,
 	rec *{{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoStruct}},
 ) error {
-	return biz.dao.Edit(ctx, tx, rec)
+	return biz.dal.Edit(ctx, tx, rec)
 }
 
 // SetStatus updates the logical status of the record.
 func (biz *Biz{{$.Entity.GoStruct}}) SetStatus(ctx context.Context, tx *sql.Tx,
 	rec *{{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoStruct}},
 ) error {
-	if err := biz.dao.SetStatus(ctx, tx, rec); err != nil {
+	if err := biz.dal.SetStatus(ctx, tx, rec); err != nil {
 		return err
 	}
 	biz.setRecordActions(ctx, rec)
@@ -85,7 +85,7 @@ func (biz *Biz{{$.Entity.GoStruct}}) SetStatus(ctx context.Context, tx *sql.Tx,
 func (biz *Biz{{$.Entity.GoStruct}}) Delete(ctx context.Context, tx *sql.Tx,
 	rec *{{$.ServiceAbbr | lowercase}}model.{{$.Entity.GoStruct}},
 ) error {
-	if err := biz.dao.Delete(ctx, tx, rec); err != nil {
+	if err := biz.dal.Delete(ctx, tx, rec); err != nil {
 		return err
 	}
 	return nil

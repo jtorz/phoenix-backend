@@ -6,8 +6,8 @@ import _ "embed"
 //go:embed 01_model.tpl
 var ModelTPL string
 
-//go:embed 02_dao.tpl
-var DaoTPL string
+//go:embed 02_dal.tpl
+var DalTPL string
 
 //go:embed 03_business.tpl
 var BusinessTPL string

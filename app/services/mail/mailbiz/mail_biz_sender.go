@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/jtorz/phoenix-backend/app/services/mail/maildao"
+	"github.com/jtorz/phoenix-backend/app/services/mail/maildal"
 	"github.com/jtorz/phoenix-backend/app/services/mail/mailmodel"
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 )
@@ -12,13 +12,13 @@ import (
 // BizSender business component.
 type BizSender struct {
 	Exe base.Executor
-	dao *maildao.DaoSender
+	dal *maildal.DalSender
 }
 
 // NewBizSender creates the business component.
 func NewBizSender() BizSender {
 	return BizSender{
-		dao: &maildao.DaoSender{},
+		dal: &maildal.DalSender{},
 	}
 }
 
@@ -26,7 +26,7 @@ func NewBizSender() BizSender {
 func (biz *BizSender) GetByID(ctx context.Context, exe base.Executor,
 	id string,
 ) (*mailmodel.Sender, error) {
-	rec, err := biz.dao.GetByID(ctx, exe, id)
+	rec, err := biz.dal.GetByID(ctx, exe, id)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func (biz *BizSender) GetByID(ctx context.Context, exe base.Executor,
 func (biz *BizSender) List(ctx context.Context, exe base.Executor,
 	onlyActive bool,
 ) (mailmodel.Senders, error) {
-	recs, err := biz.dao.List(ctx, exe, onlyActive)
+	recs, err := biz.dal.List(ctx, exe, onlyActive)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (biz *BizSender) New(ctx context.Context, tx *sql.Tx,
 	rec *mailmodel.Sender,
 ) error {
 	rec.Status = base.StatusCaptured
-	if err := biz.dao.New(ctx, tx, rec); err != nil {
+	if err := biz.dal.New(ctx, tx, rec); err != nil {
 		return err
 	}
 	biz.setRecordActions(ctx, rec)
@@ -62,14 +62,14 @@ func (biz *BizSender) New(ctx context.Context, tx *sql.Tx,
 func (biz *BizSender) Edit(ctx context.Context, tx *sql.Tx,
 	rec *mailmodel.Sender,
 ) error {
-	return biz.dao.Edit(ctx, tx, rec)
+	return biz.dal.Edit(ctx, tx, rec)
 }
 
 // SetStatus updates the logical status of the record.
 func (biz *BizSender) SetStatus(ctx context.Context, tx *sql.Tx,
 	rec *mailmodel.Sender,
 ) error {
-	if err := biz.dao.SetStatus(ctx, tx, rec); err != nil {
+	if err := biz.dal.SetStatus(ctx, tx, rec); err != nil {
 		return err
 	}
 	biz.setRecordActions(ctx, rec)
@@ -80,7 +80,7 @@ func (biz *BizSender) SetStatus(ctx context.Context, tx *sql.Tx,
 func (biz *BizSender) Delete(ctx context.Context, tx *sql.Tx,
 	rec *mailmodel.Sender,
 ) error {
-	if err := biz.dao.Delete(ctx, tx, rec); err != nil {
+	if err := biz.dal.Delete(ctx, tx, rec); err != nil {
 		return err
 	}
 	return nil
