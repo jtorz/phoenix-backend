@@ -27,13 +27,12 @@ playground/
 sqlboiler.toml
 app/assets/certs/*
 
-.vscode/launch.json
-
-scripts/generate-lex.ps1
-scripts/generate-code.ps1
 test_env.ps1
 
 codegen.gotpl
 
 web/dist/
 web/backup/
+
+*.env
+scripts/generate-code.ps1
