@@ -1,7 +1,7 @@
 // Code generated - DO NOT EDIT.
 // This file is a generated binding and any manual changes will be lost.
 
-package lex
+package dalhelper
 
 import (
 	"github.com/doug-martin/goqu/v9"

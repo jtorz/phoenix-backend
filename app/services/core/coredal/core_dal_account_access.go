@@ -10,8 +10,8 @@ import (
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
 
-	//lint:ignore ST1001 dot import allowed only in dal packages for lex.
-	. "github.com/jtorz/phoenix-backend/app/shared/lex"
+	//lint:ignore ST1001 dot import allowed only in dal packages for dalhelper.
+	. "github.com/jtorz/phoenix-backend/app/shared/dalhelper"
 )
 
 // DalAccountAccess Data Access structure.

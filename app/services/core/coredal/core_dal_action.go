@@ -10,7 +10,7 @@ import (
 	"github.com/jtorz/phoenix-backend/app/shared/base"
 
 	//lint:ignore ST1001 dot import allowed only in dal packages for
-	. "github.com/jtorz/phoenix-backend/app/shared/lex"
+	. "github.com/jtorz/phoenix-backend/app/shared/dalhelper"
 )
 
 // DalAction Data Access structure.

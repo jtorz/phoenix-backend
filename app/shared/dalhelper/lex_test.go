@@ -1,7 +1,7 @@
 // Code generated - DO NOT EDIT.
 // This file is a generated binding and any manual changes will be lost.
 
-package lex
+package dalhelper
 
 import (
 	"database/sql"
@@ -37,7 +37,7 @@ func testSelect(t *testing.T, objects interface{}) {
 		goName := val.Type().Field(i).Name
 		tableName := val.Field(i).Interface().(string)
 		if err := selectAllFrom(mainDB, tableName); err != nil {
-			t.Errorf(`MainDB lex.T.%s: SELECT 1 FROM "%s": %s`, goName, tableName, err)
+			t.Errorf(`MainDB dalhelper.T.%s: SELECT 1 FROM "%s": %s`, goName, tableName, err)
 		}
 	}
 }

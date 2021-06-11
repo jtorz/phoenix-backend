@@ -14,9 +14,8 @@ import (
 	"github.com/jtorz/phoenix-backend/app/shared/baseerrors"
 	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
 	"github.com/jtorz/phoenix-backend/app/shared/ctxinfo"
+	"github.com/jtorz/phoenix-backend/app/shared/dalhelper"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/jtorz/phoenix-backend/app/shared/lex"
 )
 
 var testAuthSvc = struct {
@@ -38,6 +37,7 @@ type testUserData struct {
 
 func TestMain(m *testing.M) {
 	var err error
+	log.Println("loading test config")
 	testAuthSvc.config, err = testconfig.NewConfig()
 	if err != nil {
 		log.Fatal(err)
@@ -55,6 +55,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println("loading test config")
 	m.Run()
 
 	testAuthSvc.dbTx.Rollback()
@@ -95,38 +96,38 @@ type auxTestStruct struct{}
 var auxTest = auxTestStruct{}
 
 func (auxTestStruct) insertUser(userID string) (err error) {
-	_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.CoreUser).Rows(goqu.Record{
-		lex.CoreUser.UseID:         userID,
-		lex.CoreUser.UseName:       userID,
-		lex.CoreUser.UseMiddleName: userID,
-		lex.CoreUser.UseLastName:   userID,
-		lex.CoreUser.UseEmail:      userID,
-		lex.CoreUser.UseUsername:   userID,
-		lex.CoreUser.UseStatus:     2,
+	_, err = dalhelper.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, dalhelper.NewInsert(dalhelper.T.CoreUser).Rows(goqu.Record{
+		dalhelper.CoreUser.UseID:         userID,
+		dalhelper.CoreUser.UseName:       userID,
+		dalhelper.CoreUser.UseMiddleName: userID,
+		dalhelper.CoreUser.UseLastName:   userID,
+		dalhelper.CoreUser.UseEmail:      userID,
+		dalhelper.CoreUser.UseUsername:   userID,
+		dalhelper.CoreUser.UseStatus:     2,
 	}))
 	return
 }
 
 func (auxTestStruct) insertModule(moduleID string) (err error) {
-	_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.CoreModule).Rows(goqu.Record{
-		lex.CoreModule.ModID:          moduleID,
-		lex.CoreModule.ModName:        moduleID,
-		lex.CoreModule.ModDescription: moduleID,
-		lex.CoreModule.ModOrder:       1,
-		lex.CoreModule.ModStatus:      2,
+	_, err = dalhelper.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, dalhelper.NewInsert(dalhelper.T.CoreModule).Rows(goqu.Record{
+		dalhelper.CoreModule.ModID:          moduleID,
+		dalhelper.CoreModule.ModName:        moduleID,
+		dalhelper.CoreModule.ModDescription: moduleID,
+		dalhelper.CoreModule.ModOrder:       1,
+		dalhelper.CoreModule.ModStatus:      2,
 	}))
 	return
 }
 
 func (auxTestStruct) insertActions(moduleID string, actions ...string) (err error) {
 	for _, a := range actions {
-		_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.CoreAction).Rows(goqu.Record{
-			lex.CoreAction.ActModuleID:    moduleID,
-			lex.CoreAction.ActActionID:    a,
-			lex.CoreAction.ActName:        a,
-			lex.CoreAction.ActDescription: a,
-			lex.CoreAction.ActOrder:       1,
-			lex.CoreAction.ActStatus:      2,
+		_, err = dalhelper.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, dalhelper.NewInsert(dalhelper.T.CoreAction).Rows(goqu.Record{
+			dalhelper.CoreAction.ActModuleID:    moduleID,
+			dalhelper.CoreAction.ActActionID:    a,
+			dalhelper.CoreAction.ActName:        a,
+			dalhelper.CoreAction.ActDescription: a,
+			dalhelper.CoreAction.ActOrder:       1,
+			dalhelper.CoreAction.ActStatus:      2,
 		}))
 		if err != nil {
 			return
@@ -136,22 +137,22 @@ func (auxTestStruct) insertActions(moduleID string, actions ...string) (err erro
 }
 
 func (auxTestStruct) insertActionRoute(moduleID, actionID, method, route string) (err error) {
-	_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.CoreActionRoute).Rows(goqu.Record{
-		lex.CoreActionRoute.AcrModuleID: moduleID,
-		lex.CoreActionRoute.AcrActionID: actionID,
-		lex.CoreActionRoute.AcrMethod:   method,
-		lex.CoreActionRoute.AcrRoute:    route,
+	_, err = dalhelper.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, dalhelper.NewInsert(dalhelper.T.CoreActionRoute).Rows(goqu.Record{
+		dalhelper.CoreActionRoute.AcrModuleID: moduleID,
+		dalhelper.CoreActionRoute.AcrActionID: actionID,
+		dalhelper.CoreActionRoute.AcrMethod:   method,
+		dalhelper.CoreActionRoute.AcrRoute:    route,
 	}))
 	return
 }
 
 func (auxTestStruct) insertRole(rolID string) (err error) {
-	_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.CoreRole).Rows(goqu.Record{
-		lex.CoreRole.RolID:          rolID,
-		lex.CoreRole.RolName:        rolID,
-		lex.CoreRole.RolDescription: rolID,
-		lex.CoreRole.RolIcon:        rolID,
-		lex.CoreRole.RolStatus:      2,
+	_, err = dalhelper.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, dalhelper.NewInsert(dalhelper.T.CoreRole).Rows(goqu.Record{
+		dalhelper.CoreRole.RolID:          rolID,
+		dalhelper.CoreRole.RolName:        rolID,
+		dalhelper.CoreRole.RolDescription: rolID,
+		dalhelper.CoreRole.RolIcon:        rolID,
+		dalhelper.CoreRole.RolStatus:      2,
 	}))
 	return
 }
@@ -159,10 +160,10 @@ func (auxTestStruct) insertRole(rolID string) (err error) {
 func (auxTestStruct) insertPrivileges(rolID string, privs ...string) (err error) {
 	for _, priv := range privs {
 		act := strings.Split(priv, ".")
-		_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.CorePrivilege).Rows(goqu.Record{
-			lex.CorePrivilege.PriRoleID:   "_TESTROLE_",
-			lex.CorePrivilege.PriModuleID: act[0],
-			lex.CorePrivilege.PriActionID: act[1],
+		_, err = dalhelper.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, dalhelper.NewInsert(dalhelper.T.CorePrivilege).Rows(goqu.Record{
+			dalhelper.CorePrivilege.PriRoleID:   "_TESTROLE_",
+			dalhelper.CorePrivilege.PriModuleID: act[0],
+			dalhelper.CorePrivilege.PriActionID: act[1],
 		}))
 		if err != nil {
 			return err
@@ -172,9 +173,9 @@ func (auxTestStruct) insertPrivileges(rolID string, privs ...string) (err error)
 }
 
 func (auxTestStruct) insertUserRole(userId, rolID string) (err error) {
-	_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.CoreUserRole).Rows(goqu.Record{
-		lex.CoreUserRole.UsrUserID: userId,
-		lex.CoreUserRole.UsrRoleID: rolID,
+	_, err = dalhelper.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, dalhelper.NewInsert(dalhelper.T.CoreUserRole).Rows(goqu.Record{
+		dalhelper.CoreUserRole.UsrUserID: userId,
+		dalhelper.CoreUserRole.UsrRoleID: rolID,
 	}))
 	return
 }

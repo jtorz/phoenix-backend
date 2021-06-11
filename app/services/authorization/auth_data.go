@@ -14,8 +14,8 @@ import (
 	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
 	"github.com/jtorz/phoenix-backend/app/shared/ctxinfo"
 
-	//lint:ignore ST1001 dot import allowed only in dal packages for lex.
-	. "github.com/jtorz/phoenix-backend/app/shared/lex"
+	//lint:ignore ST1001 dot import allowed only in dal packages for dalhelper.
+	. "github.com/jtorz/phoenix-backend/app/shared/dalhelper"
 )
 
 func (svc *Service) getRoles(ctx context.Context) ([]string, error) {

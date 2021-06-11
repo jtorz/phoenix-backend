@@ -65,7 +65,7 @@ func NewConfig() (*Config, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error loading test config: %s", err)
 	}
-
+	log.Println(c.DBConnection)
 	db, err := serverconfig.OpenPostgres(c.DBConnection, 5, 5, 5, 5)
 	if err != nil {
 		return nil, fmt.Errorf("connecting database: %w", err)

@@ -1,9 +1,9 @@
-package lex
+package dalhelper
 
 import (
 	"database/sql/driver"
 
-	"github.com/jtorz/phoenix-backend/app/shared/lex/convert"
+	"github.com/jtorz/phoenix-backend/app/shared/dalhelper/convert"
 )
 
 // ZeroString represents a string that may be null.

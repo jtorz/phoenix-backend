@@ -33,9 +33,9 @@ type TemplateData struct {
 }
 
 func init() {
-	flag.String("pkg", "lex", "go package name")
+	flag.String("pkg", "dalhelper", "go package name")
 	flag.String("testPkg", "github.com/jtorz/phoenix-backend/app/config/configtest", "go test package name")
-	flag.String("out", "app/shared/lex", "database connection string")
+	flag.String("out", "app/shared/dalhelper", "database connection string")
 	flag.String("schema", "", "database schema")
 	flag.String("db", "", "database connection string")
 	flag.String("filterPrefix", "", "database connection string")

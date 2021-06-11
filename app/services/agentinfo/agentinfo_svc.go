@@ -7,7 +7,7 @@ import (
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
-	"github.com/jtorz/phoenix-backend/app/shared/lex"
+	"github.com/jtorz/phoenix-backend/app/shared/dalhelper"
 )
 
 // Service authorization module service.
@@ -40,19 +40,19 @@ func (svc *Service) getUser(ctx context.Context) error {
 	if svc.userRetrieved {
 		return nil
 	}
-	query := lex.NewSelect(
-		lex.CoreUser.UseEmail,
-		lex.CoreUser.UseUsername,
-		lex.CoreUser.UseName,
-		lex.CoreUser.UseMiddleName,
-		lex.CoreUser.UseLastName,
+	query := dalhelper.NewSelect(
+		dalhelper.CoreUser.UseEmail,
+		dalhelper.CoreUser.UseUsername,
+		dalhelper.CoreUser.UseName,
+		dalhelper.CoreUser.UseMiddleName,
+		dalhelper.CoreUser.UseLastName,
 	).
-		From(lex.T.CoreUser).
-		Where(goqu.C(lex.CoreUser.UseID).Eq(svc.userID))
+		From(dalhelper.T.CoreUser).
+		Where(goqu.C(dalhelper.CoreUser.UseID).Eq(svc.userID))
 
-	row, err := lex.QueryRowContext(ctx, svc.db, query)
+	row, err := dalhelper.QueryRowContext(ctx, svc.db, query)
 	if err != nil {
-		lex.DebugErr(ctx, err)
+		dalhelper.DebugErr(ctx, err)
 		return err
 	}
 	err = row.Scan(
@@ -63,7 +63,7 @@ func (svc *Service) getUser(ctx context.Context) error {
 		&svc.agentInfo.LastName,
 	)
 	if err != nil {
-		lex.DebugErr(ctx, err)
+		dalhelper.DebugErr(ctx, err)
 		return err
 	}
 	svc.agentInfo.ID = svc.userID

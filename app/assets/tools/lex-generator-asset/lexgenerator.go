@@ -1,5 +1,5 @@
-// Package lexasset uses go:embed to load the templates for lex generation.
-package lexasset
+// Package dalhelperasset uses go:embed to load the templates for lex generation.
+package dalhelperasset
 
 import _ "embed"
 

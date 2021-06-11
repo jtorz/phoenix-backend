@@ -1,4 +1,4 @@
-// Package lex contains the dictionary (lexicon) of the database and auxiliar functions to the dals.
+// Package dalhelper contains the dictionary (lexicon) of the database and auxiliar functions to the dals.
 //
 // The elements in the package are:
 //
@@ -10,7 +10,7 @@
 //  lex_object_columns.go
 //	* Table columns
 //	* View columns
-package lex
+package dalhelper
 
 import (
 	"context"

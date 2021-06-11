@@ -1,7 +1,7 @@
 // Code generated - DO NOT EDIT.
 // This file is a generated binding and any manual changes will be lost.
 
-package lex
+package dalhelper
 
 // TableCoreAccountAccess column names for table core_account_access.
 type TableCoreAccountAccess struct {
