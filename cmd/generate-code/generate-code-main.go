@@ -53,17 +53,17 @@ func (c ComponentType) String() string {
 }
 
 type TemplateData struct {
-	ServiceName string // Service name in GoCase (Example: Foundation)
-	ServiceAbbr string // Service abbreviation in GoCase (Example: Fnd)
+	ServiceName string // Service name in GoCase (Example: Core)
+	ServiceAbbr string // Service abbreviation in GoCase (Example: Core)
 	Entity      *codegen.Entity
 }
 
 func init() {
 	flag.String("db", "", "REQUIRED - Database connection string")
 	flag.String("schema", "", "REQUIRED - Database schema")
-	flag.String("table", "", "REQUIRED - Database table (Example: fnduser)")
-	flag.String("svc", "", "REQUIRED - Service name (Example: foundation)")
-	flag.String("svcAbbr", "", "REQUIRED - Service abbreviation (Example: fnd)")
+	flag.String("table", "", "REQUIRED - Database table (Example: coreuser)")
+	flag.String("svc", "", "REQUIRED - Service name (Example: core)")
+	flag.String("svcAbbr", "", "REQUIRED - Service abbreviation (Example: core)")
 	flag.String("component", "A", "REQUIRED - Type of component to generate ('M:Model' 'D:Dal' 'B:Business' 'H:HttpHandler' 'R:RestTest' 'A:All')")
 	flag.Bool("write", true, "Should write to output files in the service directory.")
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)

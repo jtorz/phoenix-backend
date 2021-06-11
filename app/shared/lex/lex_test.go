@@ -53,17 +53,17 @@ func TestColumns(t *testing.T) {
 		tableName   string
 		tableStruct interface{}
 	}{
-		{T.FndAccountAccess, FndAccountAccess},
-		{T.FndAction, FndAction},
-		{T.FndActionRoute, FndActionRoute},
-		{T.FndModule, FndModule},
-		{T.FndNavElement, FndNavElement},
-		{T.FndNavElementRole, FndNavElementRole},
-		{T.FndPassword, FndPassword},
-		{T.FndPrivilege, FndPrivilege},
-		{T.FndRole, FndRole},
-		{T.FndUser, FndUser},
-		{T.FndUserRole, FndUserRole},
+		{T.CoreAccountAccess, CoreAccountAccess},
+		{T.CoreAction, CoreAction},
+		{T.CoreActionRoute, CoreActionRoute},
+		{T.CoreModule, CoreModule},
+		{T.CoreNavElement, CoreNavElement},
+		{T.CoreNavElementRole, CoreNavElementRole},
+		{T.CorePassword, CorePassword},
+		{T.CorePrivilege, CorePrivilege},
+		{T.CoreRole, CoreRole},
+		{T.CoreUser, CoreUser},
+		{T.CoreUserRole, CoreUserRole},
 		{T.MailBRecord, MailBRecord},
 		{T.MailFooter, MailFooter},
 		{T.MailHeader, MailHeader},
@@ -71,7 +71,7 @@ func TestColumns(t *testing.T) {
 		{T.MailTemplate, MailTemplate},
 		{T.MailTemplateType, MailTemplateType},
 
-		{V.FndVPrivilegeRole, FndVPrivilegeRole},
+		{V.CoreVPrivilegeRole, CoreVPrivilegeRole},
 	}
 	m := getObjectMap()
 	for _, test := range testCases {

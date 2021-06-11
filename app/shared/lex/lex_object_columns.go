@@ -3,8 +3,8 @@
 
 package lex
 
-// TableFndAccountAccess column names for table fnd_account_access.
-type TableFndAccountAccess struct {
+// TableCoreAccountAccess column names for table core_account_access.
+type TableCoreAccountAccess struct {
 	AcaID             string `database:"-,datatype=text"`
 	AcaType           string `database:"-,datatype=text"`
 	AcaUserID         string `database:"-,datatype=uuid"`
@@ -14,7 +14,7 @@ type TableFndAccountAccess struct {
 	AcaStatus         string `database:"-,datatype=smallint"`
 }
 
-var FndAccountAccess = TableFndAccountAccess{
+var CoreAccountAccess = TableCoreAccountAccess{
 	AcaID:             "aca_id",
 	AcaType:           "aca_type",
 	AcaUserID:         "aca_user_id",
@@ -24,8 +24,8 @@ var FndAccountAccess = TableFndAccountAccess{
 	AcaStatus:         "aca_status",
 }
 
-// TableFndAction column names for table fnd_action.
-type TableFndAction struct {
+// TableCoreAction column names for table core_action.
+type TableCoreAction struct {
 	ActModuleID    string `database:"-,datatype=text"`
 	ActActionID    string `database:"-,datatype=text"`
 	ActName        string `database:"-,datatype=text"`
@@ -36,7 +36,7 @@ type TableFndAction struct {
 	ActStatus      string `database:"-,datatype=smallint"`
 }
 
-var FndAction = TableFndAction{
+var CoreAction = TableCoreAction{
 	ActModuleID:    "act_module_id",
 	ActActionID:    "act_action_id",
 	ActName:        "act_name",
@@ -47,23 +47,23 @@ var FndAction = TableFndAction{
 	ActStatus:      "act_status",
 }
 
-// TableFndActionRoute column names for table fnd_action_route.
-type TableFndActionRoute struct {
+// TableCoreActionRoute column names for table core_action_route.
+type TableCoreActionRoute struct {
 	AcrModuleID string `database:"-,datatype=text"`
 	AcrActionID string `database:"-,datatype=text"`
 	AcrMethod   string `database:"-,datatype=text"`
 	AcrRoute    string `database:"-,datatype=text"`
 }
 
-var FndActionRoute = TableFndActionRoute{
+var CoreActionRoute = TableCoreActionRoute{
 	AcrModuleID: "acr_module_id",
 	AcrActionID: "acr_action_id",
 	AcrMethod:   "acr_method",
 	AcrRoute:    "acr_route",
 }
 
-// TableFndModule column names for table fnd_module.
-type TableFndModule struct {
+// TableCoreModule column names for table core_module.
+type TableCoreModule struct {
 	ModID          string `database:"-,datatype=text"`
 	ModName        string `database:"-,datatype=text"`
 	ModDescription string `database:"-,datatype=text"`
@@ -74,7 +74,7 @@ type TableFndModule struct {
 	ModStatus      string `database:"-,datatype=smallint"`
 }
 
-var FndModule = TableFndModule{
+var CoreModule = TableCoreModule{
 	ModID:          "mod_id",
 	ModName:        "mod_name",
 	ModDescription: "mod_description",
@@ -85,8 +85,8 @@ var FndModule = TableFndModule{
 	ModStatus:      "mod_status",
 }
 
-// TableFndNavElement column names for table fnd_nav_element.
-type TableFndNavElement struct {
+// TableCoreNavElement column names for table core_nav_element.
+type TableCoreNavElement struct {
 	NaeID          string `database:"-,datatype=text"`
 	NaeName        string `database:"-,datatype=text"`
 	NaeDescription string `database:"-,datatype=text"`
@@ -99,7 +99,7 @@ type TableFndNavElement struct {
 	NaeStatus      string `database:"-,datatype=smallint"`
 }
 
-var FndNavElement = TableFndNavElement{
+var CoreNavElement = TableCoreNavElement{
 	NaeID:          "nae_id",
 	NaeName:        "nae_name",
 	NaeDescription: "nae_description",
@@ -112,19 +112,19 @@ var FndNavElement = TableFndNavElement{
 	NaeStatus:      "nae_status",
 }
 
-// TableFndNavElementRole column names for table fnd_nav_element_role.
-type TableFndNavElementRole struct {
+// TableCoreNavElementRole column names for table core_nav_element_role.
+type TableCoreNavElementRole struct {
 	NerNavElementID string `database:"-,datatype=text"`
 	NerRoleID       string `database:"-,datatype=text"`
 }
 
-var FndNavElementRole = TableFndNavElementRole{
+var CoreNavElementRole = TableCoreNavElementRole{
 	NerNavElementID: "ner_nav_element_id",
 	NerRoleID:       "ner_role_id",
 }
 
-// TableFndPassword column names for table fnd_password.
-type TableFndPassword struct {
+// TableCorePassword column names for table core_password.
+type TableCorePassword struct {
 	PasID               string `database:"-,datatype=bigint"`
 	PasData             string `database:"-,datatype=json"`
 	PasType             string `database:"-,datatype=text"`
@@ -135,7 +135,7 @@ type TableFndPassword struct {
 	PasStatus           string `database:"-,datatype=smallint"`
 }
 
-var FndPassword = TableFndPassword{
+var CorePassword = TableCorePassword{
 	PasID:               "pas_id",
 	PasData:             "pas_data",
 	PasType:             "pas_type",
@@ -146,21 +146,21 @@ var FndPassword = TableFndPassword{
 	PasStatus:           "pas_status",
 }
 
-// TableFndPrivilege column names for table fnd_privilege.
-type TableFndPrivilege struct {
+// TableCorePrivilege column names for table core_privilege.
+type TableCorePrivilege struct {
 	PriRoleID   string `database:"-,datatype=text"`
 	PriModuleID string `database:"-,datatype=text"`
 	PriActionID string `database:"-,datatype=text"`
 }
 
-var FndPrivilege = TableFndPrivilege{
+var CorePrivilege = TableCorePrivilege{
 	PriRoleID:   "pri_role_id",
 	PriModuleID: "pri_module_id",
 	PriActionID: "pri_action_id",
 }
 
-// TableFndRole column names for table fnd_role.
-type TableFndRole struct {
+// TableCoreRole column names for table core_role.
+type TableCoreRole struct {
 	RolID          string `database:"-,datatype=text"`
 	RolName        string `database:"-,datatype=text"`
 	RolDescription string `database:"-,datatype=text"`
@@ -170,7 +170,7 @@ type TableFndRole struct {
 	RolStatus      string `database:"-,datatype=smallint"`
 }
 
-var FndRole = TableFndRole{
+var CoreRole = TableCoreRole{
 	RolID:          "rol_id",
 	RolName:        "rol_name",
 	RolDescription: "rol_description",
@@ -180,8 +180,8 @@ var FndRole = TableFndRole{
 	RolStatus:      "rol_status",
 }
 
-// TableFndUser column names for table fnd_user.
-type TableFndUser struct {
+// TableCoreUser column names for table core_user.
+type TableCoreUser struct {
 	UseID         string `database:"-,datatype=uuid"`
 	UseName       string `database:"-,datatype=text"`
 	UseMiddleName string `database:"-,datatype=text"`
@@ -193,7 +193,7 @@ type TableFndUser struct {
 	UseStatus     string `database:"-,datatype=smallint"`
 }
 
-var FndUser = TableFndUser{
+var CoreUser = TableCoreUser{
 	UseID:         "use_id",
 	UseName:       "use_name",
 	UseMiddleName: "use_middle_name",
@@ -205,13 +205,13 @@ var FndUser = TableFndUser{
 	UseStatus:     "use_status",
 }
 
-// TableFndUserRole column names for table fnd_user_role.
-type TableFndUserRole struct {
+// TableCoreUserRole column names for table core_user_role.
+type TableCoreUserRole struct {
 	UsrUserID string `database:"-,datatype=uuid"`
 	UsrRoleID string `database:"-,datatype=text"`
 }
 
-var FndUserRole = TableFndUserRole{
+var CoreUserRole = TableCoreUserRole{
 	UsrUserID: "usr_user_id",
 	UsrRoleID: "usr_role_id",
 }
@@ -366,8 +366,8 @@ var MailTemplateType = TableMailTemplateType{
 	TetStatus:    "tet_status",
 }
 
-// ViewFndVPrivilegeRole column names for view fnd_v_privilege_role.
-type ViewFndVPrivilegeRole struct {
+// ViewCoreVPrivilegeRole column names for view core_v_privilege_role.
+type ViewCoreVPrivilegeRole struct {
 	PrrRoleID   string `database:"N,datatype=text"`
 	PrrModuleID string `database:"N,datatype=text"`
 	PrrActionID string `database:"N,datatype=text"`
@@ -375,7 +375,7 @@ type ViewFndVPrivilegeRole struct {
 	PrrRoute    string `database:"N,datatype=text"`
 }
 
-var FndVPrivilegeRole = ViewFndVPrivilegeRole{
+var CoreVPrivilegeRole = ViewCoreVPrivilegeRole{
 	PrrRoleID:   "prr_role_id",
 	PrrModuleID: "prr_module_id",
 	PrrActionID: "prr_action_id",

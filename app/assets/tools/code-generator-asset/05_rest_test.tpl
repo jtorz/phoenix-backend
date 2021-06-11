@@ -48,7 +48,7 @@
 {{- end}}
 ### GoDataType
 # @name authenticate
-POST {{`{{app-host}}`}}/api/public/foundation/account/login
+POST {{`{{app-host}}`}}/api/public/core/account/login
 Content-Type: application/json
 
 {

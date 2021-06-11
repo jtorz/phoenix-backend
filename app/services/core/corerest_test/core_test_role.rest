@@ -1,0 +1,112 @@
+
+### GoDataType
+# @name authenticate
+POST {{app-host}}/api/public/core/account/login
+Content-Type: application/json
+
+{
+    "Password": "{{env-password}}",
+    "User": "{{env-user}}"
+}
+
+@Authorization = Bearer {{authenticate.response.body.$.JWT}}
+
+#############################################################
+
+###
+# @name LIST_ALL_Roles
+GET {{app-host}}/api/core/roles
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+###
+# @name LIST_ACTIVE_Roles
+GET {{app-host}}/api/core/roles/active-records
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+
+
+###############################################################
+###############################################################
+# @name GET_BY_ID_Role
+GET {{app-host}}/api/core/roles/role/ADM_GRL
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+###
+@ID = {{GET_BY_ID_Role.response.body.$.ID}}
+@UpdatedAt = {{GET_BY_ID_Role.response.body.$.UpdatedAt}}
+
+###
+# @name INSERT_Role
+POST {{app-host}}/api/core/roles/role
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "Name": "",
+    "Description": "",
+    "Icon": "",
+}
+
+
+###
+# @name EDIT_Role
+PUT  {{app-host}}/api/core/roles/role
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "ID": "{{ID}}",
+    "Name": "Admin General",
+    "Description": "Admin General",
+    "Icon": "users",
+    "UpdatedAt": "{{UpdatedAt}}"
+}
+
+
+###
+# @name VALIDATE_Role
+PUT  {{app-host}}/api/core/roles/role/validate
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "ID": "{{ID}}",
+    "UpdatedAt": "{{UpdatedAt}}"
+}
+
+
+###
+# @name INVALIDATE_Role
+PUT  {{app-host}}/api/core/roles/role/invalidate
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "ID": "{{ID}}",
+    "UpdatedAt": "{{UpdatedAt}}"
+}
+
+###
+# @name SOFT-DELETE_Role
+PUT  {{app-host}}/api/core/roles/role/soft-delete
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "ID": "{{ID}}",
+    "UpdatedAt": "{{UpdatedAt}}"
+}
+
+###
+# @name HARD-DELETE_Role
+PUT  {{app-host}}/api/core/roles/role/hard-delete
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "ID": "{{ID}}",
+    "UpdatedAt": "{{UpdatedAt}}"
+}

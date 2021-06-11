@@ -95,38 +95,38 @@ type auxTestStruct struct{}
 var auxTest = auxTestStruct{}
 
 func (auxTestStruct) insertUser(userID string) (err error) {
-	_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.FndUser).Rows(goqu.Record{
-		lex.FndUser.UseID:         userID,
-		lex.FndUser.UseName:       userID,
-		lex.FndUser.UseMiddleName: userID,
-		lex.FndUser.UseLastName:   userID,
-		lex.FndUser.UseEmail:      userID,
-		lex.FndUser.UseUsername:   userID,
-		lex.FndUser.UseStatus:     2,
+	_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.CoreUser).Rows(goqu.Record{
+		lex.CoreUser.UseID:         userID,
+		lex.CoreUser.UseName:       userID,
+		lex.CoreUser.UseMiddleName: userID,
+		lex.CoreUser.UseLastName:   userID,
+		lex.CoreUser.UseEmail:      userID,
+		lex.CoreUser.UseUsername:   userID,
+		lex.CoreUser.UseStatus:     2,
 	}))
 	return
 }
 
 func (auxTestStruct) insertModule(moduleID string) (err error) {
-	_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.FndModule).Rows(goqu.Record{
-		lex.FndModule.ModID:          moduleID,
-		lex.FndModule.ModName:        moduleID,
-		lex.FndModule.ModDescription: moduleID,
-		lex.FndModule.ModOrder:       1,
-		lex.FndModule.ModStatus:      2,
+	_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.CoreModule).Rows(goqu.Record{
+		lex.CoreModule.ModID:          moduleID,
+		lex.CoreModule.ModName:        moduleID,
+		lex.CoreModule.ModDescription: moduleID,
+		lex.CoreModule.ModOrder:       1,
+		lex.CoreModule.ModStatus:      2,
 	}))
 	return
 }
 
 func (auxTestStruct) insertActions(moduleID string, actions ...string) (err error) {
 	for _, a := range actions {
-		_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.FndAction).Rows(goqu.Record{
-			lex.FndAction.ActModuleID:    moduleID,
-			lex.FndAction.ActActionID:    a,
-			lex.FndAction.ActName:        a,
-			lex.FndAction.ActDescription: a,
-			lex.FndAction.ActOrder:       1,
-			lex.FndAction.ActStatus:      2,
+		_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.CoreAction).Rows(goqu.Record{
+			lex.CoreAction.ActModuleID:    moduleID,
+			lex.CoreAction.ActActionID:    a,
+			lex.CoreAction.ActName:        a,
+			lex.CoreAction.ActDescription: a,
+			lex.CoreAction.ActOrder:       1,
+			lex.CoreAction.ActStatus:      2,
 		}))
 		if err != nil {
 			return
@@ -136,22 +136,22 @@ func (auxTestStruct) insertActions(moduleID string, actions ...string) (err erro
 }
 
 func (auxTestStruct) insertActionRoute(moduleID, actionID, method, route string) (err error) {
-	_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.FndActionRoute).Rows(goqu.Record{
-		lex.FndActionRoute.AcrModuleID: moduleID,
-		lex.FndActionRoute.AcrActionID: actionID,
-		lex.FndActionRoute.AcrMethod:   method,
-		lex.FndActionRoute.AcrRoute:    route,
+	_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.CoreActionRoute).Rows(goqu.Record{
+		lex.CoreActionRoute.AcrModuleID: moduleID,
+		lex.CoreActionRoute.AcrActionID: actionID,
+		lex.CoreActionRoute.AcrMethod:   method,
+		lex.CoreActionRoute.AcrRoute:    route,
 	}))
 	return
 }
 
 func (auxTestStruct) insertRole(rolID string) (err error) {
-	_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.FndRole).Rows(goqu.Record{
-		lex.FndRole.RolID:          rolID,
-		lex.FndRole.RolName:        rolID,
-		lex.FndRole.RolDescription: rolID,
-		lex.FndRole.RolIcon:        rolID,
-		lex.FndRole.RolStatus:      2,
+	_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.CoreRole).Rows(goqu.Record{
+		lex.CoreRole.RolID:          rolID,
+		lex.CoreRole.RolName:        rolID,
+		lex.CoreRole.RolDescription: rolID,
+		lex.CoreRole.RolIcon:        rolID,
+		lex.CoreRole.RolStatus:      2,
 	}))
 	return
 }
@@ -159,10 +159,10 @@ func (auxTestStruct) insertRole(rolID string) (err error) {
 func (auxTestStruct) insertPrivileges(rolID string, privs ...string) (err error) {
 	for _, priv := range privs {
 		act := strings.Split(priv, ".")
-		_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.FndPrivilege).Rows(goqu.Record{
-			lex.FndPrivilege.PriRoleID:   "_TESTROLE_",
-			lex.FndPrivilege.PriModuleID: act[0],
-			lex.FndPrivilege.PriActionID: act[1],
+		_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.CorePrivilege).Rows(goqu.Record{
+			lex.CorePrivilege.PriRoleID:   "_TESTROLE_",
+			lex.CorePrivilege.PriModuleID: act[0],
+			lex.CorePrivilege.PriActionID: act[1],
 		}))
 		if err != nil {
 			return err
@@ -172,9 +172,9 @@ func (auxTestStruct) insertPrivileges(rolID string, privs ...string) (err error)
 }
 
 func (auxTestStruct) insertUserRole(userId, rolID string) (err error) {
-	_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.FndUserRole).Rows(goqu.Record{
-		lex.FndUserRole.UsrUserID: userId,
-		lex.FndUserRole.UsrRoleID: rolID,
+	_, err = lex.DoInsert(testAuthSvc.ctx, testAuthSvc.dbTx, lex.NewInsert(lex.T.CoreUserRole).Rows(goqu.Record{
+		lex.CoreUserRole.UsrUserID: userId,
+		lex.CoreUserRole.UsrRoleID: rolID,
 	}))
 	return
 }

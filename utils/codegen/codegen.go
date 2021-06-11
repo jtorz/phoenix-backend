@@ -18,8 +18,8 @@ import (
 )
 
 type Entity struct {
-	DBName   string // database table name (Examples: fnd_user, fnd_role)
-	DBGoCase string // database table name in Go Case (Examples: FndUser, FndRole)
+	DBName   string // database table name (Examples: core_user, core_role)
+	DBGoCase string // database table name in Go Case (Examples: CoreUser, CoreRole)
 	GoStruct string // Struct name for go
 	GoSlice  string //Slice name for go
 	Columns  []Attribute
@@ -38,10 +38,10 @@ type Attribute struct {
 }
 
 type Fk struct {
-	DBName       string // database fk constraint name in Go Case (Examples: FndActionFkFndModule)
-	DBGoCase     string // database fk constraint name (Examples: fnd_user, fnd_action_fk_fnd_module)
-	FTableGoCase string // database foreing table name in Go Case (Examples: FndModule)
-	FTable       string // database foreing table name (Examples: fnd_module)
+	DBName       string // database fk constraint name in Go Case (Examples: CoreActionFkCoreModule)
+	DBGoCase     string // database fk constraint name (Examples: core_user, core_action_fk_core_module)
+	FTableGoCase string // database foreing table name in Go Case (Examples: CoreModule)
+	FTable       string // database foreing table name (Examples: core_module)
 	Columns      []FKColumns
 }
 

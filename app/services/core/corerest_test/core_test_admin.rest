@@ -1,0 +1,22 @@
+
+### GoDataType
+# @name authenticate
+POST {{app-host}}/api/public/core/account/login
+Content-Type: application/json
+
+{
+    "Password": "{{env-password}}",
+    "User": "{{env-user}}"
+}
+
+@Authorization = Bearer {{authenticate.response.body.$.JWT}}
+
+#############################################################
+
+###
+# @name CACHE_CLEAR
+POST {{app-host}}/api/admin/core/cache/clear
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+###

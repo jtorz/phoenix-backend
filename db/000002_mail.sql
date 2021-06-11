@@ -11,7 +11,7 @@
         sen_from                TEXT NOT NULL,
         sen_created_at          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
         sen_updated_at          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-        sen_status              fnd_dm_record_status
+        sen_status              core_dm_record_status
     );
 
     ALTER TABLE ONLY mail_sender ADD CONSTRAINT
@@ -26,7 +26,7 @@
         tet_tags       JSON DEFAULT '[]'::JSON NOT NULL,
         tet_created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
         tet_updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-        tet_status     fnd_dm_record_status
+        tet_status     core_dm_record_status
     );
 
     ALTER TABLE ONLY mail_template_type ADD CONSTRAINT
@@ -40,7 +40,7 @@
         hea_header     TEXT NOT NULL,
         hea_created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
         hea_updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-        hea_status     fnd_dm_record_status
+        hea_status     core_dm_record_status
     );
 
     ALTER TABLE ONLY mail_header ADD CONSTRAINT
@@ -54,7 +54,7 @@
         foo_footer     TEXT NOT NULL,
         foo_created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
         foo_updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-        foo_status     fnd_dm_record_status
+        foo_status     core_dm_record_status
     );
 
     ALTER TABLE ONLY mail_footer ADD CONSTRAINT
@@ -73,7 +73,7 @@
         tem_sender_id   TEXT NOT NULL,
         tem_created_at  TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
         tem_updated_at  TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-        tem_status      fnd_dm_record_status
+        tem_status      core_dm_record_status
     );
 
     ALTER TABLE ONLY mail_template ADD CONSTRAINT
@@ -103,7 +103,7 @@
         rec_from             TEXT NOT NULL,
         rec_created_at       TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
         rec_updated_at       TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-        rec_status           fnd_dm_record_status
+        rec_status           core_dm_record_status
     );
 
     ALTER TABLE ONLY mail_b_record ADD CONSTRAINT
@@ -111,5 +111,5 @@
 
     CALL create_fk('mail_b_record', 'rec_type_id', 'mail_template_type', 'tet_id');
 
-    CALL create_fk('mail_b_record', 'rec_sender_user_id', 'fnd_user', 'use_id');
+    CALL create_fk('mail_b_record', 'rec_sender_user_id', 'core_user', 'use_id');
 -- END mail_b_record

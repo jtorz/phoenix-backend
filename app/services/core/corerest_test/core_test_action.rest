@@ -1,0 +1,133 @@
+
+### GoDataType
+# @name authenticate
+POST {{app-host}}/api/public/core/account/login
+Content-Type: application/json
+
+{
+    "Password": "{{env-password}}",
+    "User": "{{env-user}}"
+}
+
+@Authorization = Bearer {{authenticate.response.body.$.JWT}}
+
+#############################################################
+
+###
+# @name LIST_ALL_Actions
+GET {{app-host}}/api/core/modules/module/{{moduleID}}/actions
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+###
+# @name LIST_ACTIVE_Actions
+GET {{app-host}}/api/core/modules/module/{{moduleID}}/actions/active-records
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+###
+# @name LIST_FILTERED_Actions
+POST {{app-host}}/api/core/modules/module/{{moduleID}}/actions
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "limit": 0,
+    "offset": 0,
+    "sort": ["+ModuleID","+ActionID","+Name","+Description","+Order","+CreatedAt","+UpdatedAt"
+    ]
+}
+
+
+
+###############################################################
+###############################################################
+# @name GET_BY_ID_Action
+GET {{app-host}}/api/core/modules/module/{{moduleID}}/actions/action/{{actionID}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+###
+@moduleID = CORE.NAV
+@actionID = NEW
+@updatedAt = {{GET_BY_ID_Action.response.body.$.UpdatedAt}}
+
+###
+# @name INSERT_Action
+POST {{app-host}}/api/core/modules/actions/action
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "ModuleID": "{{moduleID}}",
+    "ActionID": "NEW",
+    "Name": "New",
+    "Description": "Create new navigator element.",
+    "Order": 0
+}
+
+
+###
+# @name EDIT_Action
+PUT  {{app-host}}/api/core/modules/actions/action
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "ModuleID": "{{moduleID}}",
+    "ActionID": "{{actionID}}",
+    "Name": "New",
+    "Description": "Create a new navigator element.",
+    "Order": 0,
+    "UpdatedAt": "{{updatedAt}}"
+}
+
+
+###
+# @name VALIDATE_Action
+PUT  {{app-host}}/api/core/modules/actions/action/validate
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "ModuleID": "{{moduleID}}",
+    "ActionID": "{{actionID}}",
+    "UpdatedAt": "{{updatedAt}}"
+}
+
+
+###
+# @name INVALIDATE_Action
+PUT  {{app-host}}/api/core/modules/actions/action/invalidate
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "ModuleID": "{{moduleID}}",
+    "ActionID": "{{actionID}}",
+    "UpdatedAt": "{{updatedAt}}"
+}
+
+###
+# @name SOFT-DELETE_Action
+PUT  {{app-host}}/api/core/modules/actions/action/soft-delete
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "ModuleID": "{{moduleID}}",
+    "ActionID": "{{actionID}}",
+    "UpdatedAt": "{{updatedAt}}"
+}
+
+###
+# @name HARD-DELETE_Action
+PUT  {{app-host}}/api/core/modules/actions/action/hard-delete
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+    "ModuleID": "{{moduleID}}",
+    "ActionID": "{{actionID}}",
+    "UpdatedAt": "{{updatedAt}}"
+}

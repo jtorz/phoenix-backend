@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jtorz/phoenix-backend/app/services/authorization"
-	"github.com/jtorz/phoenix-backend/app/services/fnd/fndhttp"
+	"github.com/jtorz/phoenix-backend/app/services/core/corehttp"
 	"github.com/jtorz/phoenix-backend/app/services/mail"
 	"github.com/jtorz/phoenix-backend/app/services/mail/mailhttp"
 	"github.com/jtorz/phoenix-backend/app/shared/baseservice"
@@ -41,15 +41,15 @@ func (server *Server) configureServices() {
 	}
 
 	{
-		route := "/foundation"
-		fndSVC := fndhttp.NewHttpService(server.MainDB, jwtSvc, mailSenderSvc, server.Redis)
+		route := "/core"
+		coreSVC := corehttp.NewHttpService(server.MainDB, jwtSvc, mailSenderSvc, server.Redis)
 		adminGroup := apiGroup.Group("/admin")
 		publicGroup := apiGroup.Group("/public")
 		authAllGroup := apiGroup.Group("/auth-all")
-		fndSVC.API(apiGroup.Group(route))
-		fndSVC.APIAdmin(adminGroup.Group(route))
-		fndSVC.APIPublic(publicGroup.Group(route))
-		fndSVC.APIAuthAll(authAllGroup.Group(route))
+		coreSVC.API(apiGroup.Group(route))
+		coreSVC.APIAdmin(adminGroup.Group(route))
+		coreSVC.APIPublic(publicGroup.Group(route))
+		coreSVC.APIAuthAll(authAllGroup.Group(route))
 	}
 
 	h := http.TimeoutHandler(r, time.Duration(server.Config.RequestTimeout)*time.Second, `"request timeout"`)

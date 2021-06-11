@@ -13,7 +13,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 
 COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
 
-CREATE DOMAIN fnd_dm_record_status
+CREATE DOMAIN core_dm_record_status
     AS SMALLINT DEFAULT 1 NOT NULL
     CHECK (VALUE IN (0, 1, 2, 3));
 

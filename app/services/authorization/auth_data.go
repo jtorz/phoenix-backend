@@ -166,9 +166,9 @@ func (svc *Service) savePrivilegesCache(privs []privilege) error {
 
 func (svc *Service) getRolesDB(ctx context.Context) ([]string, error) {
 	recs := make([]string, 0)
-	query := NewSelect(FndUserRole.UsrRoleID).
-		From(T.FndUserRole).
-		Where(goqu.C(FndUserRole.UsrUserID).Eq(svc.ID))
+	query := NewSelect(CoreUserRole.UsrRoleID).
+		From(T.CoreUserRole).
+		Where(goqu.C(CoreUserRole.UsrUserID).Eq(svc.ID))
 
 	rows, err := QueryContext(ctx, svc.exe, query)
 	if err != nil {
@@ -194,13 +194,13 @@ func (svc *Service) getRolesDB(ctx context.Context) ([]string, error) {
 func (svc *Service) getPrivilegesDB(ctx context.Context) ([]privilege, error) {
 	recs := []privilege{}
 	query := NewSelect(
-		goqu.L(FndVPrivilegeRole.PrrModuleID+"||'.'||"+FndVPrivilegeRole.PrrActionID),
-		CoalesceStr(FndVPrivilegeRole.PrrMethod),
-		CoalesceStr(FndVPrivilegeRole.PrrRoute),
+		goqu.L(CoreVPrivilegeRole.PrrModuleID+"||'.'||"+CoreVPrivilegeRole.PrrActionID),
+		CoalesceStr(CoreVPrivilegeRole.PrrMethod),
+		CoalesceStr(CoreVPrivilegeRole.PrrRoute),
 	).
-		From(V.FndVPrivilegeRole).
-		InnerJoin(goqu.T(T.FndUserRole), goqu.On(goqu.C(FndUserRole.UsrRoleID).Eq(goqu.C(FndVPrivilegeRole.PrrRoleID)))).
-		Where(goqu.C(FndUserRole.UsrUserID).Eq(svc.ID)).GroupBy()
+		From(V.CoreVPrivilegeRole).
+		InnerJoin(goqu.T(T.CoreUserRole), goqu.On(goqu.C(CoreUserRole.UsrRoleID).Eq(goqu.C(CoreVPrivilegeRole.PrrRoleID)))).
+		Where(goqu.C(CoreUserRole.UsrUserID).Eq(svc.ID)).GroupBy()
 
 	rows, err := QueryContext(ctx, svc.exe, query)
 	if err != nil {

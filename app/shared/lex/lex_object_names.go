@@ -10,152 +10,152 @@ import (
 
 // T database table names.
 var T = struct {
-	FndAccountAccess  string
-	FndAction         string
-	FndActionRoute    string
-	FndModule         string
-	FndNavElement     string
-	FndNavElementRole string
-	FndPassword       string
-	FndPrivilege      string
-	FndRole           string
-	FndUser           string
-	FndUserRole       string
-	MailBRecord       string
-	MailFooter        string
-	MailHeader        string
-	MailSender        string
-	MailTemplate      string
-	MailTemplateType  string
+	CoreAccountAccess  string
+	CoreAction         string
+	CoreActionRoute    string
+	CoreModule         string
+	CoreNavElement     string
+	CoreNavElementRole string
+	CorePassword       string
+	CorePrivilege      string
+	CoreRole           string
+	CoreUser           string
+	CoreUserRole       string
+	MailBRecord        string
+	MailFooter         string
+	MailHeader         string
+	MailSender         string
+	MailTemplate       string
+	MailTemplateType   string
 }{
-	FndAccountAccess:  "fnd_account_access",
-	FndAction:         "fnd_action",
-	FndActionRoute:    "fnd_action_route",
-	FndModule:         "fnd_module",
-	FndNavElement:     "fnd_nav_element",
-	FndNavElementRole: "fnd_nav_element_role",
-	FndPassword:       "fnd_password",
-	FndPrivilege:      "fnd_privilege",
-	FndRole:           "fnd_role",
-	FndUser:           "fnd_user",
-	FndUserRole:       "fnd_user_role",
-	MailBRecord:       "mail_b_record",
-	MailFooter:        "mail_footer",
-	MailHeader:        "mail_header",
-	MailSender:        "mail_sender",
-	MailTemplate:      "mail_template",
-	MailTemplateType:  "mail_template_type",
+	CoreAccountAccess:  "core_account_access",
+	CoreAction:         "core_action",
+	CoreActionRoute:    "core_action_route",
+	CoreModule:         "core_module",
+	CoreNavElement:     "core_nav_element",
+	CoreNavElementRole: "core_nav_element_role",
+	CorePassword:       "core_password",
+	CorePrivilege:      "core_privilege",
+	CoreRole:           "core_role",
+	CoreUser:           "core_user",
+	CoreUserRole:       "core_user_role",
+	MailBRecord:        "mail_b_record",
+	MailFooter:         "mail_footer",
+	MailHeader:         "mail_header",
+	MailSender:         "mail_sender",
+	MailTemplate:       "mail_template",
+	MailTemplateType:   "mail_template_type",
 }
 
 // V database view names.
 var V = struct {
-	FndVPrivilegeRole string
+	CoreVPrivilegeRole string
 }{
-	FndVPrivilegeRole: "fnd_v_privilege_role",
+	CoreVPrivilegeRole: "core_v_privilege_role",
 }
 
-// FndAccountAccessFkFndUser returns the join expression for the foreign key from FndAccountAccess to FndUser.
-func FndAccountAccessFkFndUser(exps ...exp.Expression) exp.JoinCondition {
+// CoreAccountAccessFkCoreUser returns the join expression for the foreign key from CoreAccountAccess to CoreUser.
+func CoreAccountAccessFkCoreUser(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
-		FndAccountAccess.AcaUserID: goqu.I(FndUser.UseID),
+		CoreAccountAccess.AcaUserID: goqu.I(CoreUser.UseID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndActionFkFndModule returns the join expression for the foreign key from FndAction to FndModule.
-func FndActionFkFndModule(exps ...exp.Expression) exp.JoinCondition {
+// CoreActionFkCoreModule returns the join expression for the foreign key from CoreAction to CoreModule.
+func CoreActionFkCoreModule(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
-		FndAction.ActModuleID: goqu.I(FndModule.ModID),
+		CoreAction.ActModuleID: goqu.I(CoreModule.ModID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndActionRouteFkFndAction returns the join expression for the foreign key from FndActionRoute to FndAction.
-func FndActionRouteFkFndAction(exps ...exp.Expression) exp.JoinCondition {
+// CoreActionRouteFkCoreAction returns the join expression for the foreign key from CoreActionRoute to CoreAction.
+func CoreActionRouteFkCoreAction(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
-		FndActionRoute.AcrActionID: goqu.I(FndAction.ActActionID),
-		FndActionRoute.AcrModuleID: goqu.I(FndAction.ActModuleID),
+		CoreActionRoute.AcrActionID: goqu.I(CoreAction.ActActionID),
+		CoreActionRoute.AcrModuleID: goqu.I(CoreAction.ActModuleID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndModuleFkFndModulePadre returns the join expression for the foreign key from FndModule to FndModule.
-func FndModuleFkFndModulePadre(exps ...exp.Expression) exp.JoinCondition {
+// CoreModuleFkCoreModulePadre returns the join expression for the foreign key from CoreModule to CoreModule.
+func CoreModuleFkCoreModulePadre(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
-		FndModule.ModParentID: goqu.I(FndModule.ModID),
+		CoreModule.ModParentID: goqu.I(CoreModule.ModID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndNavElementFkFndNavElementParent returns the join expression for the foreign key from FndNavElement to FndNavElement.
-func FndNavElementFkFndNavElementParent(exps ...exp.Expression) exp.JoinCondition {
+// CoreNavElementFkCoreNavElementParent returns the join expression for the foreign key from CoreNavElement to CoreNavElement.
+func CoreNavElementFkCoreNavElementParent(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
-		FndNavElement.NaeParentID: goqu.I(FndNavElement.NaeID),
+		CoreNavElement.NaeParentID: goqu.I(CoreNavElement.NaeID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndNavElementRoleFkFndNavElement returns the join expression for the foreign key from FndNavElementRole to FndNavElement.
-func FndNavElementRoleFkFndNavElement(exps ...exp.Expression) exp.JoinCondition {
+// CoreNavElementRoleFkCoreNavElement returns the join expression for the foreign key from CoreNavElementRole to CoreNavElement.
+func CoreNavElementRoleFkCoreNavElement(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
-		FndNavElementRole.NerNavElementID: goqu.I(FndNavElement.NaeID),
+		CoreNavElementRole.NerNavElementID: goqu.I(CoreNavElement.NaeID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndNavElementRoleFkFndRole returns the join expression for the foreign key from FndNavElementRole to FndRole.
-func FndNavElementRoleFkFndRole(exps ...exp.Expression) exp.JoinCondition {
+// CoreNavElementRoleFkCoreRole returns the join expression for the foreign key from CoreNavElementRole to CoreRole.
+func CoreNavElementRoleFkCoreRole(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
-		FndNavElementRole.NerRoleID: goqu.I(FndRole.RolID),
+		CoreNavElementRole.NerRoleID: goqu.I(CoreRole.RolID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndPasswordFkFndUser returns the join expression for the foreign key from FndPassword to FndUser.
-func FndPasswordFkFndUser(exps ...exp.Expression) exp.JoinCondition {
+// CorePasswordFkCoreUser returns the join expression for the foreign key from CorePassword to CoreUser.
+func CorePasswordFkCoreUser(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
-		FndPassword.PasUserID: goqu.I(FndUser.UseID),
+		CorePassword.PasUserID: goqu.I(CoreUser.UseID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndPrivilegeFkFndAction returns the join expression for the foreign key from FndPrivilege to FndAction.
-func FndPrivilegeFkFndAction(exps ...exp.Expression) exp.JoinCondition {
+// CorePrivilegeFkCoreAction returns the join expression for the foreign key from CorePrivilege to CoreAction.
+func CorePrivilegeFkCoreAction(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
-		FndPrivilege.PriActionID: goqu.I(FndAction.ActActionID),
-		FndPrivilege.PriModuleID: goqu.I(FndAction.ActModuleID),
+		CorePrivilege.PriActionID: goqu.I(CoreAction.ActActionID),
+		CorePrivilege.PriModuleID: goqu.I(CoreAction.ActModuleID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndPrivilegeFkFndRole returns the join expression for the foreign key from FndPrivilege to FndRole.
-func FndPrivilegeFkFndRole(exps ...exp.Expression) exp.JoinCondition {
+// CorePrivilegeFkCoreRole returns the join expression for the foreign key from CorePrivilege to CoreRole.
+func CorePrivilegeFkCoreRole(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
-		FndPrivilege.PriRoleID: goqu.I(FndRole.RolID),
+		CorePrivilege.PriRoleID: goqu.I(CoreRole.RolID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndUserRoleFkFndRole returns the join expression for the foreign key from FndUserRole to FndRole.
-func FndUserRoleFkFndRole(exps ...exp.Expression) exp.JoinCondition {
+// CoreUserRoleFkCoreRole returns the join expression for the foreign key from CoreUserRole to CoreRole.
+func CoreUserRoleFkCoreRole(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
-		FndUserRole.UsrRoleID: goqu.I(FndRole.RolID),
+		CoreUserRole.UsrRoleID: goqu.I(CoreRole.RolID),
 	})
 	return goqu.On(exps...)
 }
 
-// FndUserRoleFkFndUser returns the join expression for the foreign key from FndUserRole to FndUser.
-func FndUserRoleFkFndUser(exps ...exp.Expression) exp.JoinCondition {
+// CoreUserRoleFkCoreUser returns the join expression for the foreign key from CoreUserRole to CoreUser.
+func CoreUserRoleFkCoreUser(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
-		FndUserRole.UsrUserID: goqu.I(FndUser.UseID),
+		CoreUserRole.UsrUserID: goqu.I(CoreUser.UseID),
 	})
 	return goqu.On(exps...)
 }
 
-// MailBRecordFkFndUser returns the join expression for the foreign key from MailBRecord to FndUser.
-func MailBRecordFkFndUser(exps ...exp.Expression) exp.JoinCondition {
+// MailBRecordFkCoreUser returns the join expression for the foreign key from MailBRecord to CoreUser.
+func MailBRecordFkCoreUser(exps ...exp.Expression) exp.JoinCondition {
 	exps = append(exps, goqu.Ex{
-		MailBRecord.RecSenderUserID: goqu.I(FndUser.UseID),
+		MailBRecord.RecSenderUserID: goqu.I(CoreUser.UseID),
 	})
 	return goqu.On(exps...)
 }

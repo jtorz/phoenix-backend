@@ -1,0 +1,19 @@
+
+###
+# @name authenticate
+POST {{app-host}}/api/public/core/account/login
+Content-Type: application/json
+
+{
+    "Password": "{{env-password}}",
+    "User": "{{env-user}}"
+}
+
+
+@Authorization = Bearer {{authenticate.response.body.$.JWT}}
+
+###
+# @name get_account_info
+GET {{app-host}}/api/core/account/session
+Content-Type: application/json
+Authorization: {{Authorization}}

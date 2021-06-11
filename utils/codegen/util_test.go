@@ -10,7 +10,7 @@ func TestGoCase(t *testing.T) {
 	tests := []struct {
 		input, expected string
 	}{
-		{input: "fnd_user", expected: "FndUser"},
+		{input: "core_user", expected: "CoreUser"},
 		{input: "user", expected: "User"},
 		{input: "mail_b_record", expected: "MailBRecord"},
 	}
@@ -26,7 +26,7 @@ func TestDbTableNameToGoName(t *testing.T) {
 	}{
 		{input: "mail_b_record", expected: "BRecord"},
 		{input: "mail__b_record", expected: "BRecord"},
-		{input: "fnd_user", expected: "User"},
+		{input: "core_user", expected: "User"},
 	}
 	for _, test := range tests {
 		actual := dbTableNameToGoName(test.input)

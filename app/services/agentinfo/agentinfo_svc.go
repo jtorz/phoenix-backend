@@ -41,14 +41,14 @@ func (svc *Service) getUser(ctx context.Context) error {
 		return nil
 	}
 	query := lex.NewSelect(
-		lex.FndUser.UseEmail,
-		lex.FndUser.UseUsername,
-		lex.FndUser.UseName,
-		lex.FndUser.UseMiddleName,
-		lex.FndUser.UseLastName,
+		lex.CoreUser.UseEmail,
+		lex.CoreUser.UseUsername,
+		lex.CoreUser.UseName,
+		lex.CoreUser.UseMiddleName,
+		lex.CoreUser.UseLastName,
 	).
-		From(lex.T.FndUser).
-		Where(goqu.C(lex.FndUser.UseID).Eq(svc.userID))
+		From(lex.T.CoreUser).
+		Where(goqu.C(lex.CoreUser.UseID).Eq(svc.userID))
 
 	row, err := lex.QueryRowContext(ctx, svc.db, query)
 	if err != nil {
