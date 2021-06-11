@@ -38,12 +38,16 @@ func (server Server) Start(s service.Service) error {
 		log.Errorf("can't load server config: %s", err)
 		return err
 	}
-	go server.runRedirect(log)
+
+	if err = server.HTTPServer.ListenAndServe(); err != nil {
+		return err
+	}
+	/* go server.runRedirect(log)
 	log.Infof("listenAndServeTLS on port %d", server.Config.Port)
 	if err := server.HTTPServer.ListenAndServeTLS(server.Config.Cert, server.Config.Key); err != nil && err != http.ErrServerClosed {
 		log.Errorf("error ListenAndServeTLS: %s", err)
 		os.Exit(1)
-	}
+	} */
 	return nil
 }
 
